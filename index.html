@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oguz Law — Operations SOP Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#FDFAF5;--sidebar-bg:#1C1410;--sidebar-hover:#2E1F16;--sidebar-active:#3D2A1E;
+  --accent:#C9873A;--accent-light:#E8A85C;--text:#2C1F14;--text-light:#6B5040;
+  --text-muted:#9B7A5E;--border:#E8DDD0;--card-bg:#FFFFFF;--header-bg:#F5EFE6;
+  --code-bg:#1C1410;--shadow:0 2px 16px rgba(44,31,20,.08);--shadow-hover:0 8px 32px rgba(44,31,20,.16);
+  --sidebar-w:280px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--sidebar-bg);height:100vh;overflow-y:auto;display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;scrollbar-width:thin;scrollbar-color:#3D2A1E transparent;}
+.sidebar::-webkit-scrollbar{width:4px;}.sidebar::-webkit-scrollbar-thumb{background:#3D2A1E;border-radius:2px;}
+.sidebar-logo{padding:28px 20px 20px;border-bottom:1px solid rgba(201,135,58,.2);}
+.sidebar-logo-mark{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--accent-light);display:block;}
+.sidebar-logo-sub{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(201,135,58,.5);display:block;margin-top:2px;}
+.search-wrap{padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.05);}
+.search-input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(201,135,58,.2);border-radius:8px;padding:9px 12px 9px 34px;color:#F5EDE0;font-family:'Jost',sans-serif;font-size:13px;outline:none;transition:border-color .2s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23C9873A' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center;}
+.search-input::placeholder{color:rgba(255,255,255,.3);}.search-input:focus{border-color:var(--accent);}
+.nav-content{padding:12px 0 40px;flex:1;}
+.cat-section{margin-bottom:4px;}
+.cat-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:12px 16px 6px;opacity:.8;}
+.doc-list{list-style:none;padding:0 8px;}
+.doc-link{display:block;padding:8px 12px;color:rgba(245,237,224,.7);text-decoration:none;font-size:12.5px;border-radius:6px;transition:all .15s;line-height:1.4;margin-bottom:1px;}
+.doc-link:hover{background:var(--sidebar-hover);color:var(--accent-light);}
+.doc-link.active{background:var(--sidebar-active);color:var(--accent-light);font-weight:500;}
+.main{margin-left:var(--sidebar-w);flex:1;height:100vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.main::-webkit-scrollbar{width:6px;}.main::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.main-header{position:sticky;top:0;z-index:50;background:var(--header-bg);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+.main-header-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--text);}
+.header-meta{font-size:12px;color:var(--text-muted);}
+.content-area{padding:32px 40px 80px;max-width:1100px;}
+.cat-section-main{margin-bottom:48px;}
+.cat-heading{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--text);margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--accent);display:inline-flex;align-items:center;gap:10px;}
+.doc-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .2s;}
+.doc-card:hover{box-shadow:var(--shadow-hover);}.doc-card.expanded{border-color:var(--accent);}
+.doc-header{padding:20px 24px;display:flex;gap:24px;align-items:flex-start;cursor:pointer;transition:background .15s;}
+.doc-header:hover{background:#FEFDF8;}.doc-header-left{min-width:200px;flex-shrink:0;}.doc-header-right{flex:1;}
+.doc-badge{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:rgba(201,135,58,.1);border:1px solid rgba(201,135,58,.3);border-radius:4px;padding:2px 8px;margin-bottom:8px;}
+.doc-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text);line-height:1.3;margin-bottom:4px;}
+.doc-meta{font-size:11px;color:var(--text-muted);}
+.doc-summary{font-size:13.5px;color:var(--text-light);line-height:1.6;margin-bottom:12px;}
+.expand-btn{background:transparent;border:1px solid var(--accent);color:var(--accent);font-family:'Jost',sans-serif;font-size:12px;font-weight:500;padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .15s;}
+.expand-btn:hover{background:var(--accent);color:white;}
+.doc-body{border-top:1px solid var(--border);padding:32px 40px;font-size:14.5px;line-height:1.75;color:var(--text);}
+.doc-body h2{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--text);margin:32px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.doc-body h2:first-child{margin-top:0;}
+.doc-body h3{font-family:'Jost',sans-serif;font-size:16px;font-weight:600;color:var(--text);margin:24px 0 10px;}
+.doc-body h4{font-family:'Jost',sans-serif;font-size:13.5px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px;}
+.doc-body p{margin-bottom:12px;}.doc-body ul,.doc-body ol{padding-left:22px;margin-bottom:14px;}.doc-body li{margin-bottom:5px;}
+.doc-body hr{border:none;border-top:1px solid var(--border);margin:28px 0;}
+.doc-body strong{font-weight:600;}.doc-body em{font-style:italic;color:var(--text-light);}
+.doc-body code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:rgba(201,135,58,.1);color:#8B5E3C;border-radius:4px;padding:1px 6px;}
+.doc-body pre{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--code-bg);color:#E8C99A;border-radius:10px;padding:20px 24px;overflow-x:auto;margin:16px 0;line-height:1.7;border-left:3px solid var(--accent);}
+.doc-body a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;}
+.table-wrap{overflow-x:auto;margin:16px 0;border-radius:10px;border:1px solid var(--border);}
+.doc-body table{width:100%;border-collapse:collapse;font-size:13.5px;}
+.doc-body thead{background:var(--header-bg);}
+.doc-body th{padding:10px 14px;text-align:left;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-light);white-space:nowrap;}
+.doc-body td{padding:10px 14px;border-top:1px solid var(--border);vertical-align:top;line-height:1.55;}
+.doc-body tr:hover td{background:#FEFAF3;}
+.badge-on{color:#2E7D32;font-weight:600;font-size:11px;}
+.status-ok{color:#2E7D32;font-weight:600;}.status-fail{color:#C62828;font-weight:600;}.status-warn{color:#E65100;font-weight:600;}
+.warning-box{background:#FFF8EE;border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#5C3200;line-height:1.6;}
+.info-box{background:#F0F4FF;border-left:4px solid #4A6FA5;border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:#1A2F5E;line-height:1.6;}
+.flow-box{background:linear-gradient(135deg,#1C1410,#2E1F16);color:#E8C99A;border-radius:10px;padding:24px 28px;margin:16px 0;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2;}
+.search-results-info{padding:12px 40px;background:rgba(201,135,58,.08);border-bottom:1px solid var(--border);font-size:13px;color:var(--text-light);display:none;}
+.step-block{display:flex;gap:16px;margin:16px 0;align-items:flex-start;}
+.step-num{flex-shrink:0;width:32px;height:32px;background:var(--accent);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;font-family:'Jost',sans-serif;margin-top:2px;}
+.step-content{flex:1;padding-top:4px;}
+.step-content strong{display:block;font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.code-block{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--code-bg);color:#E8C99A;border-radius:10px;padding:20px 24px;overflow-x:auto;margin:16px 0;line-height:1.7;border-left:3px solid var(--accent);white-space:pre;}
+.badge-sm{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:rgba(201,135,58,.1);border:1px solid rgba(201,135,58,.25);border-radius:3px;padding:1px 6px;}
+.badge-sm.muted{color:var(--text-muted);background:rgba(155,122,94,.08);border-color:rgba(155,122,94,.2);}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="sidebar-logo-mark">Oguz Law</span>
+    <span class="sidebar-logo-sub">Operations SOP Library</span>
+  </div>
+  <div class="search-wrap">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search documents… (⌘K)">
+  </div>
+  <nav class="nav-content" id="sidebarNav">
+<div class="cat-section"><div class="cat-label">🏛 HubSpot & CRM</div><ul class="doc-list">
+<li><a href="#doc-internal_kurallar" class="doc-link" data-target="internal_kurallar">HubSpot Brand Rules (Internal Kurallar)</a></li>
+<li><a href="#doc-hubspot_kb" class="doc-link" data-target="hubspot_kb">Oguz Law Internal Knowledge Base</a></li>
+<li><a href="#doc-hubspot_workflows" class="doc-link" data-target="hubspot_workflows">HubSpot Active Automations — Master Reference</a></li>
+</ul></div>
+<div class="cat-section"><div class="cat-label">⚙️ Automations & Tracking</div><ul class="doc-list">
+<li><a href="#doc-whatsapp_sop" class="doc-link" data-target="whatsapp_sop">WhatsApp UTM Tracking SOP v1.1</a></li>
+<li><a href="#doc-whatsapp_handoff" class="doc-link" data-target="whatsapp_handoff">WhatsApp UTM Tracking — Team Handoff</a></li>
+</ul></div>
+<div class="cat-section"><div class="cat-label">🔧 Technical Infrastructure</div><ul class="doc-list">
+<li><a href="#doc-ejudge" class="doc-link" data-target="ejudge">E-Judge Maintenance — EOIR Hearing Sync</a></li>
+<li><a href="#doc-mycase_oauth" class="doc-link" data-target="mycase_oauth">MyCase OAuth Proxy — Installation & Operations</a></li>
+</ul></div>
+<div class="cat-section"><div class="cat-label">📊 Reporting & Analytics</div><ul class="doc-list">
+<li><a href="#doc-mycase_kpi" class="doc-link" data-target="mycase_kpi">MyCase KPI Reports — SOP Library</a></li>
+<li><a href="#doc-openphone_filters" class="doc-link" data-target="openphone_filters">OpenPhone Analytics Filters Reference</a></li>
+</ul></div>
+<div class="cat-section"><div class="cat-label">🌐 IT Evaluation</div><ul class="doc-list">
+<li><a href="#doc-nordbrowser" class="doc-link" data-target="nordbrowser">NordBrowser Beta Test — Scope Review Report</a></li>
+</ul></div></nav>
+</aside>
+<div class="main" id="mainPanel">
+  <div class="main-header">
+    <div class="main-header-title">Operations Knowledge Base</div>
+    <div class="header-meta">Oguz Law Internal — Confidential</div>
+  </div>
+  <div class="search-results-info" id="searchInfo"></div>
+  <div class="content-area" id="contentArea">
+<section class="cat-section-main" id="cat-hubspot"><h2 class="cat-heading">🏛 HubSpot & CRM</h2>
+<article class="doc-card" id="doc-internal_kurallar" data-content="internal_kurallar">
+  <div class="doc-header">
+    <div class="doc-header-left">
+      <span class="doc-badge">HubSpot</span>
+      <h3 class="doc-title">HubSpot Brand Rules (Internal Kurallar)</h3>
+      <p class="doc-meta">Brand & Access Management</p>
+    </div>
+    <div class="doc-header-right">
+      <p class="doc-summary">HubSpot multi-brand rules: brand selection when creating assets, and team-based access control for segments and dashboards.</p>
+      <button class="expand-btn" data-target="internal_kurallar">Read Full Document ↓</button>
+    </div>
+  </div>
+  <div class="doc-body" id="body-internal_kurallar" style="display:none;">
+<h2>HubSpot Multi-Brand Rules</h2>
+<p>Oguz Law HubSpot account hosts multiple brands. Since separate companies share a single HubSpot portal, the following rules must be followed at all times.</p>
+<h3>Rule 1 — Brand Selection When Creating Assets</h3>
+<p>Before creating a new form, file, or any other asset, click the brand name in your profile area, then select the correct brand from the <strong>Brands</strong> section. Every asset must be created under the brand it belongs to.</p>
+<h3>Rule 2 — Access Management for Segments &amp; Dashboards</h3>
+<p>Whenever you create a dashboard, segment, or other shared resource, go to <strong>Manage Sharing / Access</strong> and restrict access to only the teams relevant to that company.</p>
+<p>For Oguz Law assets specifically, the following teams must <strong>NOT</strong> be given access:</p>
+<ul><li>EXTERNAL – ITB</li><li>EXTERNAL – IAU</li><li>Consultants</li><li>ITIN</li><li>Oguz Injury</li></ul>
+<div class="info-box"><strong>📹 HubSpot Marketing Training</strong><br>Brand-related video folder: <a href="https://loom.com/share/folder/2d69e527a4d44f50aeeee73c19b11c59" target="_blank">Loom folder</a></div>
+</div>
+</article>
+<article class="doc-card" id="doc-hubspot_kb" data-content="hubspot_kb">
+  <div class="doc-header">
+    <div class="doc-header-left">
+      <span class="doc-badge">HubSpot</span>
+      <h3 class="doc-title">Oguz Law Internal Knowledge Base</h3>
+      <p class="doc-meta">Core CRM Reference — Full Team</p>
+    </div>
+    <div class="doc-header-right">
+      <p class="doc-summary">Complete HubSpot guide: account setup, contact navigation, lead management, CRM glossary, integrations, ticket system, contact tags, case type properties, referral workflows, and naming conventions.</p>
+      <button class="expand-btn" data-target="hubspot_kb">Read Full Document ↓</button>
+    </div>
+  </div>
+  <div class="doc-body" id="body-hubspot_kb" style="display:none;"><h2>Getting Started — HubSpot Account Setup</h2>
+<h3>Step 1: Accept Your Invitation</h3>
+<p>You'll receive an email from HubSpot: <em>"You've been invited to join Oğuz Law on HubSpot"</em>. Click <strong>Accept Invitation</strong> to be redirected to the sign-up page.</p>
+<h3>Step 2: Fill In Your Basic Info</h3>
+<ul><li>Name &amp; Surname (as it appears professionally)</li><li>Email (company email preferred)</li><li>Password (mix of uppercase, lowercase, numbers, symbols)</li></ul>
+<p>Contact the CRM Specialist to fill out your Job Title, Manager, and working hours — or wait for the setup form to be sent to you.</p>
+<h3>Step 3: Set Your Preferences</h3>
+<ul><li><strong>Default Page:</strong> Settings → General → Profile</li><li><strong>Task Preferences:</strong> Settings → General → Tasks</li><li><strong>Timezone:</strong> Settings → General → Profile — confirm it's correct</li></ul>
+<h3>Step 4–6: Security Setup</h3>
+<ul><li>Add a trusted phone number (Settings → Security → Phone Number)</li><li>Set up Passkeys if possible (Settings → Security → Passkeys)</li><li>Enable Two-Factor Authentication — <strong>mandatory for all team members</strong> (Settings → Security → Two-Factor Authentication)</li></ul>
+<hr>
+<h2>Contact Page Views</h2>
+<h3>What is a View?</h3>
+<p>A <strong>View</strong> is a saved filter with specific column arrangements. It lets you focus on certain contacts without reapplying filters each time. Access via CRM → Contacts → "All Views".</p>
+<h3>Creating a Custom View</h3>
+<ol><li>CRM → Contacts → Add View → "Create new view"</li><li>Name the view; choose visibility (private / team / everyone)</li><li>Add filters (lifecycle stage, lead status, last activity, owner, custom properties)</li><li>Click "Save view"</li></ol>
+<h3>Default CRM Admin Views</h3>
+<div class="table-wrap"><table><thead><tr><th>View</th><th>Shows</th><th>Action Required</th></tr></thead><tbody>
+<tr><td>🛑 No Activity Logged</td><td>Lead Status = New Lead + no engagement</td><td>Reach out and log activity. Update lead status.</td></tr>
+<tr><td>⚠ Activity Logged but Still New Lead</td><td>At least one activity logged, Lead Status still "New Lead"</td><td>Update lead status to reflect progress.</td></tr>
+</tbody></table></div>
+<hr>
+<h2>Navigating the Contact Page</h2>
+<h3>Overview Tab</h3>
+<p>At-a-glance view of: Pinned Activities, Upcoming Actions, Recent Activities, Data Highlights (conditional properties), and embedded Reports.</p>
+<h4>Key Conditional Properties</h4>
+<ul>
+<li><strong>Referred In (Other):</strong> How the contact was referred → map to Referral_From_1 dropdown</li>
+<li><strong>Referred Out:</strong> Where the contact was referred → map to Referral_To_1 dropdown</li>
+<li><strong>Unqualified Reason:</strong> Appears only when Lead Status = Unqualified</li>
+<li><strong>Loss Reason:</strong> Appears only when Lead Status = Not Moving Forward</li>
+</ul>
+<h3>Activities Tab — Logging Guidelines</h3>
+<div class="table-wrap"><table><thead><tr><th>Type</th><th>When to Use</th><th>Key Rules</th></tr></thead><tbody>
+<tr><td>📎 Notes</td><td>Any internal update or context</td><td>@mention teammates. Include why they booked, objections, referral source.</td></tr>
+<tr><td>📞 Calls</td><td>After any call</td><td>Note outcome, objections, interest, next steps. Keep OpenPhone auto-record ON at all times. Do NOT touch the recording button mid-call.</td></tr>
+<tr><td>📧 Emails</td><td>Sent from HubSpot or log manually</td><td>Gmail auto-logs if integrated. Missive: Go to Gmail Sent → click "Log email to HubSpot" → verify correct account.</td></tr>
+<tr><td>📅 Meetings</td><td>Schedule or log manually</td><td>Include purpose, participants, and key takeaways.</td></tr>
+<tr><td>✅ Tasks</td><td>Follow-up actions</td><td>Set due dates. Describe the next action clearly. Check Tasks page daily.</td></tr>
+</tbody></table></div>
+<div class="warning-box">⚠ Do NOT use the "make a phone call" button in HubSpot unless specifically told to. Verify activities logged within 1 hour — if missing, log manually and contact Emel Gedik.</div>
+<hr>
+<h2>Lead Management Process</h2>
+<h3>Lead Creation Rules</h3>
+<ul>
+<li>Create the contact <strong>during or before</strong> the call so OpenPhone logs automatically</li>
+<li>Can create with just a phone number — fill details after</li>
+<li>Must enter email + phone number to prevent duplicate contacts</li>
+</ul>
+<h4>Four Required Questions on Initial Call</h4>
+<ol><li>What is your email address?</li><li>What is your phone number? (double-check — pin additional numbers as notes)</li><li>Where did you find us?</li><li>Have you contacted our company before?</li></ol>
+<h3>Lead Status Workflow</h3>
+<div class="table-wrap"><table><thead><tr><th>Status</th><th>Meaning</th><th>Action Required</th></tr></thead><tbody>
+<tr><td>🆕 New Lead</td><td>Just added, no engagement yet</td><td>Reach out immediately</td></tr>
+<tr><td>🔄 In Progress</td><td>Sales started, at least 1 activity logged</td><td>Continue engagement</td></tr>
+<tr><td>📞 Attempted to Contact</td><td>Tried to reach, no response yet</td><td>Follow 1-2-3-7 day method</td></tr>
+<tr><td>🚫 No Answer</td><td>Multiple attempts, no response</td><td>After all 1-2-3-7 day attempts fail</td></tr>
+<tr><td>❌ Unqualified</td><td>Not a fit</td><td>Select Unqualified Reason (mandatory)</td></tr>
+<tr><td>🚪 Not Moving Forward</td><td>Lead declined</td><td>Select Loss Reason (mandatory)</td></tr>
+<tr><td>⏳ Long Term Follow Up</td><td>May qualify in future</td><td>Create task + update lifecycle to MQL</td></tr>
+<tr><td>📂 Open Deal</td><td>Deal sent, deciding</td><td>Create deal record, set stage to "Contract Sent"</td></tr>
+<tr><td>🤝 Active Client</td><td>Deal signed (Closed Won)</td><td>Auto-set by system</td></tr>
+</tbody></table></div>
+<h3>1-2-3-7 Day Follow-Up Method</h3>
+<p>When a call goes unanswered: set Lead Status to "Attempted to Contact" and create follow-up tasks for <strong>1 day, 2 days, 3 days, and 7 days</strong> after the attempt. If still no answer: update to "No Answer".</p>
+<h3>Deal Process</h3>
+<ol>
+<li>Create deal linked to the contact</li>
+<li>Set Deal Stage to "Contract Sent" (all deals must start here)</li>
+<li>Update Contact Lead Status to "Open Deal"</li>
+<li>Set up tasks and reminders for the contact owner</li>
+<li><strong>If accepted:</strong> Deal Stage = Closed Won → Lead Status = Active Client</li>
+<li><strong>If rejected:</strong> Deal Stage = Closed Lost → select Closed Lost Reason → Lead Status = Not Moving Forward → set Long-Term Follow-Up task</li>
+</ol>
+<hr>
+<h2>Lead Status &amp; Reason Reference</h2>
+<h3>Unqualified Reasons</h3>
+<div class="table-wrap"><table><thead><tr><th>Reason</th><th>When to Use</th></tr></thead><tbody>
+<tr><td>Outside of Our Services</td><td>Asking for something we don't offer</td></tr>
+<tr><td>Does Not Meet the Criteria</td><td>Doesn't meet case type, financial, or eligibility requirements</td></tr>
+<tr><td>Outside of Our Jurisdiction</td><td>Location where we're not authorized to provide services</td></tr>
+<tr><td>Other</td><td>Any other reason — add a note for context</td></tr>
+</tbody></table></div>
+<h3>Not Moving Forward — Loss Reasons</h3>
+<div class="table-wrap"><table><thead><tr><th>Reason</th><th>Meaning</th></tr></thead><tbody>
+<tr><td>Budget Constraints</td><td>Cannot afford our services</td></tr>
+<tr><td>Chose Another Firm</td><td>Went with a competitor</td></tr>
+<tr><td>Timeline Mismatch</td><td>Timeline didn't align with their needs</td></tr>
+<tr><td>Our Late Response</td><td>Lost due to delayed reply from our team</td></tr>
+<tr><td>Personal Reasons</td><td>Lead's own personal decision</td></tr>
+<tr><td>Location</td><td>Preferred provider in a different location</td></tr>
+<tr><td>Other</td><td>Doesn't fit listed reasons — add a note</td></tr>
+</tbody></table></div>
+<hr>
+<h2>CRM Glossary</h2>
+<h3>Contact Card Fields</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Definition &amp; Usage</th></tr></thead><tbody>
+<tr><td>Contact Owner</td><td>Person responsible for managing the contact. Only one owner at a time. If someone else is assigned to reach out, change the owner to that person.</td></tr>
+<tr><td>Lifecycle Stage: MQL</td><td>Not yet qualified for sales — includes unqualified contacts and lost-deal contacts still viable for marketing</td></tr>
+<tr><td>Lifecycle Stage: SQL</td><td>Called by intake team and found qualified. Also for leads with status "In Progress"</td></tr>
+<tr><td>Lifecycle Stage: Customer</td><td>Accepted the offer and signed a contract. Auto-updated when deal is Closed Won.</td></tr>
+<tr><td>Case Type</td><td>Case and/or visa type. Fill out for every contact with sufficient info. Use "Other" for unlisted visa types. Leave blank for non-immigration cases.</td></tr>
+<tr><td>Pre-Sales Notes</td><td>Quick notes during initial call. Enter every detail before assigning the contact owner or creating a follow-up task.</td></tr>
+</tbody></table></div>
+<h3>Original Traffic Source (OTS) — Critical Field</h3>
+<div class="warning-box">⚠ OTS is critical for marketing investment evaluation. Avoid "Offline Sources" as much as possible. Always ask where they found us. You must fill out both OTS and Lead Source for every contact.</div>
+<div class="table-wrap"><table><thead><tr><th>OTS Value</th><th>When to Select</th></tr></thead><tbody>
+<tr><td>Paid Social</td><td>Social media ads (Facebook, Instagram, WhatsApp)</td></tr>
+<tr><td>Paid Search</td><td>Google Ads, LSAs, or other paid search</td></tr>
+<tr><td>Organic Social</td><td>Direct message or organic discovery on social platforms</td></tr>
+<tr><td>Organic Search</td><td>Found us on Google (not paid)</td></tr>
+<tr><td>Direct Traffic</td><td>Entered URL directly; also if they found our website number</td></tr>
+<tr><td>Referrals</td><td>Referred by a third party or partner</td></tr>
+<tr><td>Offline Sources</td><td>Excel uploads, manual creation, or in-person events only</td></tr>
+</tbody></table></div>
+<div class="info-box">💡 WhatsApp messages and incoming calls are <em>communication methods</em>, not traffic sources. Select OTS based on <em>how they found our number</em>.</div>
+<h3>Deal Card Fields</h3>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Definition</th></tr></thead><tbody>
+<tr><td>Pipeline</td><td>Select the correct department. Do not use Sales Pipeline if you're not in Sales.</td></tr>
+<tr><td>Deal Stage</td><td>All deals must start at "Contract Sent" and progress from there.</td></tr>
+<tr><td>Initial Payment Amount</td><td>Upfront payment agreed in the contract — important for tracking partial payments.</td></tr>
+<tr><td>Amount</td><td>Total deal value (full service fee) — used for revenue tracking.</td></tr>
+<tr><td>Deal Type</td><td>New Business (first-time client) or Existing Business (returning/additional service)</td></tr>
+</tbody></table></div>
+<h3>Case/Deal Naming Format</h3>
+<div class="table-wrap"><table><thead><tr><th>Case Type</th><th>Format</th><th>Example</th></tr></thead><tbody>
+<tr><td>Business Immigration</td><td>Company Name / Applicant Full Name – Visa Type</td><td>ABC Company / Ali Yilmaz – E2</td></tr>
+<tr><td>Other Cases</td><td>Full Name – Detailed Case Type</td><td>Ali Yilmaz – Defensive Asylum</td></tr>
+</tbody></table></div>
+<div class="warning-box">⚠ <strong>Critical Rules:</strong><br>• Deal name and contact full name must be <strong>identical</strong><br>• Use <strong>English characters only</strong> (G not Ğ, I not İ, S not Ş, C not Ç, O not Ö, U not Ü)<br>• Never use generic terms like "Asylum Case" — always specify: "Defensive Asylum" or "Affirmative Asylum"</div>
+<hr>
+<h2>Integrations — Email Setup</h2>
+<h3>Connect Your Email</h3>
+<ol><li>Settings → General → Email → "Connect Personal Email"</li><li>Choose provider (Gmail or Outlook) and follow prompts</li><li>Enable "Log emails" and "Track emails"</li></ol>
+<p><strong>If you use Missive:</strong> Gmail Sent folder → click "Log email to HubSpot" → verify it logged to the correct contact.</p>
+<h3>Email Signature Setup</h3>
+<ol><li>Settings → General → Email → "Manage Email Signatures" → choose HTML</li><li>Open a Gmail Sent email with your signature → right-click → Inspect → use arrow tool to select entire signature → right-click code → Copy outerHTML</li><li>Paste into HubSpot. Check that emojis display correctly.</li></ol>
+<hr>
+<h2>CRM Ticket System</h2>
+<p>Submit a CRM ticket for: questions about features, bugs or errors, new user requests, custom property requests, or improvement suggestions.</p>
+<h3>How to Submit</h3>
+<ol><li>CRM → Tickets → Create Ticket</li><li>Select pipeline: <strong>"CRM Pipeline (Reach out to Emel for HubSpot Inquiries)"</strong></li><li>Fill: Ticket Name, Type, Priority, Owner of Request (yourself), Status (New CRM Ticket), Description</li><li>Set Ticket Owner to <strong>Emel Gedik</strong></li><li>Associate with a contact if relevant → Click Create</li></ol>
+<hr>
+<h2>Contact Tags Reference</h2>
+<div class="table-wrap"><table><thead><tr><th>Tag</th><th>When to Use</th></tr></thead><tbody>
+<tr><td>High Value</td><td>High-value cases or strategically important clients</td></tr>
+<tr><td>Repeat Client</td><td>Previously worked with us</td></tr>
+<tr><td>Already Client</td><td>Existing/past client returned with an inquiry (not a new lead)</td></tr>
+<tr><td>Multiple Inquiries (Services)</td><td>Inquired about more than one legal service</td></tr>
+<tr><td>Family of Existing Client</td><td>Relative of a current or past client</td></tr>
+<tr><td>Urgent Matter</td><td>Time-sensitive issue or deadline</td></tr>
+<tr><td>Needs Translator</td><td>Needs language assistance</td></tr>
+<tr><td>Waiting for Client Documents</td><td>Waiting on required documents to proceed</td></tr>
+<tr><td>Prefers Phone</td><td>Prefers phone calls</td></tr>
+<tr><td>Prefers Email</td><td>Prefers email communication</td></tr>
+<tr><td>Partnership Business</td><td>A partner business (not a client) — only for active partners</td></tr>
+</tbody></table></div>
+<div class="warning-box">⚠ When tagged <strong>Urgent Matter</strong>, a follow-up task is auto-created. Do NOT reassign to intake — you are responsible. Failure to contact an urgent-tagged lead may result in a performance warning.</div>
+<hr>
+<h2>Repeat Clients — CRM Update Strategy</h2>
+<div class="table-wrap"><table><thead><tr><th>Step</th><th>Action</th></tr></thead><tbody>
+<tr><td>1</td><td>Do NOT create a new contact — use their existing record</td></tr>
+<tr><td>2</td><td>Update Lead Status (e.g., Unqualified if new inquiry isn't a fit)</td></tr>
+<tr><td>3</td><td>Keep Lifecycle Stage as Customer (do not move back to Lead or MQL)</td></tr>
+<tr><td>4</td><td>Log all activity and add a detailed note</td></tr>
+<tr><td>5</td><td>Create a follow-up Task if needed</td></tr>
+<tr><td>6</td><td>Add tags: Repeat Client + Multiple Inquiries (Services)</td></tr>
+</tbody></table></div>
+<hr>
+<h2>Referral Company Communication</h2>
+<h3>Why This Approach Exists</h3>
+<p>Even with restricted HubSpot access, external referral reps could see all Notes, Calls, and Emails through Notes/Calls views — a confidentiality risk. The current approach solves this.</p>
+<h3>How It Works</h3>
+<ul>
+<li>Referral reps are added to HubSpot but <strong>not assigned to any team</strong></li>
+<li>When contact owner changes to a referral rep → automation creates a <strong>pinned note</strong></li>
+<li>Your team copies summaries into the <strong>comments section</strong> of that note and @mentions the rep</li>
+<li>Reps can only see the pinned note and its comments — not the original activities</li>
+</ul>
+<h3>When a Referral Company Sends Us a Contact</h3>
+<ol><li>They create the contact (they become initial owner)</li><li>Auto-pinned note appears — they add context in comments</li><li>They set themselves as <strong>Secondary Contact Owner</strong> first</li><li>Then they change Contact Owner to <strong>Hassan Kadak (Intake Leader)</strong></li></ol>
+<div class="warning-box">⚠ If they forget to assign themselves as secondary owner before reassigning, they lose access. Remind them if needed.</div>
+<hr>
+<h2>Case Type-Specific Properties</h2>
+<p>These properties appear dynamically based on selected Case Type — replacing the need to type the same information into Pre-Sales Notes manually.</p>
+<div class="table-wrap"><table><thead><tr><th>Case Type</th><th>Property</th><th>Field Type</th></tr></thead><tbody>
+<tr><td>H1B</td><td>Degree Requirement for the offer</td><td>Yes / No</td></tr>
+<tr><td>H1B</td><td>Degree Field</td><td>Short text</td></tr>
+<tr><td>H1B, EB3, EB2</td><td>Legal Status in US</td><td>No / F1 / J1 / B2 / H1B / O1 / E2 / Other</td></tr>
+<tr><td>L-1, EB-1C</td><td>TR Employee Count</td><td>0-10 / 10-20 / Other</td></tr>
+<tr><td>L-1, EB-1C</td><td>TR Executive Role</td><td>GM / CEO / Operations Manager / Other</td></tr>
+<tr><td>L-1, EB-1C</td><td>TR Role Duration</td><td>At least 1 year in last 3 years / +1</td></tr>
+<tr><td>E-1</td><td>US-TR Trade Volume</td><td>0-100k / 100k-200k / 200k+</td></tr>
+<tr><td>E-1</td><td>US-TR Trade Ratio</td><td>50%+ / below 50%</td></tr>
+<tr><td>E-2</td><td>Location of Application</td><td>USA / Turkiye</td></tr>
+<tr><td>E-2</td><td>Investment Source</td><td>Home sale / Vehicle sale / Company income / Gift / Debt / Other</td></tr>
+<tr><td>E-2</td><td>Investment Amount</td><td>0-50k / 50-100k / 100-150k / 150k+</td></tr>
+<tr><td>E-2, L-1</td><td>Tourist Visa Status</td><td>Yes / No</td></tr>
+<tr><td>EB-1C</td><td>US Team Size</td><td>0-5 / 5-10 / 10+</td></tr>
+<tr><td>O-1</td><td>Field of Extraordinary Ability</td><td>Arts / Sciences / Education / Business / Athletics / Motion Pictures/TV / Other</td></tr>
+<tr><td>O-1, H1B, EB3, EB2, NIW</td><td>Sponsor Status</td><td>Has Sponsor / No Sponsor / Looking for Sponsor</td></tr>
+<tr><td>CFI</td><td>CFI Result</td><td>Short text</td></tr>
+<tr><td>Defensive Asylum</td><td>Defensive Asylum Status</td><td>Short text</td></tr>
+<tr><td>SIJS</td><td>SIJS Process Stage</td><td>Short text</td></tr>
+<tr><td>DV Lottery</td><td>DV Case Number</td><td>Short text</td></tr>
+</tbody></table></div>
+<hr>
+<h2>Referral Lead Status Guide</h2>
+<div class="table-wrap"><table><thead><tr><th>Status</th><th>Use When</th><th>System Behavior</th></tr></thead><tbody>
+<tr><td>Referred Out</td><td>Lead qualified and case transferred to external firm. No further sales activity.</td><td>Referral tracking starts. Reminder tasks may trigger. No deal created. Set Lifecycle Stage to "Other".</td></tr>
+<tr><td>Referred – Signed (Referral Earned)</td><td>External firm confirms client signed. Referral fee contractually earned.</td><td>Payment follow-up tasks created. Referral revenue becomes reportable. Status remains until fee is paid.</td></tr>
+</tbody></table></div>
+<div class="info-box">📌 Mandatory fields when referral is signed: Referral Deal Signed Date, Expected Referral Fee, Referral Fee Status (Pending / Paid / Overdue). Do NOT move records to "Customer" or create deals for referral-only cases.</div>
+</div>
+</article>
+<article class="doc-card" id="doc-hubspot_workflows" data-content="hubspot_workflows">
+  <div class="doc-header">
+    <div class="doc-header-left">
+      <span class="doc-badge">HubSpot</span>
+      <h3 class="doc-title">HubSpot Active Automations — Master Reference</h3>
+      <p class="doc-meta">Automation Inventory — April 2026</p>
+    </div>
+    <div class="doc-header-right">
+      <p class="doc-summary">Full list of active HubSpot workflows with their action types, object types, and 7-day enrollment counts.</p>
+      <button class="expand-btn" data-target="hubspot_workflows">Read Full Document ↓</button>
+    </div>
+  </div>
+  <div class="doc-body" id="body-hubspot_workflows" style="display:none;"><h2>HubSpot Active Automations</h2>
+<p>Full inventory of all HubSpot workflows, exported April 2026. 161 active / 139 inactive.</p>
+<h3>Active Workflows (161)</h3>
+<div class="table-wrap"><table><thead><tr><th>Workflow Name</th><th>Object</th><th>Action Types</th><th>7-Day Enrollments</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>family cases rotation</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record; Rotate record to owner</td><td>37</td><td></td></tr>
+<tr><td><strong>Case Type of Asylum or Adjustment of Status - joaquin</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>18</td><td>Sets the contact owner to a specific user for contacts with Case Type of Asylum or Adjustment of Status and Preferred language as English.</td></tr>
+<tr><td><strong>cta tagleme</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record; Branch: AND/OR logic</td><td>53</td><td></td></tr>
+<tr><td><strong>Sales - deal - new task</strong></td><td><span class="badge-sm">DEAL</span></td><td>Delay (for a set amount of time or time of day); Branch: AND/OR logic; Create task</td><td>14</td><td></td></tr>
+<tr><td><strong>Calendly owner atama</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>3</td><td></td></tr>
+<tr><td><strong>utm to lead source - form</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>108</td><td></td></tr>
+<tr><td><strong>quote signed deal and contact update</strong></td><td><span class="badge-sm">DEAL</span></td><td>Branch: AND/OR logic; Edit record</td><td>22</td><td></td></tr>
+<tr><td><strong>Emails | Lead status = Attempted To Contact</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email; Delay (for a set amount of time or time of day); Branch: AND/OR logic</td><td>69</td><td>Sends a series of follow-up emails in Turkish, Spanish, or default language to contacts with lead status &quot;Open Deal,&quot; spaced by 4-day delays.</td></tr>
+<tr><td><strong>senanın kayıtları</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record; Rotate record to owner</td><td>0</td><td></td></tr>
+<tr><td><strong>Quote Sent=Lead Status</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>17</td><td></td></tr>
+<tr><td><strong>Unnamed workflow - 2025-12-05 18:35:49 GMT+0000</strong></td><td><span class="badge-sm">DEAL</span></td><td>Edit record</td><td>33</td><td></td></tr>
+<tr><td><strong>acceptance method is &quot;E-signature&quot; - no payment - signed</strong></td><td><span class="badge-sm">QUOTE</span></td><td>Branch: AND/OR logic; Edit record</td><td>22</td><td>Updates deal stage to &quot;Closed Won&quot; and lead status to &quot;Active Client&quot; for deals in various pipelines when acceptance method is &quot;E-signature&quot; and ESign Date is known.</td></tr>
+<tr><td><strong>Deal Collaborator - ismail hosen</strong></td><td><span class="badge-sm">DEAL</span></td><td>Edit record</td><td>2</td><td></td></tr>
+<tr><td><strong>IAU referred</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>8</td><td></td></tr>
+<tr><td><strong>Creates a task to fill the Quote Playbook</strong></td><td><span class="badge-sm">DEAL</span></td><td>Create task; Delay (for a set amount of time or time of day); Branch: One property or action output; Send internal email notification; Edit record</td><td>0</td><td>Creates a task to fill the Quote Playbook when a property changes, then sends reminders and alerts if the task remains not started after daily delays.</td></tr>
+<tr><td><strong>pdf linki</strong></td><td><span class="badge-sm">QUOTE</span></td><td>Edit record</td><td>22</td><td></td></tr>
+<tr><td><strong>İsmail IAU Sağlama </strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>0</td><td></td></tr>
+<tr><td><strong>Contact CEO ise secondary enes</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>0</td><td></td></tr>
+<tr><td><strong>If the survey answer is law, send email</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Send internal email notification</td><td>—</td><td></td></tr>
+<tr><td><strong>yeni lead - ulaşım olmamıi task gönderimi (cloned)</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Create task; Delay (for a set amount of time or time of day)</td><td>9</td><td>Creates a high-priority task for the contact owner when a new lead is unworked and assigned over 7 days ago.</td></tr>
+<tr><td><strong>Updates the lead source to &quot;HelpDesk&quot;  (cloned)</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>0</td><td>Updates the lead source to &quot;HelpDesk&quot; for contacts whose property changes to the Sales Team and have a support pipeline ticket with status &quot;Converted inquiry.&quot;</td></tr>
+<tr><td><strong>not ekleme</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Create note</td><td>12</td><td>Adds a pinned note with updates and activity summaries when the contact owner changes to specified individuals.</td></tr>
+<tr><td><strong>Unnamed workflow - 2025-12-02 20:54:27 GMT+0000</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Create note</td><td>8</td><td></td></tr>
+<tr><td><strong>IAU Referral Güncelleme Sistemi</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>8</td><td>Updates contact properties to add referral information when the contact or secondary contact owner is the CEO.</td></tr>
+<tr><td><strong>Send overdue task notifications to assigned owners</strong></td><td><span class="badge-sm">TASK</span></td><td>Send in-app notification; Send internal email notification; Send Slack notification</td><td>186</td><td>Sends notifications via email, app, and Slack to task owners when their tasks are overdue and due after December 1, 2024.</td></tr>
+<tr><td><strong>Sends a series of follow-up call tasks over several days to deals</strong></td><td><span class="badge-sm">DEAL</span></td><td>Delay (for a set amount of time or time of day); Create task; Branch: AND/OR logic; Edit record; Create note; Create Google Sheet row</td><td>0</td><td>Sends a series of follow-up call tasks over several days to deals in the &quot;Attempted to Communicate&quot; stage and updates the deal stage to &quot;No Answer&quot; if unanswered.</td></tr>
+<tr><td><strong>email association</strong></td><td><span class="badge-sm">DEAL</span></td><td>Edit record</td><td>—</td><td></td></tr>
+<tr><td><strong>Secondary Owner Ayarı</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send internal email notification; Send in-app notification</td><td>94</td><td></td></tr>
+<tr><td><strong>&quot;Contract Sent&quot; stage for 2 days - no contact</strong></td><td><span class="badge-sm">DEAL</span></td><td>Create task</td><td>8</td><td>Creates a high-priority follow-up task if a deal in the &quot;Contract Sent&quot; stage has had no contact for 2 days, prompting outreach or status update.</td></tr>
+<tr><td><strong>Asylum geçici atama</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Rotate record to owner</td><td>0</td><td></td></tr>
+<tr><td><strong>manuel bir şey</strong></td><td><span class="badge-sm">DEAL</span></td><td>Edit record</td><td>0</td><td></td></tr>
+<tr><td><strong>CRM Control Check Yes</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Create Google Sheet row; Delay (for a set amount of time or time of day); Edit record</td><td>837</td><td></td></tr>
+<tr><td><strong>Mustafa++++ Call Aktivite Ataması</strong></td><td><span class="badge-sm">CALL</span></td><td>Branch: AND/OR logic; Edit record</td><td>1013</td><td>Assigns activities to specific individuals based on call notes when the activity is not already assigned.</td></tr>
+<tr><td><strong>Asylum ++ Call Aktivite Araması</strong></td><td><span class="badge-sm">CALL</span></td><td>Branch: AND/OR logic; Edit record</td><td>1013</td><td>Assigns activities to specific individuals based on unknown &quot;Activity assigned to&quot; and specific names in &quot;Call notes&quot;.</td></tr>
+<tr><td><strong>Feyza++++ Call Aktivite Ataması</strong></td><td><span class="badge-sm">CALL</span></td><td>Edit record; Branch: AND/OR logic</td><td>1014</td><td>Assigns activities to specific individuals based on call notes when the activity is not already assigned.</td></tr>
+<tr><td><strong>Furkan Dogan Call Aktivite</strong></td><td><span class="badge-sm">CALL</span></td><td>Branch: AND/OR logic; Edit record</td><td>1014</td><td>Assigns activities to specific individuals based on call notes when the activity is unassigned.</td></tr>
+<tr><td><strong>satışçılar için rotation + zapier - case type (cloned)</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Create record; Branch: AND/OR logic; Edit record; Create Google Sheet row</td><td>117</td><td></td></tr>
+<tr><td><strong>cUSTOMER Manually</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>28</td><td>Sets a contact property to &quot;Yes&quot; when the owner&#x27;s date is older than the customer&#x27;s date.</td></tr>
+<tr><td><strong>unknown &quot;Was Customer - manual&quot;</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>251</td><td>Updates contacts with an unknown &quot;Was Customer - manual&quot; property by setting it to &quot;No&quot; when this property is not set.</td></tr>
+<tr><td><strong>Meeting owner atama</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>39</td><td></td></tr>
+<tr><td><strong>Sets the Deal Contact Name</strong></td><td><span class="badge-sm">DEAL</span></td><td>Edit record; Create Google Sheet row</td><td>56</td><td>Sets the Deal Contact Name property using the associated contact&#x27;s first and last name when the Deal Name is known.</td></tr>
+<tr><td><strong>if no playbook then playbook logged is no</strong></td><td><span class="badge-sm">DEAL</span></td><td>Edit record</td><td>47</td><td></td></tr>
+<tr><td><strong>Sets the initial payment amount from the associated amount paid </strong></td><td><span class="badge-sm">COMMERCE_PAYMENT</span></td><td>Edit record</td><td>18</td><td>Sets the initial payment amount from the associated amount paid when a record is created with a known quote case type and status processing or succeeded.</td></tr>
+<tr><td><strong>Sets the Amount property to the Quote amount for signed deals </strong></td><td><span class="badge-sm">QUOTE</span></td><td>Edit record</td><td>22</td><td>Sets the Amount property to the Quote amount for signed deals whose names do not contain &quot;deneme&quot;.</td></tr>
+<tr><td><strong>acceptance method is &quot;E-signature&quot;</strong></td><td><span class="badge-sm">QUOTE</span></td><td>Branch: AND/OR logic; Edit record</td><td>22</td><td>Updates deal stage to &quot;Closed Won&quot; and lead status to &quot;Active Client&quot; for deals in various pipelines when acceptance method is &quot;E-signature&quot; and ESign Date is known.</td></tr>
+<tr><td><strong>email notifications about disputed, refunded, or failed payments </strong></td><td><span class="badge-sm">COMMERCE_PAYMENT</span></td><td>Send internal email notification; Edit record</td><td>1</td><td>Sends internal email notifications about disputed, refunded, or failed payments linked to quotes, including detailed payment and customer information.</td></tr>
+<tr><td><strong>Calculates a weekend score - deal</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Custom code; Edit record; Create Google Sheet row</td><td>36</td><td>Calculates a weekend score based on the owner assigned date when that date property changes after July 1, 2025, and updates the contact with this score.</td></tr>
+<tr><td><strong>Calculates a weekend score</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Custom code; Edit record; Create Google Sheet row</td><td>279</td><td>Calculates a weekend score based on the owner assigned date when that date property changes after July 1, 2025, and updates the contact with this score.</td></tr>
+<tr><td><strong>First Name Capitalize</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Format data; Edit record; Create Google Sheet row</td><td>298</td><td></td></tr>
+<tr><td><strong>acceptance method is &quot;E-signature&quot; - no payment - closed won</strong></td><td><span class="badge-sm">QUOTE</span></td><td>Branch: AND/OR logic; Edit record</td><td>2</td><td>Updates deal stage to &quot;Closed Won&quot; and lead status to &quot;Active Client&quot; for deals in various pipelines when acceptance method is &quot;E-signature&quot; and ESign Date is known.</td></tr>
+<tr><td><strong>Playbook Logged is Yes if logged</strong></td><td><span class="badge-sm">DEAL</span></td><td>Edit record</td><td>24</td><td></td></tr>
+<tr><td><strong>quote payment owner</strong></td><td><span class="badge-sm">COMMERCE_PAYMENT</span></td><td>Edit record</td><td>24</td><td>Sets the Owner property based on the associated quote owner when a record is created.</td></tr>
+<tr><td><strong>HR Ticket owner request + çok büyük</strong></td><td><span class="badge-sm">TICKET</span></td><td>Branch: One property or action output; Edit record</td><td>0</td><td></td></tr>
+<tr><td><strong>Sets the &quot;Quote Public Link&quot;</strong></td><td><span class="badge-sm">QUOTE</span></td><td>Edit record</td><td>53</td><td>Sets the &quot;Quote Public Link&quot; property when the &quot;Link to hosted Quote&quot; property is known on the record.</td></tr>
+<tr><td><strong>Deal Owner Copy for Zapier</strong></td><td><span class="badge-sm">DEAL</span></td><td>Branch: One property or action output; Edit record</td><td>51</td><td>Runs only for deals owned by specified users and updated within the last 30 days.</td></tr>
+<tr><td><strong>Sets the &quot;Marketing Call Source&quot; - call logs</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record; Branch: AND/OR logic</td><td>24</td><td>Sets the &quot;Marketing Call Source&quot; property based on the forwarded number when the forwarded number is known.</td></tr>
+<tr><td><strong>Sets the &quot;Marketing Call Source&quot; &amp; UTMs</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record; Branch: AND/OR logic</td><td>47</td><td>Sets the &quot;Marketing Call Source&quot; property based on the forwarded number when the forwarded number is known.</td></tr>
+<tr><td><strong>Lead source - marketing call source</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>49</td><td>Updates the Lead Source property based on the Marketing Call Source when the source is known, assigning values like Paid search, Organic search, or Organic social accordingly.</td></tr>
+<tr><td><strong>quote id</strong></td><td><span class="badge-sm">QUOTE</span></td><td>Edit record</td><td>22</td><td></td></tr>
+<tr><td><strong>No owner - enes</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>98</td><td>Sets the contact owner to a specific value for contacts without an owner and whose lifecycle stage is not Subscriber.</td></tr>
+<tr><td><strong>Updates the lead source to &quot;HelpDesk&quot; </strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>0</td><td>Updates the lead source to &quot;HelpDesk&quot; for contacts whose property changes to the Sales Team and have a support pipeline ticket with status &quot;Converted inquiry.&quot;</td></tr>
+<tr><td><strong>commission workflow</strong></td><td><span class="badge-sm">DEAL</span></td><td>Branch: AND/OR logic; Edit record</td><td>49</td><td></td></tr>
+<tr><td><strong>amount text</strong></td><td><span class="badge-sm">DEAL</span></td><td>Format data; Edit record</td><td>76</td><td></td></tr>
+<tr><td><strong>email workflow giga</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Send email; Delay (for a set amount of time or time of day)</td><td>0</td><td></td></tr>
+<tr><td><strong>giga mail</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>0</td><td></td></tr>
+<tr><td><strong>intake kpi - team change trigger 2</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record; Create Google Sheet row</td><td>251</td><td></td></tr>
+<tr><td><strong>Finance Case Type - Report Help Property Update</strong></td><td><span class="badge-sm">DEAL</span></td><td>Branch: AND/OR logic; Edit record; Create Google Sheet row</td><td>47</td><td></td></tr>
+<tr><td><strong>set first contacted</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>221</td><td></td></tr>
+<tr><td><strong>intake kpi - team change trigger 1</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>252</td><td></td></tr>
+<tr><td><strong>utm - campaign - source update</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>0</td><td></td></tr>
+<tr><td><strong>Nimbata Call --&gt; Set original traffic source</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>15</td><td></td></tr>
+<tr><td><strong>Eastbay - Toghrul</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>0</td><td></td></tr>
+<tr><td><strong>Stage Güncelleme - kodsuz</strong></td><td><span class="badge-sm">APPOINTMENT</span></td><td>Branch: AND/OR logic; Edit record</td><td>7</td><td></td></tr>
+<tr><td><strong>HR Ticket Pipeline Owner Atama</strong></td><td><span class="badge-sm">TICKET</span></td><td>Edit record; Branch: AND/OR logic</td><td>0</td><td>Assigns ticket owners based on HR ticket type: sets to Merve Seker for &quot;HR Letters &amp; Certificates&quot; tickets, otherwise assigns to Selin.</td></tr>
+<tr><td><strong>HR Ticket pipeline secondary ocontact owner atama</strong></td><td><span class="badge-sm">TICKET</span></td><td>Branch: AND/OR logic; Edit record</td><td>50</td><td>Assigns the secondary ticket owner based on the primary ticket owner when the secondary owner is not set.</td></tr>
+<tr><td><strong>Set UTM fields based on Meeting UTM properties </strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record; Branch: AND/OR logic; Delay (for a set amount of time or time of day)</td><td>9</td><td>Copies the UTM source, medium and campaign of last meeting booked to the custom UTM fields so you don&#x27;t need to look across multiple properties to analyse sources.
+
+Only copies values over if UTMs are empty (doesn&#x27;t overwrite values) to protect first-touch attribution.</td></tr>
+<tr><td><strong>Youtube referansları Lead OTS Güncelleme</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>6</td><td>Updates lead properties by setting &quot;Original Traffic Source&quot; and &quot;Lead Source&quot; to &quot;Referrals&quot; for contacts referred from specific YouTube sources.</td></tr>
+<tr><td><strong>helpdesk ticket</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Create record; Branch: AND/OR logic</td><td>20</td><td></td></tr>
+<tr><td><strong>call notes intake - no - yes</strong></td><td><span class="badge-sm">CALL</span></td><td>Branch: AND/OR logic; Edit record</td><td>2335</td><td></td></tr>
+<tr><td><strong>intake routed date</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>107</td><td></td></tr>
+<tr><td><strong>intake owner assigned date</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record; Branch: AND/OR logic</td><td>245</td><td></td></tr>
+<tr><td><strong>Status Güncelleme</strong></td><td><span class="badge-sm">APPOINTMENT</span></td><td>Custom code; Edit record</td><td>7</td><td></td></tr>
+<tr><td><strong>Meeting Booked - Appointment Creation</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Create record; Branch: AND/OR logic</td><td>55</td><td></td></tr>
+<tr><td><strong>isimleri ingilizceleştir - deal</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record; Custom code</td><td>36</td><td>Normalizes Turkish characters in first and last names to English equivalents when either name is known, then updates the contact&#x27;s name properties with the normalized values.</td></tr>
+<tr><td><strong>preferred way to contact</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>0</td><td></td></tr>
+<tr><td><strong>urgency - time sensitive - contact</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Create task</td><td>3</td><td></td></tr>
+<tr><td><strong>urgency - time sensitive</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record; Create task; Branch: AND/OR logic</td><td>0</td><td></td></tr>
+<tr><td><strong>Set Original Traffic Source and Lead Source to Direct Traffic.</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Delay (for a set amount of time or time of day); Branch: AND/OR logic; Edit record</td><td>114</td><td>Updates the original traffic source to &quot;Direct Traffic&quot; for contacts whose original traffic source is &quot;Offline Sources&quot; after a 24-hour delay.</td></tr>
+<tr><td><strong>contact page - form - dil - email</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>64</td><td></td></tr>
+<tr><td><strong>Form submission- Email - Marketing - dil</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Delay (for a set amount of time or time of day); Send email; Branch: AND/OR logic</td><td>37</td><td></td></tr>
+<tr><td><strong>işten çıkanları aktarma</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>652</td><td>Updates the contact owner based on current owner values and then sets the lifecycle stage to &quot;Other&quot; for contacts with a known owner.</td></tr>
+<tr><td><strong>isimleri ingilizceleştir</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Custom code; Edit record</td><td>334</td><td>Normalizes Turkish characters in first and last names to English equivalents when either name is known, then updates the contact&#x27;s name properties with the normalized values.</td></tr>
+<tr><td><strong>Owner is older than Customer is 0</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record; Branch: One property or action output</td><td>251</td><td>Updates a property based on whether the owner&#x27;s date is older than the customer&#x27;s date for contacts with a known owner date property.</td></tr>
+<tr><td><strong>Preferred Language</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>100</td><td></td></tr>
+<tr><td><strong>case type to case type team</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>62</td><td></td></tr>
+<tr><td><strong>blog form etiket</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record; Branch: AND/OR logic</td><td>1</td><td></td></tr>
+<tr><td><strong>call notes, assigning English, Turkish, or Spanish - marketing</strong></td><td><span class="badge-sm">CALL</span></td><td>Branch: AND/OR logic; Edit record</td><td>137</td><td>Sets the preferred language based on phone numbers found in call notes, assigning English, Turkish, or Spanish accordingly.</td></tr>
+<tr><td><strong>Triggers for new HR tickets</strong></td><td><span class="badge-sm">TICKET</span></td><td>Edit record</td><td>0</td><td>Triggers for new HR tickets in the HR Ticket Pipeline but contains no actions to execute.</td></tr>
+<tr><td><strong>telefon numara formatlama</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Format data; Edit record</td><td>276</td><td></td></tr>
+<tr><td><strong> &quot;Needs Update&quot; tag - email</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record; Create note</td><td>136</td><td>Adds a &quot;Needs Update&quot; tag and creates a note to request an email address for contacts created after July 10, 2025, with an unknown email.</td></tr>
+<tr><td><strong>&quot;utm-form-blog&quot; </strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>0</td><td>Sets the &quot;Marketing Lead Source&quot; property to &quot;Blog&quot; for contacts who have the &quot;utm-form-blog&quot; value.</td></tr>
+<tr><td><strong>Form dolduruldu - mail gönderildi - non marketing çevir</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Set marketing contact status; Delay (for a set amount of time or time of day)</td><td>0</td><td>Updates marketing contacts who submitted a form and have received marketing emails by delaying 2 hours, then changing their status to non-marketing until renewal.</td></tr>
+<tr><td><strong>Pipeline is &quot;CRM Pipeline (Reach out Emel for Hubspot Inquiries)&quot;, Ticket status is &quot;In Review&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Send Slack notification</td><td>0</td><td></td></tr>
+<tr><td><strong>Pipeline is &quot;CRM Pipeline (Reach out Emel for Hubspot Inquiries)&quot;, Ticket status is &quot;Waiting for Info&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Create note; Send internal email notification; Send in-app notification; Create task; Send Slack notification</td><td>0</td><td>Sends notifications and creates tasks requesting detailed information when a ticket in the CRM pipeline is marked &quot;Waiting for Info&quot; and not sourced from chat.</td></tr>
+<tr><td><strong>Pipeline is &quot;HR Ticket Pipeline&quot;, Ticket status is &quot;Rejected / Not Possible&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Send internal email notification; Send Slack notification</td><td>0</td><td>Sends an email and Slack notification to the ticket owner when an HR ticket is rejected or marked as not possible, excluding tickets from chat.</td></tr>
+<tr><td><strong>Pipeline is &quot;HR Ticket Pipeline&quot;, Ticket status is &quot;Resolved – No Action Needed&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Send internal email notification; Send Slack notification</td><td>0</td><td>Sends an internal email and Slack notification to the ticket owner when an HR ticket is marked as &quot;Resolved – No Action Needed&quot; and the source is not &quot;Chat.&quot;</td></tr>
+<tr><td><strong>Pipeline is &quot;HR Ticket Pipeline&quot;, Ticket status is &quot;Completed&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Send internal email notification; Send Slack notification</td><td>0</td><td>Sends an internal email and Slack notification when an HR ticket is marked as completed and its source is not chat.</td></tr>
+<tr><td><strong>Missed Call’a Geri Dönüldü mü?</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record; Delay (for a set amount of time or time of day); Custom code; Branch: One property or action output</td><td>93</td><td>Updates a property indicating if a missed call has been followed up by checking if the last contact date is after the last missed call date.</td></tr>
+<tr><td><strong>Set Last Missed Call Date</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>95</td><td>Sets the &quot;Last Missed Call Date&quot; to the current time for contacts who are members of a specific list.</td></tr>
+<tr><td><strong>Set Original Traffic Source to Direct Traffic everything before 7 days</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>0</td><td>Sets the Original Traffic Source to Direct Traffic for contacts created before June 1, 2025, with an Original Traffic Source of Offline Sources.</td></tr>
+<tr><td><strong>Callback olunca etiket güncelleme</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Custom code; Branch: One property or action output; Edit record</td><td>1917</td><td>Updates a contact property to &quot;No&quot; if the last contacted date is after the last missed call date, otherwise sets it to &quot;Yes,&quot; for contacts with known dates and recent activity.</td></tr>
+<tr><td><strong>case type 1</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>62</td><td>Sets a custom property based on the case type when the case type is known and matches one of several specific values.</td></tr>
+<tr><td><strong>Pipeline is &quot;CRM Pipeline (Reach out Emel for Hubspot Inquiries)&quot;, Ticket status is &quot;Rejected / Not Possible&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Create note; Send internal email notification; Send in-app notification</td><td>—</td><td>Sends a note, internal email, and in-app notification to the ticket owner when a ticket is rejected or marked not possible, excluding tickets from chat sources.</td></tr>
+<tr><td><strong>Pipeline is &quot;HR Ticket Pipeline&quot;, Ticket status is &quot;Waiting for Info&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Send internal email notification; Send Slack notification</td><td>0</td><td>Sends email and Slack notifications to the ticket owner when an HR ticket status is &quot;Waiting for Info&quot; and the source is not &quot;Chat.&quot;</td></tr>
+<tr><td><strong>Pipeline is &quot;HR Ticket Pipeline&quot;, Ticket status is &quot;New HR Ticket&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Send in-app notification; Send internal email notification; Send Slack notification</td><td>0</td><td>Sends email, Slack, and in-app notifications for new HR Tickets that are not sourced from chat to alert owners and related team members.</td></tr>
+<tr><td><strong>Partnership ise LS other</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>2</td><td>Updates the lifecycle stage to &quot;Other&quot; for contacts tagged with &quot;Partnership Business.&quot;</td></tr>
+<tr><td><strong>OTS - Lead Source eşlemesi - marketing  için</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td><td>0</td><td>Sets the Lead Source property to &quot;Organic search&quot; for contacts whose Original Traffic Source is &quot;Organic Search.&quot;</td></tr>
+<tr><td><strong>Date entered LTFU</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>76</td><td>Sets the &quot;Date Entered Long Term Follow Up&quot; property when a contact&#x27;s Lead Status changes to Long Term Follow-Up.</td></tr>
+<tr><td><strong>Date entered Inquiry</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>113</td><td>Sets the &quot;Date entered Inquiry&quot; property to the current date when a contact&#x27;s Lead Status changes to &quot;Inquiry&quot;.</td></tr>
+<tr><td><strong>Date entered In Progress</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>107</td><td>Sets the &quot;Date entered &#x27;In Progress&#x27;&quot; property to the current time when the Lead Status changes to &quot;In Progress&quot;.</td></tr>
+<tr><td><strong>Date entered new lead</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>291</td><td>Sets the &quot;Date entered &#x27;New Lead&#x27;&quot; property when a contact&#x27;s Lead Status changes to &quot;New Lead&quot;.</td></tr>
+<tr><td><strong>Date Entered Open Deal</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>23</td><td>Sets the &quot;Date entered &#x27;Open Deal&#x27;&quot; property to the current date when a contact&#x27;s Lead Status changes to &quot;Open Deal.&quot;</td></tr>
+<tr><td><strong>Date entered Attempted to contact</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>121</td><td>Updates the &quot;Date entered &#x27;Attempted to Contact&#x27;&quot; property to the current time when the Lead Status changes to &quot;Attempted to Contact.&quot;</td></tr>
+<tr><td><strong>Newsletter Internal</strong></td><td><span class="badge-sm">USER</span></td><td>Send internal email notification</td><td>0</td><td>Sends an internal email to a specific user with updates on CRM changes, repeat client tracking, referral communication, and tips to manage lead statuses in Hubspot.</td></tr>
+<tr><td><strong>IT Pipeline Bildirim</strong></td><td><span class="badge-sm">TICKET</span></td><td>Send internal email notification</td><td>0</td><td>Sends an internal email to the IT team when a ticket is in the IT Pipeline and the request owner is unknown in the system.</td></tr>
+<tr><td><strong>Pipeline is &quot;IT Pipeline&quot;, Ticket status is &quot;Waiting for Info&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Create note; Send internal email notification; Create task</td><td>—</td><td>Sends a note to ticket owners when ticket status is &quot;Waiting for Info&quot; (excluding chat source), then notifies the requester to provide details and creates a follow-up task.</td></tr>
+<tr><td><strong>Pipeline is &quot;CRM Pipeline (Reach out Emel for Hubspot Inquiries)&quot;, Ticket status is &quot;New CRM Ticket&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Edit record</td><td>0</td><td>Sets the ticket owner to Emel Gedik when the ticket status is &quot;New CRM Ticket&quot; and the source is not &quot;Chat&quot;.</td></tr>
+<tr><td><strong>Pipeline is &quot;IT Pipeline&quot;, Ticket status is &quot;Rejected / Not Possible&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Create note; Send in-app notification; Send internal email notification</td><td>—</td><td>Creates a note and sends in-app and email notifications to the ticket owner when an IT ticket is marked as &quot;Rejected / Not Possible&quot; and not sourced from chat.</td></tr>
+<tr><td><strong>Pipeline is &quot;IT Pipeline&quot;, Ticket status is &quot;Resolved – No Action Needed&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Create note; Send in-app notification; Send internal email notification</td><td>—</td><td>Sends a note, an in-app notification, and an internal email when an IT ticket is marked &quot;Resolved – No Action Needed&quot; and the source is not chat.</td></tr>
+<tr><td><strong>Pipeline is &quot;IT Pipeline&quot;, Ticket status is &quot;Completed&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Create note; Send in-app notification; Send internal email notification</td><td>—</td><td>Sends a note and notifications when an IT ticket (not from chat) is marked Completed, informing the owner and requestor of the status change.</td></tr>
+<tr><td><strong>Pipeline is &quot;CRM Pipeline (Reach out Emel for Hubspot Inquiries)&quot;, Ticket status is &quot;Resolved – No Action Needed&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Create note; Send internal email notification; Send in-app notification</td><td>0</td><td>Sends a note, internal email, and in-app notification to the ticket owner when a non-chat ticket is marked as &quot;Resolved – No Action Needed.&quot;</td></tr>
+<tr><td><strong>Pipeline is &quot;CRM Pipeline (Reach out Emel for Hubspot Inquiries)&quot;, Ticket status is &quot;Completed&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Create note; Send internal email notification; Send in-app notification</td><td>0</td><td>Sends a note, internal email, and in-app notification to the ticket owner when a non-chat ticket is marked as completed.</td></tr>
+<tr><td><strong>LF- Copy owner</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Branch: One property or action output; Edit record</td><td>652</td><td>Sets a specific owner-copy property based on the contact owner’s name when the contact owner is known.</td></tr>
+<tr><td><strong>Hubspot Yeni Kullanıcı Uyarı Maili</strong></td><td><span class="badge-sm">USER</span></td><td>Send internal email notification</td><td>0</td><td>Sends an internal email notification when a property value changes to indicate a new user has been added.</td></tr>
+<tr><td><strong>Update Subject to Diğer for Support Pipeline contacts with unknown Subject</strong></td><td><span class="badge-sm">TICKET</span></td><td>Edit record</td><td>20</td><td>Sets the &quot;Subject&quot; property to &quot;Diğer&quot; for items in the &quot;Support Pipeline&quot; with an unknown &quot;Subject&quot;.</td></tr>
+<tr><td><strong>Send conversation to IT Technical Assistance inbox</strong></td><td><span class="badge-sm">CONVERSATION</span></td><td>Assign conversation owner</td><td>0</td><td>Assigns conversation owner to &quot;Mustafa Cansu&quot; when the owner is unknown and the originating channel account is &quot;IT Technical Assistance&quot;.</td></tr>
+<tr><td><strong>Pipeline is &quot;IT Pipeline&quot;, Ticket status is &quot;New IT Ticket&quot;</strong></td><td><span class="badge-sm">TICKET</span></td><td>Edit record</td><td>0</td><td>Assigns new IT tickets to a specific owner when the ticket status is &quot;New IT Ticket&quot; and the source is not &quot;Chat&quot;.</td></tr>
+<tr><td><strong>(es) EB-3 - Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email; Delay (for a set amount of time or time of day)</td><td>0</td><td>Sends a follow-up email 3 days after a contact submits the specified form.</td></tr>
+<tr><td><strong>Ticket Phone Number Oto Güncelleme</strong></td><td><span class="badge-sm">TICKET</span></td><td>Edit record</td><td>44</td><td>Updates the &quot;Phone Number&quot; property when a ticket has a known &quot;Phone Number&quot; and a known &quot;Create date&quot;.</td></tr>
+<tr><td><strong>Previous Owner Tracking</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>50</td><td>Copies the current contact owner to the &quot;Previous Contact Owner&quot; property when the contact owner changes to specific values and the previous owner is known.</td></tr>
+<tr><td><strong>Update contact owner based on enrollment criteria</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>583</td><td>Copies the &quot;Contact owner&quot; property when the contact owner is known.</td></tr>
+<tr><td><strong>Previous Contact Owner</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>263</td><td>Updates &quot;Contact Owner Change Log&quot; with the assigned date and owner ID when the contact owner is updated within the last 10 days.</td></tr>
+<tr><td><strong>Pipeline is &quot;Asylum&quot;, stage is &quot;Offer Given&quot;</strong></td><td><span class="badge-sm">DEAL</span></td><td>Edit record</td><td>0</td><td>Updates the deal stage to &quot;Contract Sent&quot; when the pipeline is &quot;Asylum&quot; and the deal stage is &quot;Offer Given.&quot;</td></tr>
+<tr><td><strong>Lead Status Yok İse New Lead</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Edit record</td><td>237</td><td>Sets the Lead Status to &quot;New Lead&quot; when a new record is created and the Lead Status is not already set.</td></tr>
+<tr><td><strong>(es) EB-2 NIW Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>—</td><td>Sends a follow-up email after a contact submits the EB-2 NIW visa guide form.</td></tr>
+<tr><td><strong>(EN) E-2 Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>—</td><td>Sends a follow-up email after a contact submits the specified form.</td></tr>
+<tr><td><strong>(TR) E-2 Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>0</td><td>Sends a follow-up email after a contact submits a specific form about E-2 visas.</td></tr>
+<tr><td><strong>(es) E-2 Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>0</td><td>Sends a follow-up email after a contact submits the specified form.</td></tr>
+<tr><td><strong>(en) H-1B - Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>0</td><td>Sends a follow-up email after a contact submits the specified form.</td></tr>
+<tr><td><strong>(en) o-1 Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>—</td><td>Sends a follow-up email after a contact submits a specific form.</td></tr>
+<tr><td><strong>(tr) o-1 - Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>—</td><td>Sends a follow-up email when a specific form is submitted, allowing re-enrollment each time the form is completed.</td></tr>
+<tr><td><strong>(es) o-1 - Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>—</td><td>Sends a follow-up email after a contact submits the specified form.</td></tr>
+<tr><td><strong>(tr) h-1b - Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>0</td><td>Sends a follow-up email when a contact submits the specified H-1B visa guide form.</td></tr>
+<tr><td><strong>(ES) H-1B - Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>—</td><td>Sends a follow-up email after a contact submits the specified form.</td></tr>
+<tr><td><strong>(en) L-1 - Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>—</td><td>Sends a follow-up email after a contact submits the specified form about L-1 visa information.</td></tr>
+<tr><td><strong>(es) L-1 - Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>—</td><td>Sends a follow-up email after a contact submits a specific form about L-1 visas.</td></tr>
+<tr><td><strong>(tr) L-1 - Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>—</td><td>Sends a follow-up email after a contact submits a specific form about L-1 visa information.</td></tr>
+<tr><td><strong>(tr) EB-3- Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>0</td><td>Sends a follow-up email after a contact submits the specified form.</td></tr>
+<tr><td><strong>(EN) EB-3 Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>—</td><td>Sends a follow-up email after a contact submits the EB-3 visa guide form.</td></tr>
+<tr><td><strong>(TR) EB-2-NIW- Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>—</td><td>Sends a follow-up email after a contact submits the &quot;[TR] EB-2 NIW Vize Rehberi&quot; form.</td></tr>
+<tr><td><strong>(en) EB-2 NIW - Send a follow-up email after form submission</strong></td><td><span class="badge-sm">CONTACT</span></td><td>Send email</td><td>—</td><td>Sends a follow-up email after a contact submits the EB-2 NIW visa guide form.</td></tr>
+</tbody></table></div>
+<h3>Inactive Workflows (139)</h3>
+<p>The following workflows are currently turned off. They remain in HubSpot and can be reactivated.</p>
+<div class="table-wrap"><table><thead><tr><th>Workflow Name</th><th>Object</th><th>Action Types</th></tr></thead><tbody>
+<tr><td>Unnamed workflow - 2025-12-18 21:42:45 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Onboard customers after successful payment</td><td><span class="badge-sm muted">COMMERCE_PAYMENT</span></td><td>Send internal email notification; Create record; Send email; Create task</td></tr>
+<tr><td>UTM Source Known - Source Update if UnKnown</td><td><span class="badge-sm muted">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>Emails | Lead status = Open Deal</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email; Delay (for a set amount of time or time of day); Branch: AND/OR logic; Branch: One property or action output</td></tr>
+<tr><td>deal eşittir contact</td><td><span class="badge-sm muted">DEAL</span></td><td>Branch: One property or action output; Edit record</td></tr>
+<tr><td>Unnamed workflow - 2025-12-10 20:07:49 GMT+0000</td><td><span class="badge-sm muted">DEAL</span></td><td>—</td></tr>
+<tr><td>acceptance method is &quot;E-signature&quot; - no payment - signed (cloned)</td><td><span class="badge-sm muted">QUOTE</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>Unnamed workflow - 2025-12-08 21:53:26 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - 2025-12-08 15:49:07 GMT+0000</td><td><span class="badge-sm muted">QUOTE</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - 2025-12-08 14:54:01 GMT+0000</td><td><span class="badge-sm muted">DEAL</span></td><td>—</td></tr>
+<tr><td>acceptance method is &quot;E-signature&quot; - no payment - not signed - sent</td><td><span class="badge-sm muted">QUOTE</span></td><td>Edit record</td></tr>
+<tr><td>Unnamed workflow - 2025-12-04 16:25:00 GMT+0000</td><td><span class="badge-sm muted">DEAL</span></td><td>Branch: One property or action output; Create task; Delay (for a set amount of time or time of day)</td></tr>
+<tr><td>Emails | Lead status = No Answer</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email; Delay (for a set amount of time or time of day); Branch: One property or action output</td></tr>
+<tr><td>denemeee</td><td><span class="badge-sm muted">USER</span></td><td>Send Slack notification</td></tr>
+<tr><td>email workflow techcrunch</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email; Branch: AND/OR logic; Delay (for a set amount of time or time of day)</td></tr>
+<tr><td>offboarding task aktarım 2</td><td><span class="badge-sm muted">TASK</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>offboarding - task aktarım </td><td><span class="badge-sm muted">TASK</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>Unnamed workflow - 2025-11-22 18:07:44 GMT+0000</td><td><span class="badge-sm muted">USER</span></td><td>Branch: One property or action output</td></tr>
+<tr><td>Summarize a Closed Deal (cloned)</td><td><span class="badge-sm muted">DEAL</span></td><td>Edit record; Data Agent: Custom prompt</td></tr>
+<tr><td>Summarize a Closed Deal</td><td><span class="badge-sm muted">DEAL</span></td><td>Summarize record; Edit record</td></tr>
+<tr><td>Unnamed workflow - 2025-11-18 15:58:17 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - 2025-11-17 19:29:42 GMT+0000</td><td><span class="badge-sm muted">DEAL</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - 2025-11-17 18:35:57 GMT+0000</td><td><span class="badge-sm muted">DEAL</span></td><td>—</td></tr>
+<tr><td>All Company Call Assigned To 6</td><td><span class="badge-sm muted">CALL</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>All Company Call Assigned To 5</td><td><span class="badge-sm muted">CALL</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>All Company Call Assigned To 4</td><td><span class="badge-sm muted">CALL</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>utm to lead source - form (cloned)</td><td><span class="badge-sm muted">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>All Company Call Assigned To 3</td><td><span class="badge-sm muted">CALL</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>All Company Call Assigned To 2</td><td><span class="badge-sm muted">CALL</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>All Company Call Assigned To 1</td><td><span class="badge-sm muted">CALL</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>Unnamed workflow - 2025-11-13 16:00:16 GMT+0000</td><td><span class="badge-sm muted">CALL</span></td><td>Branch: One property or action output; Edit record</td></tr>
+<tr><td>Unnamed workflow - 2025-11-13 16:05:02 GMT+0000</td><td><span class="badge-sm muted">COMMERCE_PAYMENT</span></td><td>—</td></tr>
+<tr><td>Call and Contact Activity user</td><td><span class="badge-sm muted">CALL</span></td><td>Edit record</td></tr>
+<tr><td>İsmail İkinci Adım</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email; Edit record; Delay (for a set amount of time or time of day)</td></tr>
+<tr><td>İsmail İlk Adım</td><td><span class="badge-sm muted">CALL</span></td><td>Edit record; Delay (for a set amount of time or time of day); Branch: One property or action output</td></tr>
+<tr><td>Unnamed workflow - 2025-11-10 21:34:18 GMT+0000</td><td><span class="badge-sm muted">CALL</span></td><td>Create task</td></tr>
+<tr><td>deal quote sent</td><td><span class="badge-sm muted">QUOTE</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>Unnamed workflow - 2025-11-07 20:42:17 GMT+0000</td><td><span class="badge-sm muted">QUOTE</span></td><td>—</td></tr>
+<tr><td>TechCrunch</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email; Delay (for a set amount of time or time of day)</td></tr>
+<tr><td>Unnamed workflow - 2025-11-03 19:49:04 GMT+0000</td><td><span class="badge-sm muted">INVOICE</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - 2025-10-21 16:54:18 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Attempted to contact - 1237 metoduna göre task ve not</td><td><span class="badge-sm muted">CONTACT</span></td><td>Create task; Branch: AND/OR logic; Create note; Delay (for a set amount of time or time of day)</td></tr>
+<tr><td>Unnamed workflow - 2025-10-16 22:47:03 GMT+0000</td><td><span class="badge-sm muted">DEAL</span></td><td>—</td></tr>
+<tr><td>case type adjustment</td><td><span class="badge-sm muted">CONTACT</span></td><td>Branch: AND/OR logic; Custom code; Edit record</td></tr>
+<tr><td>Unnamed workflow - 2025-10-14 15:08:07 GMT+0000</td><td><span class="badge-sm muted">DEAL</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>satışçılar için rotation + zapier</td><td><span class="badge-sm muted">CONTACT</span></td><td>Create record; Delay (for a set amount of time or time of day); Branch: AND/OR logic</td></tr>
+<tr><td>satışçılar için rotation + zapier - case type</td><td><span class="badge-sm muted">CONTACT</span></td><td>Create record; Branch: AND/OR logic</td></tr>
+<tr><td>Unnamed workflow - 2025-10-08 14:12:47 GMT+0000</td><td><span class="badge-sm muted">DEAL</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - 2025-10-08 11:31:38 GMT+0000</td><td><span class="badge-sm muted">DEAL</span></td><td>Custom code; Edit record</td></tr>
+<tr><td>(delete)</td><td><span class="badge-sm muted">CONTACT</span></td><td>Create record</td></tr>
+<tr><td>(delete) Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>Email Re-engagement: Lead status = Not Moving Forward</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - 2025-10-05 20:14:14 GMT+0000</td><td><span class="badge-sm muted">PROJECT</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - 2025-10-01 17:31:19 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - 2025-09-29 21:48:47 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>Rotate record to owner</td></tr>
+<tr><td>deal name workflow</td><td><span class="badge-sm muted">DEAL</span></td><td>Edit record; Delay (for a set amount of time or time of day); Create Google Sheet row</td></tr>
+<tr><td>(To DELETE) Unnamed workflow - 2025-09-18 11:14:54 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>rotation</td><td><span class="badge-sm muted">CONTACT</span></td><td>Rotate record to owner</td></tr>
+<tr><td>Unnamed workflow - 2025-08-28 15:00:24 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>appointment</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Create and assign tasks when a new deal is created</td><td><span class="badge-sm muted">DEAL</span></td><td>Create task; Delay (until an event happens); Branch: One property or action output; Send internal email notification</td></tr>
+<tr><td>Spanish Form - Email - Marketing (cloned) (cloned)</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>Turkish Form - Email - Marketing (cloned)</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>When a contact clicks a link in the email</td><td><span class="badge-sm muted">CONTACT</span></td><td>Add to static list</td></tr>
+<tr><td>Email automation - forms</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>reassigned tag</td><td><span class="badge-sm muted">CONTACT</span></td><td>Edit record; Delay (for a set amount of time or time of day)</td></tr>
+<tr><td>telefon numara formatlama (cloned)</td><td><span class="badge-sm muted">CONTACT</span></td><td>Format data; Edit record</td></tr>
+<tr><td>Unnamed workflow - 2025-07-03 17:32:30 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>Unnamed workflow - 2025-07-01 18:05:52 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Calendly + in progress</td><td><span class="badge-sm muted">CONTACT</span></td><td>Edit record</td></tr>
+<tr><td>Unnamed workflow - 2025-06-13 20:02:37 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Sets the ticket status to &quot;On Hold&quot;</td><td><span class="badge-sm muted">TICKET</span></td><td>Edit record; Create note</td></tr>
+<tr><td>Unnamed workflow - Fri Jun 13 2025 09:48:48 GMT-07:00</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>calendly deneme</td><td><span class="badge-sm muted">CONTACT</span></td><td>Edit record; Branch: AND/OR logic; Add to static list</td></tr>
+<tr><td>Unnamed workflow - 2025-06-12 20:52:39 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>Branch: AND/OR logic</td></tr>
+<tr><td>Unnamed workflow - 2025-06-10 17:02:12 GMT+0000</td><td><span class="badge-sm muted">CONVERSATION</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - 2025-06-05 17:49:47 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>Edit record</td></tr>
+<tr><td>LF- Copy deal owner (cloned)</td><td><span class="badge-sm muted">CONTACT</span></td><td>Edit record; Branch: One property or action output</td></tr>
+<tr><td>Unnamed workflow - 2025-05-28 17:12:20 GMT+0000</td><td><span class="badge-sm muted">DEAL</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - 2025-05-23 16:25:14 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Lead status takılı kalmış workflowu</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send Slack notification</td></tr>
+<tr><td>Lead status tarih girişleri</td><td><span class="badge-sm muted">CONTACT</span></td><td>Edit record; Branch: AND/OR logic</td></tr>
+<tr><td>Unnamed workflow - 2025-05-08 21:51:03 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - 2025-05-06 19:40:04 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - Mon Apr 21 2025 09:23:48 GMT-07:00</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>Assign tickets to an owner</td><td><span class="badge-sm muted">TICKET</span></td><td>Delay (for a set amount of time or time of day); Branch: AND/OR logic; Rotate record to owner</td></tr>
+<tr><td>Pipeline is &quot;Asylum&quot;, stage is &quot;Contract Sent&quot;</td><td><span class="badge-sm muted">DEAL</span></td><td>—</td></tr>
+<tr><td>Unnamed workflow - 2025-04-06 16:46:17 GMT+0000</td><td><span class="badge-sm muted">TASK</span></td><td>—</td></tr>
+<tr><td>yeni lead - ulaşım olmamıi task gönderimi</td><td><span class="badge-sm muted">CONTACT</span></td><td>Create task</td></tr>
+<tr><td>Unnamed workflow - 2025-04-02 21:29:13 GMT+0000</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>Sumeyye Unal Call Aktivite Ataması</td><td><span class="badge-sm muted">CALL</span></td><td>Edit record</td></tr>
+<tr><td>Duygu Er Call Aktivite Ataması</td><td><span class="badge-sm muted">CALL</span></td><td>Edit record</td></tr>
+<tr><td>Ali Arıcak Call Aktivite Ataması</td><td><span class="badge-sm muted">CALL</span></td><td>Edit record</td></tr>
+<tr><td>İsmail Dislik Call Aktivite Ataması</td><td><span class="badge-sm muted">CALL</span></td><td>Edit record</td></tr>
+<tr><td>Süheyla Filiz Call Aktivite Ataması</td><td><span class="badge-sm muted">CALL</span></td><td>Edit record</td></tr>
+<tr><td>Hakan Özcanan Call Aktivite Ataması</td><td><span class="badge-sm muted">CALL</span></td><td>Edit record</td></tr>
+<tr><td>Ersagun K. Call Aktivite Ataması</td><td><span class="badge-sm muted">CALL</span></td><td>Edit record</td></tr>
+<tr><td>Sude Çankaya Call Aktivite Ataması</td><td><span class="badge-sm muted">CALL</span></td><td>Edit record</td></tr>
+<tr><td>Fatma Simal S. Call Aktivite Ataması</td><td><span class="badge-sm muted">CALL</span></td><td>Edit record</td></tr>
+<tr><td>Burcu N. Ö. Call Aktivite Ataması</td><td><span class="badge-sm muted">CALL</span></td><td>Edit record</td></tr>
+<tr><td>Müge Fide Call Aktivite Ataması</td><td><span class="badge-sm muted">CALL</span></td><td>Edit record</td></tr>
+<tr><td>(EN) L-1 -iletişim- Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(es) E-2 İLETİŞİM Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(es) h-1b iletişim - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(tr) eb-3-iletişim - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(en) eb-3-iletişim- Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(en) eb-2 NIW- iletişim - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(tr) eb-2 NIW-iletişim- Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(en) h-1b- iletişim - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(tr) h-1b - iletişim - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(en) o-1 - iletişim - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(tr) L-1 - iletişim - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(es) L-1 - iletişim - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(tr) e-2- iletişim- Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(EN) E-2 - iletişim- Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(es) o-1 - iletişim - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(tr) o-1 - iletişim - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>Unnamed workflow - 2025-03-27 18:52:57 GMT+0000</td><td><span class="badge-sm muted">DEAL</span></td><td>—</td></tr>
+<tr><td>(es) e-1 - iletişim - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(tr) E-1 - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(ES) E-1 - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(es) eb-2 NIW diğer -Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(ES) EB-3 - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(en) E-1 - Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>(en) E-1 Send a follow-up email after form submission Yeni</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>unqualified reason is &quot;Does not meet criteria&quot;</td><td><span class="badge-sm muted">CONTACT</span></td><td>Create task</td></tr>
+<tr><td>Contact Owner</td><td><span class="badge-sm muted">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>Unnamed workflow - Fri Mar 08 2024 15:42:56 GMT-08:00</td><td><span class="badge-sm muted">CONTACT</span></td><td>—</td></tr>
+<tr><td>When a contact clicks a link in the email</td><td><span class="badge-sm muted">CONTACT</span></td><td>Add to static list</td></tr>
+<tr><td>Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>Send a follow-up email after form submission</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>Unnamed workflow - Tue Feb 27 2024 13:47:37 GMT-08:00</td><td><span class="badge-sm muted">CONTACT</span></td><td>Send email</td></tr>
+<tr><td>Case Type of Asylum or Adjustment of Status - joaquin</td><td><span class="badge-sm muted">CONTACT</span></td><td>Edit record</td></tr>
+<tr><td>utm to lead source - form</td><td><span class="badge-sm muted">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+<tr><td>Quote Sent=Lead Status</td><td><span class="badge-sm muted">CONTACT</span></td><td>Edit record</td></tr>
+<tr><td>Asylum geçici atama</td><td><span class="badge-sm muted">CONTACT</span></td><td>Rotate record to owner</td></tr>
+<tr><td>UTM Source Known - Source Update if UnKnown</td><td><span class="badge-sm muted">CONTACT</span></td><td>Branch: AND/OR logic; Edit record</td></tr>
+</tbody></table></div></div>
+</article>
+</section>
+<section class="cat-section-main" id="cat-automations"><h2 class="cat-heading">⚙️ Automations & Tracking</h2>
+<article class="doc-card" id="doc-whatsapp_sop" data-content="whatsapp_sop">
+  <div class="doc-header">
+    <div class="doc-header-left">
+      <span class="doc-badge">Zapier</span>
+      <h3 class="doc-title">WhatsApp UTM Tracking SOP v1.1</h3>
+      <p class="doc-meta">SOP-ZAP-001 — Active</p>
+    </div>
+    <div class="doc-header-right">
+      <p class="doc-summary">Zapier workflow that captures and stores UTM parameters from WhatsApp traffic. Ensures each unique visitor session (CID) is recorded only once.</p>
+      <button class="expand-btn" data-target="whatsapp_sop">Read Full Document ↓</button>
+    </div>
+  </div>
+  <div class="doc-body" id="body-whatsapp_sop" style="display:none;"><h2>WhatsApp UTM Tracking — SOP-ZAP-001</h2>
+<p>This workflow captures and stores UTM (Urchin Tracking Module) parameters from WhatsApp traffic via Zapier. It ensures that each unique visitor session — identified by a client ID (CID) — is recorded exactly once in the tracking table, preventing duplicate entries and maintaining clean attribution data.</p>
+
+<div class="info-box">
+  <strong>SOP ID:</strong> SOP-ZAP-001 &nbsp;|&nbsp; <strong>Status:</strong> Active &nbsp;|&nbsp; <strong>Platform:</strong> Zapier + Zapier Tables &nbsp;|&nbsp; <strong>Version:</strong> 1.1
+</div>
+
+<h3>1. Scope</h3>
+<p>This SOP applies to:</p>
+<ul>
+  <li>Marketing and analytics teams responsible for campaign attribution</li>
+  <li>Operations and automation teams managing Zapier workflows</li>
+  <li>Any stakeholder reviewing WhatsApp campaign performance data</li>
+</ul>
+
+<h3>2. Tools &amp; Systems</h3>
+<div class="table-wrap"><table><thead><tr><th>Tool</th><th>Role</th></tr></thead><tbody>
+<tr><td>Zapier</td><td>Workflow automation engine</td></tr>
+<tr><td>Zapier Webhook</td><td>Receives the incoming UTM payload (trigger)</td></tr>
+<tr><td>Zapier Tables — WA_UTM_Clicks</td><td>Stores one record per unique CID</td></tr>
+</tbody></table></div>
+
+<h3>3. Trigger</h3>
+<p>The workflow is triggered by an incoming <strong>Webhook (HTTP POST)</strong>. This webhook fires whenever a user arrives at a tracked page via a WhatsApp link containing UTM parameters.</p>
+
+<p>Expected webhook payload fields:</p>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>cid</code></td><td>Unique client/session identifier</td></tr>
+<tr><td><code>utm_source</code></td><td>Traffic source (e.g. whatsapp, google)</td></tr>
+<tr><td><code>utm_medium</code></td><td>Marketing medium (e.g. cpc, organic)</td></tr>
+<tr><td><code>utm_campaign</code></td><td>Campaign name</td></tr>
+<tr><td><code>utm_term</code></td><td>Paid search keyword (optional)</td></tr>
+<tr><td><code>utm_content</code></td><td>Ad variant (optional)</td></tr>
+<tr><td><code>page_url</code></td><td>Landing page URL</td></tr>
+<tr><td><code>referrer</code></td><td>Referring URL</td></tr>
+<tr><td><code>timestamp</code></td><td>ISO 8601 timestamp of the session</td></tr>
+</tbody></table></div>
+
+<h3>4. Workflow Steps</h3>
+<p>The automation runs through four sequential steps each time the webhook fires:</p>
+
+<div class="step-block">
+  <div class="step-num">1</div>
+  <div class="step-content">
+    <strong>Receive Webhook (Trigger)</strong>
+    <p>The workflow starts when the Zapier webhook endpoint receives a POST request. The payload is parsed and all UTM fields are made available to subsequent steps. No action is taken at this point.</p>
+  </div>
+</div>
+
+<div class="step-block">
+  <div class="step-num">2</div>
+  <div class="step-content">
+    <strong>Search for Existing Record</strong>
+    <p>Zapier searches the <strong>WA_UTM_Clicks</strong> table in Zapier Tables for the incoming CID.</p>
+    <ul>
+      <li>Lookup field: <code>cid</code> (mapped to column <code>f1</code>)</li>
+      <li>Match type: exact match</li>
+      <li>If no match found → workflow continues to Step 3</li>
+      <li>If match found → filter in Step 3 will stop the workflow</li>
+    </ul>
+    <p><em>Note: The search is configured to succeed on miss — it does not fail if no record is found; it continues normally.</em></p>
+  </div>
+</div>
+
+<div class="step-block">
+  <div class="step-num">3</div>
+  <div class="step-content">
+    <strong>Filter — Skip Duplicates</strong>
+    <p>Condition: <code>record_id</code> from Step 2 does not exist.</p>
+    <ul>
+      <li>If <code>record_id</code> is empty (no match) → proceed to Step 4, create new entry</li>
+      <li>If <code>record_id</code> has a value (match found) → workflow stops, no duplicate written</li>
+    </ul>
+    <div class="warning-box"><strong>⚠ Deduplication guarantee:</strong> Each unique CID is stored only once, regardless of how many times the webhook fires for the same session.</div>
+  </div>
+</div>
+
+<div class="step-block">
+  <div class="step-num">4</div>
+  <div class="step-content">
+    <strong>Create Record in Zapier Tables</strong>
+    <p>If no duplicate is found, a new row is written to <strong>WA_UTM_Clicks</strong> with all 9 UTM/page/timestamp fields mapped to the correct table columns.</p>
+  </div>
+</div>
+
+<h3>5. Process Flow</h3>
+<div class="code-block">Webhook fires
+    ↓
+Step 1: Parse payload (CID + UTM fields)
+    ↓
+Step 2: Search WA_UTM_Clicks for CID
+    ↓
+Step 3: Is record_id empty?
+   YES → Step 4: Write new row     NO → STOP (duplicate suppressed)
+</div>
+
+<h3>6. Testing Checklist</h3>
+<ul>
+  <li>Send a test webhook payload with a new CID → confirm a record is created in WA_UTM_Clicks</li>
+  <li>Send the same CID a second time → confirm no duplicate record is created</li>
+  <li>Verify all 9 UTM/page/timestamp fields are correctly mapped to the right columns</li>
+  <li>Monitor Zapier task history for 48 hours and confirm no failures</li>
+</ul>
+
+<h3>7. Maintenance &amp; Ownership</h3>
+<p>Review this Zap whenever:</p>
+<ul>
+  <li>WhatsApp campaign UTM parameter structure changes</li>
+  <li>The WA_UTM_Clicks table schema is modified</li>
+  <li>Zapier updates the Webhook or Tables integration</li>
+</ul>
+<p>Any changes to this workflow must be reflected in an updated version of this document.</p>
+</div>
+</article>
+<article class="doc-card" id="doc-whatsapp_handoff" data-content="whatsapp_handoff">
+  <div class="doc-header">
+    <div class="doc-header-left">
+      <span class="doc-badge">Zapier</span>
+      <h3 class="doc-title">WhatsApp UTM Tracking — Team Handoff</h3>
+      <p class="doc-meta">Architecture & Status — HIGH Priority</p>
+    </div>
+    <div class="doc-header-right">
+      <p class="doc-summary">Full architecture overview of the two-Zap WhatsApp UTM tracking system: how it bridges website visits to WhatsApp contacts for full marketing attribution.</p>
+      <button class="expand-btn" data-target="whatsapp_handoff">Read Full Document ↓</button>
+    </div>
+  </div>
+  <div class="doc-body" id="body-whatsapp_handoff" style="display:none;"><h2>WhatsApp UTM Tracking — Team Handoff</h2>
+<p>This document covers the full architecture of the two-Zap WhatsApp UTM tracking system: how it works, current readiness status, and what needs to happen before launch.</p>
+
+<div class="info-box">
+  <strong>Priority:</strong> HIGH &nbsp;|&nbsp; <strong>Status:</strong> Configured, pending activation &nbsp;|&nbsp; <strong>Platform:</strong> Zapier + Wati
+</div>
+
+<h3>1. Executive Summary</h3>
+<p>We have built a two-Zap automated system in Zapier that tracks UTM attribution for inbound WhatsApp leads. The system captures the marketing source of a visitor <em>before</em> they send a WhatsApp message, then automatically applies that attribution data to their contact record in Wati when they first make contact.</p>
+<p>Without this system, all WhatsApp leads appear as unattributed — making it impossible to determine which campaigns, ads, or channels are driving inbound enquiries.</p>
+
+<h3>2. System Architecture</h3>
+<p>The system consists of two Zapier workflows operating in sequence, using two Zapier Tables as shared data stores:</p>
+
+<div class="table-wrap"><table><thead><tr><th>Component</th><th>Role</th></tr></thead><tbody>
+<tr><td><strong>Zap #1</strong> (SOP-ZAP-001)</td><td>Receives UTM parameters from the website via webhook when a visitor clicks a WhatsApp link. Stores UTMs + CID in WA_UTM_Clicks table.</td></tr>
+<tr><td><strong>Zap #2</strong></td><td>Fires when a new message arrives in Wati. Extracts the CID from the greeting, looks up UTM data in WA_UTM_Clicks, and writes attribution to the Contacts table and Wati contact attributes.</td></tr>
+<tr><td><strong>WA_UTM_Clicks table</strong></td><td>Stores one row per unique CID: UTM source, medium, campaign, term, content, landing page, referrer, timestamp.</td></tr>
+<tr><td><strong>Contacts table</strong></td><td>Stores attribution data tied to each Wati contact: CID, UTM fields, attribution timestamp, "already attributed" flag (f10).</td></tr>
+</tbody></table></div>
+
+<h3>3. End-to-End Flow</h3>
+<div class="code-block">1. Visitor clicks WhatsApp button on website (link contains CID + UTM params)
+2. Page script fires POST to Zapier webhook → Zap #1 stores UTMs in WA_UTM_Clicks
+3. Visitor sends first WhatsApp message in Wati (greeting includes CID)
+4. Zap #2 fires on new Wati message
+5. Formatter step extracts CID from greeting text
+6. Lookup: search WA_UTM_Clicks for that CID
+7. If found: write UTM data to Contacts table + update Wati contact attributes
+8. Set f10 = true (already attributed) → future messages from this contact are skipped
+</div>
+
+<h3>4. Zap #2 — Detailed Step Breakdown</h3>
+<p>Zap #2 runs every time a new message arrives in Wati and follows a branching logic:</p>
+
+<div class="table-wrap"><table><thead><tr><th>Step</th><th>Action</th><th>Detail</th></tr></thead><tbody>
+<tr><td>Trigger</td><td>New message in Wati</td><td>Fires on every inbound message</td></tr>
+<tr><td>Filter A</td><td>Is this the first message?</td><td>Stops if contact has already been attributed (f10 = true)</td></tr>
+<tr><td>Formatter</td><td>Extract CID from greeting</td><td>Uses text pattern matching to pull CID from the greeting string</td></tr>
+<tr><td>Lookup</td><td>Search WA_UTM_Clicks by CID</td><td>Exact match on the cid column</td></tr>
+<tr><td>Filter B</td><td>Was a UTM record found?</td><td>Stops if no matching CID exists (visitor arrived without UTM)</td></tr>
+<tr><td>Write</td><td>Update Contacts table</td><td>Writes all UTM fields + CID + timestamp</td></tr>
+<tr><td>Write</td><td>Update Wati contact attributes</td><td>Pushes utm_source, utm_campaign, etc. to Wati</td></tr>
+<tr><td>Write</td><td>Set f10 = true</td><td>Marks contact as attributed — prevents re-attribution on future messages</td></tr>
+</tbody></table></div>
+
+<h3>5. Data Table Schemas</h3>
+<h4>WA_UTM_Clicks Table</h4>
+<div class="table-wrap"><table><thead><tr><th>Column</th><th>Field</th><th>Description</th></tr></thead><tbody>
+<tr><td>f1</td><td>cid</td><td>Unique client/session identifier</td></tr>
+<tr><td>f2</td><td>utm_source</td><td>Traffic source</td></tr>
+<tr><td>f3</td><td>utm_medium</td><td>Marketing medium</td></tr>
+<tr><td>f4</td><td>utm_campaign</td><td>Campaign name</td></tr>
+<tr><td>f5</td><td>utm_term</td><td>Paid keyword (optional)</td></tr>
+<tr><td>f6</td><td>utm_content</td><td>Ad variant (optional)</td></tr>
+<tr><td>f7</td><td>page_url</td><td>Landing page URL</td></tr>
+<tr><td>f8</td><td>referrer</td><td>Referring URL</td></tr>
+<tr><td>f9</td><td>timestamp</td><td>Session timestamp (ISO 8601)</td></tr>
+</tbody></table></div>
+
+<h4>Contacts Table</h4>
+<div class="table-wrap"><table><thead><tr><th>Column</th><th>Field</th><th>Description</th></tr></thead><tbody>
+<tr><td>f1</td><td>wati_contact_id</td><td>Wati contact identifier</td></tr>
+<tr><td>f2–f8</td><td>utm_* fields</td><td>Mirrors the UTM fields from WA_UTM_Clicks</td></tr>
+<tr><td>f9</td><td>attribution_timestamp</td><td>When attribution was written</td></tr>
+<tr><td>f10</td><td>already_attributed</td><td>Boolean flag — prevents re-attribution on future messages</td></tr>
+</tbody></table></div>
+
+<h3>6. Open Questions</h3>
+<ul>
+  <li>How is the CID passed from the website into the WhatsApp greeting message — is it embedded in a pre-filled message URL or added by a script?</li>
+  <li>What is the exact format of the greeting that contains the CID? The Formatter step needs the pattern to extract it reliably.</li>
+  <li>Should returning contacts (f10 = true, already attributed) ever be re-attributed if they click a new ad later? Currently the system skips them.</li>
+  <li>Are there greeting languages beyond English, Turkish, and Spanish that should be accounted for?</li>
+  <li>Who owns the Wati account and can verify contact attributes are being written correctly?</li>
+</ul>
+
+<h3>7. Related Documents</h3>
+<ul>
+  <li><strong>SOP-ZAP-001</strong> — WhatsApp UTM Tracking #1 (Store UTMs with Reference Code) — step-by-step SOP for Zap #1</li>
+  <li>Zapier dashboard — both Zaps available for review and editing</li>
+  <li>WA_UTM_Clicks table and Contacts Table — accessible via Zapier Tables</li>
+</ul>
+</div>
+</article>
+</section>
+<section class="cat-section-main" id="cat-technical"><h2 class="cat-heading">🔧 Technical Infrastructure</h2>
+<article class="doc-card" id="doc-ejudge" data-content="ejudge">
+  <div class="doc-header">
+    <div class="doc-header-left">
+      <span class="doc-badge">Node.js</span>
+      <h3 class="doc-title">E-Judge Maintenance — EOIR Hearing Sync</h3>
+      <p class="doc-meta">v1.0.0 — Last updated 2026-04-08</p>
+    </div>
+    <div class="doc-header-right">
+      <p class="doc-summary">Complete maintenance guide for E-Judge: a Node.js service that syncs immigration hearing data from the EOIR API into Google Sheets via Slack and HTTP.</p>
+      <button class="expand-btn" data-target="ejudge">Read Full Document ↓</button>
+    </div>
+  </div>
+  <div class="doc-body" id="body-ejudge" style="display:none;"><h2>E-Judge — EOIR Hearing Sync Service</h2>
+<div class="info-box">
+  <strong>Runtime:</strong> Node.js ≥ 18 &nbsp;|&nbsp; <strong>Version:</strong> 1.0.0 &nbsp;|&nbsp; <strong>Last updated:</strong> 2026-04-08 &nbsp;|&nbsp; <strong>PM2 app name:</strong> e-judge
+</div>
+
+<h3>1. Overview</h3>
+<p>E-Judge is a Node.js service that synchronizes immigration hearing data from the EOIR Case-Access API into Google Sheets. It exposes an HTTP API (including a Slack slash command endpoint) that triggers a sync run, detects changes against the previous state stored in the master sheet, and writes the updated dataset back to Google Sheets.</p>
+
+<h4>High-Level Architecture</h4>
+<div class="code-block">Slack / HTTP client
+        |
+        v
+ Express API  ──►  syncService  ──►  caseService  ──►  EOIR API
+ (src/index.js)    (lock + flow)    (HTTP + retry)
+        |                 |
+        |                 └──►  sheetService  ──►  Google Sheets + Drive
+        |
+        └── /health, /sync, /slack/command,
+            /master-sheet-info, /test/master-sheet</div>
+
+<h4>Key Source Files</h4>
+<div class="table-wrap"><table><thead><tr><th>File</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>src/index.js</code></td><td>Express app entry point, route registration</td></tr>
+<tr><td><code>src/syncService.js</code></td><td>Orchestrates sync flow, manages concurrency lock</td></tr>
+<tr><td><code>src/caseService.js</code></td><td>EOIR API calls with retry + exponential backoff</td></tr>
+<tr><td><code>src/sheetService.js</code></td><td>All Google Sheets and Drive operations</td></tr>
+<tr><td><code>ecosystem.config.js</code></td><td>PM2 configuration</td></tr>
+</tbody></table></div>
+
+<h3>2. Runtime Environment</h3>
+<h4>Requirements</h4>
+<ul>
+  <li>Node.js 18+ (uses native global <code>fetch</code> / <code>AbortController</code>)</li>
+  <li>A Google Cloud service account with access to the target Drive folder</li>
+  <li>Network egress to <code>case-access.eoir.justice.gov</code> and Google APIs</li>
+  <li>~300–500 MB RAM (PM2 restarts at 500 MB)</li>
+</ul>
+
+<h4>Environment Variables</h4>
+<div class="table-wrap"><table><thead><tr><th>Variable</th><th>Required</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>EOIR_ID</code></td><td>✅ Yes</td><td>EOIR attorney/firm identifier (e.g. NN532599)</td></tr>
+<tr><td><code>GOOGLE_APPLICATION_CREDENTIALS</code></td><td>✅ Yes</td><td>Path to service account JSON key</td></tr>
+<tr><td><code>GOOGLE_DRIVE_FOLDER_ID</code></td><td>✅ Yes</td><td>Drive folder ID for the master sheet</td></tr>
+<tr><td><code>PORT</code></td><td>No</td><td>Listen port (default: 3002)</td></tr>
+<tr><td><code>ALLOWED_USER_IDS</code></td><td>No</td><td>Comma-separated Slack user IDs allowed to run /sync</td></tr>
+<tr><td><code>LOCK_TIMEOUT_MS</code></td><td>No</td><td>Stale-lock timeout in ms (default: 10 min)</td></tr>
+</tbody></table></div>
+
+<div class="warning-box"><strong>🔒 Security:</strong> Secrets (service-account JSON) must never be committed to source control. <code>.gcloudignore</code> and <code>.gitignore</code> already exclude the <code>credentials/</code> directory.</div>
+
+<h4>Process &amp; Port Configuration</h4>
+<ul>
+  <li>PM2 app name: <code>e-judge</code> (defined in <code>ecosystem.config.js</code>)</li>
+  <li>Default listen port: <code>3002</code> (override via <code>PORT</code>)</li>
+  <li>Cron restart window: 06:00, 14:00, 22:00 UTC (forced restart for hygiene)</li>
+  <li>Max memory before auto-restart: 500 MB</li>
+</ul>
+
+<h3>3. Deployment</h3>
+<p>The full first-time deployment guide lives in <code>LIGHTSAIL_DEPLOY.md</code>. This section covers routine operations only.</p>
+
+<h4>Update an Existing Deployment (Lightsail / VM)</h4>
+<div class="code-block">cd ~/apps/e-judge
+git pull
+npm install --production
+pm2 restart e-judge
+pm2 logs e-judge --lines 100
+
+# After restart, verify:
+curl -s http://localhost:3002/health
+# Expected: {"status":"ok","timestamp":"..."}</div>
+
+<h4>Cloud Run / Container</h4>
+<div class="code-block"># Build and deploy
+gcloud run deploy e-judge \
+  --source . \
+  --region &lt;REGION&gt; \
+  --set-env-vars EOIR_ID=NN532599 \
+  --set-secrets GOOGLE_APPLICATION_CREDENTIALS=/secrets/sa.json:latest</div>
+
+<h4>Rollback</h4>
+<div class="code-block"># VM rollback
+cd ~/apps/e-judge
+git log --oneline -n 10       # find the previous good SHA
+git checkout &lt;SHA&gt;
+npm install --production
+pm2 restart e-judge
+
+# Cloud Run rollback
+gcloud run services update-traffic e-judge --to-revisions=&lt;PREVIOUS_REVISION&gt;=100</div>
+
+<h3>4. API Endpoints</h3>
+<div class="table-wrap"><table><thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>GET</code></td><td><code>/health</code></td><td>Liveness check — returns <code>{"status":"ok"}</code> if process is alive</td></tr>
+<tr><td><code>POST</code></td><td><code>/sync</code></td><td>Triggers a full EOIR sync run. Requires <code>cookie</code> in body.</td></tr>
+<tr><td><code>POST</code></td><td><code>/slack/command</code></td><td>Slack slash command endpoint (ACKs immediately, processes in background)</td></tr>
+<tr><td><code>GET</code></td><td><code>/master-sheet-info</code></td><td>Returns metadata about the master Google Sheet</td></tr>
+<tr><td><code>GET</code></td><td><code>/test/master-sheet</code></td><td>Returns first 10 rows for quick inspection</td></tr>
+</tbody></table></div>
+
+<h4>Cookie Requirements</h4>
+<ul>
+  <li>Minimum length: 20 characters</li>
+  <li>Rejected if it contains control characters (<code>\x00–\x1f</code> except tab/CR/LF)</li>
+  <li>Cookie validation is skipped only in offline mock mode (<code>useTestSheet &amp;&amp; mockHearingChanges</code>)</li>
+</ul>
+
+<h4>Example API Calls</h4>
+<div class="code-block"># Production sync
+curl -X POST http://localhost:3002/sync \
+  -H "Content-Type: application/json" \
+  -d '{"cookie":"&lt;EOIR_COOKIE&gt;","isProductionMode":true}'
+
+# Offline mock (no cookie needed)
+curl -X POST http://localhost:3002/sync \
+  -H "Content-Type: application/json" \
+  -d '{"useTestSheet":true,"mockHearingChanges":true}'</div>
+
+<h3>5. Sync Flow Details</h3>
+<ol>
+  <li><strong>Lock acquisition</strong> — syncService uses a timestamp-based lock (LOCK_TIMEOUT_MS = 10 min). Stale locks are auto-released.</li>
+  <li><strong>Fetch hearings</strong> — caseService calls EOIR API with a 30 s timeout.</li>
+  <li><strong>Filter</strong> — only hearings within the next 12 months are kept; duplicates by ScheduleId are removed.</li>
+  <li><strong>Fetch details</strong> — parallel batches of 10 requests with up to 3 retries and exponential backoff (base 200 ms). 429 responses are respected.</li>
+  <li><strong>Read previous data</strong> — sheetService reads both <code>individuals</code> and <code>others</code> tabs (range A2:P).</li>
+  <li><strong>Diff &amp; write</strong> — compares hearing date/time/judge/court, marks rows as <code>NEW</code> / <code>UPDATED</code>, preserves judge rates, notes, and assigned lawyer unless a change is detected in production mode.</li>
+  <li><strong>Trailing cleanup</strong> — rows beyond the new data (up to row 10,000) are cleared to prevent stale entries.</li>
+  <li><strong>Lock release</strong> — always executed in a <code>finally</code> block.</li>
+</ol>
+
+<h3>6. Monitoring &amp; Logs</h3>
+<h4>PM2 Commands</h4>
+<div class="code-block">pm2 status                         # overview of all processes
+pm2 logs e-judge                   # tail combined logs
+pm2 logs e-judge --lines 200       # last 200 lines
+pm2 logs e-judge --err             # errors only
+pm2 monit                          # interactive dashboard</div>
+
+<h4>Log Files</h4>
+<ul>
+  <li><code>logs/out.log</code> — stdout</li>
+  <li><code>logs/error.log</code> — stderr</li>
+  <li><code>logs/combined.log</code> — merged</li>
+</ul>
+
+<h4>Health Check</h4>
+<p>Use <code>GET /health</code> from an external monitor (UptimeRobot, Cloud Run healthcheck, etc.). It does not touch EOIR or Google APIs — a 200 proves the process is alive, not that downstream dependencies are reachable.</p>
+
+<h3>7. Routine Maintenance Schedule</h3>
+<div class="table-wrap"><table><thead><tr><th>Cadence</th><th>Tasks</th></tr></thead><tbody>
+<tr><td><strong>Weekly</strong></td><td>Check pm2 status / Cloud Run revision health; scan <code>logs/error.log</code> for new error signatures; confirm the master sheet is receiving updates (check Drive modification timestamp)</td></tr>
+<tr><td><strong>Monthly</strong></td><td>Rotate / verify the EOIR cookie with the team; review Google Cloud quotas (Sheets API &amp; Drive API); run <code>npm outdated</code> and plan dependency updates; archive or trim log files if they exceed a few hundred MB</td></tr>
+<tr><td><strong>Quarterly</strong></td><td>Rotate Google service-account key (steps below); review ALLOWED_USER_IDS against current team; re-validate Drive folder ID and service account access</td></tr>
+</tbody></table></div>
+
+<h4>Quarterly: Rotate the Google Service Account Key</h4>
+<ol>
+  <li>Create a new key in Google Cloud Console for the same service account</li>
+  <li>Copy it to <code>credentials/service-account.json</code> on the server (or update Secret Manager for Cloud Run)</li>
+  <li>Restart the service: <code>pm2 restart e-judge</code></li>
+  <li>Verify with <code>curl /health</code> and a small <code>/sync</code> run against the test sheet</li>
+  <li>Delete the old key from Google Cloud Console</li>
+</ol>
+
+<h4>Dependency Upgrades</h4>
+<div class="code-block">npm outdated
+npm audit
+# Minor/patch updates:
+npm update
+npm install --production
+pm2 restart e-judge
+# Always test googleapis upgrades against the test sheet before touching production.</div>
+
+<h3>8. Troubleshooting</h3>
+<div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Cause &amp; Resolution</th></tr></thead><tbody>
+<tr><td>Service won't start</td><td>Run <code>pm2 logs e-judge --err --lines 50</code>. Verify credentials file exists and is valid JSON. Check port is not already bound: <code>sudo lsof -i :3002</code>. Confirm Node.js ≥ 18: <code>node -v</code>.</td></tr>
+<tr><td><code>/sync</code> returns "Senkronizasyon yapilacak veri bulunamadi"</td><td>Invalid or expired EOIR cookie, or the account genuinely has no upcoming hearings. Verify by hitting EOIR directly with the same cookie.</td></tr>
+<tr><td><code>/sync</code> returns "Su anda baska bir senkronizasyon islemi yapiliyor"</td><td>Another sync run is in progress. Wait. If stuck for more than 10 minutes, the lock will auto-clear on the next call.</td></tr>
+<tr><td>Slack command times out</td><td>The endpoint ACKs immediately and processes in background. If timeouts persist, check whether Express is blocked (CPU/memory) or whether the inbound URL is reachable from Slack.</td></tr>
+<tr><td>Google API 403 / 401</td><td>Service account lost folder access. Re-share the Drive folder with the service-account email as Editor, or rotate the key (§7 Quarterly).</td></tr>
+<tr><td>Data looks wrong in the sheet</td><td>Use <code>GET /master-sheet-info</code> and <code>GET /test/master-sheet</code> to inspect state. Re-run <code>/sync</code> with <code>useTestSheet=true</code> before touching production.</td></tr>
+</tbody></table></div>
+
+<h3>9. Security Notes</h3>
+<ul>
+  <li>The <code>/sync</code> endpoint has no authentication beyond cookie validation — protect it with a firewall, VPN, Cloud Run IAM, or reverse-proxy auth.</li>
+  <li><code>/slack/command</code> relies on the ALLOWED_USER_IDS allow-list. Slack request signature verification is not yet implemented; adding <code>X-Slack-Signature</code> verification is recommended before public exposure.</li>
+  <li>EOIR cookies appear in request bodies — avoid logging them. The current code only logs length, which is safe.</li>
+  <li>The service-account key grants write access to the Drive folder — treat it as a high-severity secret.</li>
+</ul>
+
+<h3>10. References</h3>
+<ul>
+  <li>Repository: <code>git remote -v</code> for origin</li>
+  <li>Deployment guide: <code>LIGHTSAIL_DEPLOY.md</code></li>
+  <li>EOIR API: <code>https://case-access.eoir.justice.gov/api/caseapi</code></li>
+  <li>Google Sheets API v4, Google Drive API v3 (googleapis SDK)</li>
+  <li>Apps Script companion: <code>apps-script/Code.gs</code></li>
+</ul>
+</div>
+</article>
+<article class="doc-card" id="doc-mycase_oauth" data-content="mycase_oauth">
+  <div class="doc-header">
+    <div class="doc-header-left">
+      <span class="doc-badge">Node.js</span>
+      <h3 class="doc-title">MyCase OAuth Proxy — Installation & Operations</h3>
+      <p class="doc-meta">SOP-MYCASE-001 v1.0 — March 2026</p>
+    </div>
+    <div class="doc-header-right">
+      <p class="doc-summary">Full SOP for installing, configuring, and operating the MyCase OAuth 2.0 proxy server. Covers Redis, environment variables, API endpoints, and production deployment checklist.</p>
+      <button class="expand-btn" data-target="mycase_oauth">Read Full Document ↓</button>
+    </div>
+  </div>
+  <div class="doc-body" id="body-mycase_oauth" style="display:none;"><h2>MyCase OAuth Proxy — Installation &amp; Operations</h2>
+<div class="info-box">
+  <strong>SOP ID:</strong> SOP-MYCASE-001 &nbsp;|&nbsp; <strong>Version:</strong> 1.0 &nbsp;|&nbsp; <strong>Date:</strong> March 2026 &nbsp;|&nbsp; <strong>Audience:</strong> Engineering &amp; DevOps
+</div>
+
+<h3>1. Purpose &amp; Scope</h3>
+<p>This SOP provides step-by-step guidance for installing, configuring, operating, and maintaining the MyCase OAuth Proxy server. It covers the full lifecycle from initial environment setup through production deployment and routine operations.</p>
+<p>This document applies to anyone who:</p>
+<ul>
+  <li>Sets up or clones the <code>mycase-oauth</code> repository for development or production</li>
+  <li>Configures environment variables and external service dependencies</li>
+  <li>Deploys, monitors, or troubleshoots the OAuth proxy server</li>
+  <li>Performs token management or administrative operations</li>
+</ul>
+
+<h3>2. Prerequisites</h3>
+<h4>Required Knowledge</h4>
+<ul>
+  <li>Node.js application development and npm package management</li>
+  <li>Linux/macOS command-line operations</li>
+  <li>OAuth 2.0 authentication flows</li>
+  <li>Redis server administration (basic)</li>
+  <li>Environment variable and secret management</li>
+</ul>
+
+<h4>Access Requirements</h4>
+<ul>
+  <li>Source code repository (Git access)</li>
+  <li>MyCase Developer Portal account with application registration rights</li>
+  <li>Target server with sudo privileges (for service installation)</li>
+  <li>SSL certificate infrastructure (production deployments only)</li>
+</ul>
+
+<div class="warning-box"><strong>⚠ Important:</strong> Verify all prerequisites are confirmed before proceeding. Do not advance to Section 3 until all boxes can be checked.</div>
+
+<h3>3. System Requirements</h3>
+<div class="table-wrap"><table><thead><tr><th>Component</th><th>Minimum Version</th><th>Notes</th></tr></thead><tbody>
+<tr><td>Node.js</td><td>18.x LTS or higher</td><td>Required for native fetch support</td></tr>
+<tr><td>npm</td><td>9.x or higher</td><td>Bundled with Node.js 18+</td></tr>
+<tr><td>Redis</td><td>6.x or higher</td><td>Used for token caching and session management</td></tr>
+<tr><td>OS</td><td>Ubuntu 20.04+ / macOS 12+</td><td>Windows supported for development only</td></tr>
+</tbody></table></div>
+
+<h4>Production Dependencies</h4>
+<div class="table-wrap"><table><thead><tr><th>Package</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>express</code></td><td>HTTP server framework</td></tr>
+<tr><td><code>axios</code></td><td>HTTP client for MyCase API calls</td></tr>
+<tr><td><code>ioredis</code></td><td>Redis client for token storage</td></tr>
+<tr><td><code>jsonwebtoken</code></td><td>JWT generation and verification</td></tr>
+<tr><td><code>bcrypt</code></td><td>Admin password hashing</td></tr>
+<tr><td><code>dotenv</code></td><td>Environment variable loading</td></tr>
+</tbody></table></div>
+
+<h3>4. Installation Procedure</h3>
+
+<div class="step-block">
+  <div class="step-num">1</div>
+  <div class="step-content">
+    <strong>Install Redis Server</strong>
+    <p>Redis must be installed and running before starting the application.</p>
+    <strong>macOS:</strong>
+    <div class="code-block">brew install redis
+brew services start redis
+redis-cli ping          # Expected: PONG</div>
+    <strong>Ubuntu / Debian:</strong>
+    <div class="code-block">sudo apt-get install redis-server
+sudo systemctl start redis-server
+sudo systemctl enable redis-server
+redis-cli ping          # Expected: PONG</div>
+  </div>
+</div>
+
+<div class="step-block">
+  <div class="step-num">2</div>
+  <div class="step-content">
+    <strong>Register MyCase OAuth Application</strong>
+    <ol>
+      <li>Navigate to <code>https://developer.mycase.com</code> and sign in</li>
+      <li>Select <strong>Create New Application</strong></li>
+      <li>Enter an application name and description</li>
+      <li>Set the Redirect URI to match your intended <code>REDIRECT_URI</code> value (e.g. <code>http://localhost:3000/api/auth/mycase/callback</code> for development)</li>
+      <li>Save the application and copy the <strong>Client ID</strong> and <strong>Client Secret</strong> to a secure location</li>
+    </ol>
+  </div>
+</div>
+
+<div class="step-block">
+  <div class="step-num">3</div>
+  <div class="step-content">
+    <strong>Clone Repository &amp; Install Dependencies</strong>
+    <div class="code-block">git clone &lt;repository-url&gt;
+cd mycase-oauth
+npm install</div>
+  </div>
+</div>
+
+<div class="step-block">
+  <div class="step-num">4</div>
+  <div class="step-content">
+    <strong>Configure Environment Variables</strong>
+    <p>Create a <code>.env</code> file in the project root. Populate it with the values below, substituting placeholders with real credentials.</p>
+    <div class="code-block"># Runtime Environment
+NODE_ENV=development
+PORT=3000
+HOST=localhost
+
+# MyCase OAuth Credentials (from Step 2)
+MYCASE_CLIENT_ID=your_client_id
+MYCASE_CLIENT_SECRET=your_client_secret
+MYCASE_AUTH_URL=https://auth.mycase.com/login_sessions/new
+MYCASE_TOKEN_URL=https://auth.mycase.com/tokens
+
+# Application URLs
+REDIRECT_URI=http://localhost:3000/api/auth/mycase/callback
+BASE_URL=http://localhost:3000
+
+# JWT Configuration (generate a strong random string)
+JWT_SECRET=your_jwt_secret_here
+JWT_EXPIRES_IN=8h
+
+# Redis Connection
+REDIS_URL=redis://localhost:6379
+REDIS_DB=0
+
+# Security
+ALLOWED_DOMAINS=localhost,127.0.0.1
+
+# Logging
+LOG_LEVEL=info
+LOG_FORMAT=json
+
+# Token Storage
+TOKEN_ENCRYPTION_KEY=your_encryption_key_here
+USE_FILE_STORAGE=true
+
+# Admin Credentials (Optional)
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD_HASH=bcrypt_hash_here
+ADMIN_JWT_SECRET=admin_jwt_secret_here</div>
+  </div>
+</div>
+
+<h3>5. Starting the Server</h3>
+<h4>Development Mode</h4>
+<div class="code-block">npm run dev</div>
+<p>Expected console output upon successful startup:</p>
+<div class="code-block">Server running on http://localhost:3000
+Redis connected
+MyCase OAuth proxy ready</div>
+
+<h4>Production Mode</h4>
+<div class="code-block">npm start</div>
+
+<h4>Verify Startup</h4>
+<div class="code-block">curl http://localhost:3000/api/healthz
+# Expected: HTTP 200 with JSON health status</div>
+
+<h3>6. API Endpoint Reference</h3>
+<h4>Authentication Endpoints</h4>
+<div class="table-wrap"><table><thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>GET</code></td><td><code>/api/auth/mycase</code></td><td>Initiates OAuth 2.0 authorization flow — redirects to MyCase login</td></tr>
+<tr><td><code>GET</code></td><td><code>/api/auth/mycase/callback</code></td><td>OAuth callback handler — exchanges code for tokens</td></tr>
+<tr><td><code>POST</code></td><td><code>/api/auth/refresh</code></td><td>Refreshes an expired access token using the stored refresh token</td></tr>
+<tr><td><code>POST</code></td><td><code>/api/auth/logout</code></td><td>Revokes tokens and clears session data</td></tr>
+</tbody></table></div>
+
+<h4>MyCase API Proxy Endpoints</h4>
+<div class="table-wrap"><table><thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>GET</code></td><td><code>/api/mycase/*</code></td><td>Proxies authenticated requests to the MyCase API</td></tr>
+<tr><td><code>POST</code></td><td><code>/api/mycase/*</code></td><td>Proxies write operations to MyCase</td></tr>
+</tbody></table></div>
+
+<h4>Admin &amp; Monitoring Endpoints</h4>
+<div class="table-wrap"><table><thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>GET</code></td><td><code>/api/healthz</code></td><td>Health check — returns service status and Redis connectivity</td></tr>
+<tr><td><code>GET</code></td><td><code>/admin</code></td><td>Admin panel (requires admin credentials)</td></tr>
+<tr><td><code>GET</code></td><td><code>/api/admin/tokens</code></td><td>Lists all stored tokens (admin only)</td></tr>
+<tr><td><code>DELETE</code></td><td><code>/api/admin/tokens/:id</code></td><td>Revokes a specific token (admin only)</td></tr>
+</tbody></table></div>
+
+<h3>7. Project Structure</h3>
+<div class="table-wrap"><table><thead><tr><th>Path</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>src/index.js</code></td><td>Application entry point and Express server setup</td></tr>
+<tr><td><code>src/routes/</code></td><td>Route handlers for auth, proxy, and admin endpoints</td></tr>
+<tr><td><code>src/middleware/</code></td><td>Authentication, logging, and error-handling middleware</td></tr>
+<tr><td><code>src/services/</code></td><td>Business logic — token management, Redis, MyCase API client</td></tr>
+<tr><td><code>src/config/</code></td><td>Environment variable parsing and validation</td></tr>
+<tr><td><code>public/admin/</code></td><td>Admin panel frontend (static HTML/CSS/JS)</td></tr>
+<tr><td><code>.env</code></td><td>Local environment variables (never commit this file)</td></tr>
+<tr><td><code>package.json</code></td><td>Dependencies and npm scripts</td></tr>
+</tbody></table></div>
+
+<h3>8. Security Controls</h3>
+<div class="table-wrap"><table><thead><tr><th>Control</th><th>Implementation</th></tr></thead><tbody>
+<tr><td>Token encryption</td><td>Access and refresh tokens are encrypted at rest in Redis using <code>TOKEN_ENCRYPTION_KEY</code></td></tr>
+<tr><td>JWT authentication</td><td>All API requests require a valid JWT signed with <code>JWT_SECRET</code></td></tr>
+<tr><td>Domain allowlist</td><td>Requests from domains not in <code>ALLOWED_DOMAINS</code> are rejected</td></tr>
+<tr><td>Admin authentication</td><td>Admin panel requires separate credentials; password stored as bcrypt hash</td></tr>
+<tr><td>HTTPS enforcement</td><td>Production deployments must use HTTPS — configure via reverse proxy (Nginx/Caddy)</td></tr>
+<tr><td>Secret isolation</td><td>All credentials are in <code>.env</code> — never hardcoded in source files</td></tr>
+</tbody></table></div>
+
+<h3>9. Production Deployment Checklist</h3>
+<p>Complete all items before go-live:</p>
+<ul>
+  <li>Node.js 18+ installed on the production server</li>
+  <li>Redis 6+ installed, running, and accessible</li>
+  <li>MyCase OAuth application registered with production Redirect URI</li>
+  <li><code>.env</code> populated with production credentials (no placeholder values)</li>
+  <li><code>NODE_ENV=production</code> set</li>
+  <li>Strong, unique values for <code>JWT_SECRET</code>, <code>TOKEN_ENCRYPTION_KEY</code>, and <code>ADMIN_JWT_SECRET</code></li>
+  <li>HTTPS configured via reverse proxy</li>
+  <li><code>ALLOWED_DOMAINS</code> restricted to production domains only</li>
+  <li><code>npm test</code> passes with zero failures</li>
+  <li><code>npm audit</code> shows no high/critical vulnerabilities</li>
+  <li>Health check endpoint returns 200: <code>curl https://your-domain.com/api/healthz</code></li>
+  <li>OAuth test flow completes end-to-end in production environment</li>
+</ul>
+
+<h3>10. Common Issues &amp; Resolutions</h3>
+<div class="table-wrap"><table><thead><tr><th>Issue</th><th>Likely Cause</th><th>Resolution</th></tr></thead><tbody>
+<tr><td>Server fails to start — "Redis connection refused"</td><td>Redis is not running</td><td>Start Redis: <code>brew services start redis</code> or <code>sudo systemctl start redis-server</code>. Verify with <code>redis-cli ping</code>.</td></tr>
+<tr><td>OAuth callback returns 400 — "redirect_uri mismatch"</td><td>Redirect URI in <code>.env</code> does not match what was registered in the MyCase Developer Portal</td><td>Update the Redirect URI in the MyCase app registration to exactly match <code>REDIRECT_URI</code> in <code>.env</code>.</td></tr>
+<tr><td>401 on all API proxy requests</td><td>JWT expired or invalid</td><td>Re-authenticate via <code>/api/auth/mycase</code>. Check <code>JWT_EXPIRES_IN</code> setting.</td></tr>
+<tr><td>Token not found in Redis after restart</td><td>Redis was restarted without persistence enabled</td><td>Enable Redis persistence (<code>appendonly yes</code> in <code>redis.conf</code>) or set <code>USE_FILE_STORAGE=true</code> for file-based fallback.</td></tr>
+<tr><td>Admin panel returns 403</td><td>Incorrect admin credentials or <code>ADMIN_PASSWORD_HASH</code> not set</td><td>Regenerate the bcrypt hash and update <code>ADMIN_PASSWORD_HASH</code> in <code>.env</code>. Restart the server.</td></tr>
+</tbody></table></div>
+
+<h3>11. Testing Procedures</h3>
+<div class="code-block"># Run automated tests
+npm test
+
+# Security audit
+npm audit
+
+# Health verification sequence
+redis-cli ping                                    # 1. Verify Redis
+npm start                                         # 2. Start server
+curl http://localhost:3000/api/healthz            # 3. Health check
+# Navigate to http://localhost:3000/admin         # 4. Admin panel
+# Navigate to http://localhost:3000/api/auth/mycase # 5. OAuth flow</div>
+</div>
+</article>
+</section>
+<section class="cat-section-main" id="cat-reporting"><h2 class="cat-heading">📊 Reporting & Analytics</h2>
+<article class="doc-card" id="doc-mycase_kpi" data-content="mycase_kpi">
+  <div class="doc-header">
+    <div class="doc-header-left">
+      <span class="doc-badge">MyCase</span>
+      <h3 class="doc-title">MyCase KPI Reports — SOP Library</h3>
+      <p class="doc-meta">Reporting Reference — Ops Team</p>
+    </div>
+    <div class="doc-header-right">
+      <p class="doc-summary">How to pull and structure MyCase KPI reports: active cases, opened/closed cases, time entries, task percentages, and automation error handling.</p>
+      <button class="expand-btn" data-target="mycase_kpi">Read Full Document ↓</button>
+    </div>
+  </div>
+  <div class="doc-body" id="body-mycase_kpi" style="display:none;"><h2>MyCase KPI Reports — How to Pull &amp; Structure</h2>
+<p>This guide covers how to extract, structure, and interpret monthly KPI reports from MyCase for operations reporting. Reports are pulled from MyCase, then organized in Google Sheets using pivot tables and formulas.</p>
+
+<div class="info-box">
+  <strong>Platform:</strong> MyCase + Google Sheets &nbsp;|&nbsp; <strong>Audience:</strong> Operations team &nbsp;|&nbsp; <strong>Cadence:</strong> Monthly
+</div>
+
+<h3>1. Monthly Report Inventory</h3>
+<p>Each month, the following reports are generated:</p>
+<div class="table-wrap"><table><thead><tr><th>Report Name</th><th>What It Shows</th><th>Source</th></tr></thead><tbody>
+<tr><td>All Cases Still Open</td><td>Full case list of open cases at month-end, with how long each case has been in its current stage</td><td>MyCase → Google Sheets</td></tr>
+<tr><td>Time Entry (Monthly)</td><td>Total time entries per user for the month — this is what "active cases" means: cases with at least one time entry that month</td><td>MyCase Firm Time Entry → Sheets</td></tr>
+<tr><td>Active Cases</td><td>Number of distinct cases per user with time entries (unique case count, not hours)</td><td>Pivot from Time Entry sheet</td></tr>
+<tr><td>Opened Cases</td><td>Cases opened during the month, grouped by lead attorney</td><td>MyCase → Sheets</td></tr>
+<tr><td>Closed Cases</td><td>Cases closed during the month</td><td>MyCase → Sheets</td></tr>
+<tr><td>Overdue Task %</td><td>Percentage of tasks that were incomplete and past due date, broken down by user</td><td>MyCase Tasks → Sheets</td></tr>
+</tbody></table></div>
+
+<h3>2. Pulling Time Entry Data</h3>
+<p>To generate both the <strong>Time Entry</strong> and <strong>Active Cases</strong> reports:</p>
+<ol>
+  <li>In MyCase, go to <strong>Firm Time Entry</strong></li>
+  <li>Select the date range for the month</li>
+  <li>Enable the <strong>Detailed</strong> view option</li>
+  <li>Export the report</li>
+  <li>In Google Sheets, create a pivot table from the exported data</li>
+</ol>
+
+<h4>Time Entry Pivot (Total Hours per User)</h4>
+<p>Rows: User name &nbsp;|&nbsp; Values: SUM of Duration/Quantity</p>
+<p>Example output:</p>
+<div class="code-block">User                    SUM of Duration/Quantity
+Ahmet Cemil Karakurt    194.5
+Ahsen Akbulut           129.9
+...</div>
+
+<h4>Active Cases Pivot (Distinct Cases per User)</h4>
+<p>Using the same time entry data, create a second pivot:</p>
+<p>Rows: User name &nbsp;|&nbsp; Values: COUNTUNIQUE of Case Link</p>
+<p>This gives the number of distinct cases each user logged time on — this is the "active case count."</p>
+
+<h3>3. All Cases Still Open — Stage Duration Extraction</h3>
+<p>MyCase shows stage duration in a format like <code>AS - I-589 Filed (670 days)</code>. To extract the day count cleanly:</p>
+<ol>
+  <li>Use a formula to separate the stage name from the parenthetical number</li>
+  <li>Extract just the numeric value (670 in the example above)</li>
+  <li>Use this to calculate averages across cases in the same stage</li>
+</ol>
+<p>The final report contains two tabs: a full case list with all details, and an average-days-per-stage summary.</p>
+
+<h4>Key Formulas Used</h4>
+<div class="table-wrap"><table><thead><tr><th>Formula</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>=UNIQUE(FLATTEN(Sheet2!A:H))</code></td><td>Get all unique assignee names across multi-person task assignments</td></tr>
+<tr><td><code>=ARRAYFORMULA(COUNTIF(Sheet2!A:H, A1:A))</code></td><td>Count how many times each name appears across the task table</td></tr>
+<tr><td><code>=TEXT(K24/86400, "mm:ss")</code></td><td>Convert seconds to MM:SS duration format</td></tr>
+<tr><td><code>=ARRAYFORMULA("00:" &amp; AA:AA)</code></td><td>Prefix a "00:" to a minutes column to build HH:MM format</td></tr>
+</tbody></table></div>
+
+<h3>4. Opened &amp; Closed Cases</h3>
+<p>These reports show cases by the month they were opened or closed. In addition to a count-per-attorney pivot, a detailed list is generated showing the attorney name followed by each case they opened/closed.</p>
+<p>Example structure for <strong>Opened Cases</strong>:</p>
+<div class="code-block">Row Labels          Count of Column1
+Ahsen Akbulut       1
+  ↳ Yifeng Shi - Marriage-Based Green Card
+Ali Aricak          3
+  ↳ Ayhan Karaduman - E2
+  ↳ Kivanc Senyurek - E-2 CoS
+  ↳ Mustafa Calisir - E2</div>
+<p><em>Note: Rows without a lead attorney assigned appear as blank entries — these represent cases where lead attorney selection was skipped at intake.</em></p>
+
+<h3>5. Overdue Task Percentage</h3>
+<p>To calculate the overdue task rate per user:</p>
+<ol>
+  <li>From the MyCase <strong>Tasks</strong> section, pull:
+    <ul>
+      <li>All users — selected month — <strong>Incomplete only</strong> → this gives overdue/incomplete tasks</li>
+      <li>All users — selected month — <strong>All tasks</strong> → this gives the total task count</li>
+    </ul>
+  </li>
+  <li>Filter both exports so only tasks with a due date <em>within the target month</em> are included — MyCase's date filter may not always match exactly, so review the due date column</li>
+  <li>Break down by attorney/user</li>
+  <li>Use the <code>FLATTEN</code> + <code>COUNTIF</code> formulas to handle tasks that have multiple names assigned</li>
+</ol>
+
+<div class="warning-box"><strong>⚠ Important:</strong> A single task can have multiple assignees. If you count rows directly, each name gets counted once per row even if they share it. Use the <code>FLATTEN</code> approach to count per-person correctly.</div>
+
+<h3>6. Quote-to-Case Workflow — Automation Error Handling</h3>
+<p>When a deal is marked as closed-won and a signed quote triggers case creation in MyCase via Zapier, the following errors can occur:</p>
+
+<div class="table-wrap"><table><thead><tr><th>Error</th><th>Cause</th><th>Resolution</th></tr></thead><tbody>
+<tr><td><strong>Lookup value missing — Google Sheets</strong></td><td>The deal owner's email is not in Sheet 3 of the user ID mapping sheet, OR the user's email changed (e.g. Rippling deletion/re-add)</td><td>Open the Zapier run → get deal data → find deal owner email → add to Sheet 3 with format: <code>id (required) — no value — name — surname — email (required)</code>. If the owner is in Intake, also add them to the Deal Owner Copy property in the Deal Object and add the relevant branch to the Zapier workflow in HubSpot.</td></tr>
+<tr><td><strong>Name has already been taken</strong></td><td>A case with the same name already exists in MyCase</td><td>Find the existing case, determine if it's a duplicate. If so, rename one of them (e.g. add a dash suffix). Then replay the Zapier run.</td></tr>
+<tr><td><strong>The user specified is duplicate</strong></td><td>The deal owner is already assigned as a required staff member in the Create Case action (e.g. a director who normally doesn't do sales closed a deal)</td><td>Remove the duplicate mapping in the automation's Create Case step. Follow the video guide in the SOP Library folder.</td></tr>
+</tbody></table></div>
+
+<h3>7. Automation Error Notifications</h3>
+<div class="warning-box"><strong>📧 Note from Emel:</strong> Some automation error handlers send alert emails to Emel's inbox directly. If Emel is unavailable, these alerts may go unnoticed. Ops team should confirm who receives error notifications for each critical automation and add a backup recipient where needed.</div>
+
+<h3>8. Related Resources</h3>
+<ul>
+  <li>Workflows and Descriptions spreadsheet — HubSpot automation inventory</li>
+  <li>UTM Builder — Google Sheets + Apps Script</li>
+  <li>SOP Library folder — Google Drive (linked in original PDF)</li>
+  <li>ITIN Stripe project planning documents — Google Drive</li>
+</ul>
+</div>
+</article>
+<article class="doc-card" id="doc-openphone_filters" data-content="openphone_filters">
+  <div class="doc-header">
+    <div class="doc-header-left">
+      <span class="doc-badge">OpenPhone</span>
+      <h3 class="doc-title">OpenPhone Analytics Filters Reference</h3>
+      <p class="doc-meta">Pivot Table Configuration</p>
+    </div>
+    <div class="doc-header-right">
+      <p class="doc-summary">Exact filter settings for the three main OpenPhone analytics pivot tables: sent messages, total calls and durations, and unique conversation counts.</p>
+      <button class="expand-btn" data-target="openphone_filters">Read Full Document ↓</button>
+    </div>
+  </div>
+  <div class="doc-body" id="body-openphone_filters" style="display:none;">
+<h2>OpenPhone Analytics Filter Configurations</h2>
+<p>Apply these exact settings in the OpenPhone Analytics dashboard for consistent team reporting.</p>
+<h3>Report 1 — Sent Messages</h3>
+<div class="table-wrap"><table><thead><tr><th>Setting</th><th>Value</th></tr></thead><tbody>
+<tr><td>Rows</td><td>BelongsTo</td></tr>
+<tr><td>Values</td><td>BelongsTo – countA</td></tr>
+<tr><td>Status (filter)</td><td>Delivered + Sent</td></tr>
+<tr><td>Direction (filter)</td><td>Outgoing</td></tr>
+<tr><td>Type</td><td>Message</td></tr>
+</tbody></table></div>
+<h3>Report 2 — Total Calls and Call Durations</h3>
+<div class="table-wrap"><table><thead><tr><th>Setting</th><th>Value</th></tr></thead><tbody>
+<tr><td>Rows</td><td>BelongsTo</td></tr>
+<tr><td>Values</td><td>userId – name it "Call Count"</td></tr>
+<tr><td>Status (filter)</td><td>Completed</td></tr>
+<tr><td>Type (filter)</td><td>Call</td></tr>
+</tbody></table></div>
+<h3>Report 3 — Unique Conversation Count</h3>
+<h4>Incoming</h4>
+<div class="table-wrap"><table><thead><tr><th>Setting</th><th>Value</th></tr></thead><tbody>
+<tr><td>Rows</td><td>BelongsTo</td></tr>
+<tr><td>Values</td><td>From – countunique</td></tr>
+<tr><td>Status (filter)</td><td>Completed, Delivered, In-Progress, Received, Ringing, Sent, Answered</td></tr>
+<tr><td>Direction (filter)</td><td>Incoming</td></tr>
+</tbody></table></div>
+<h4>Outgoing</h4>
+<div class="table-wrap"><table><thead><tr><th>Setting</th><th>Value</th></tr></thead><tbody>
+<tr><td>Rows</td><td>BelongsTo</td></tr>
+<tr><td>Values</td><td>To – countunique</td></tr>
+<tr><td>Status (filter)</td><td>Completed, Delivered, Sent</td></tr>
+<tr><td>Direction (filter)</td><td>Outcoming</td></tr>
+</tbody></table></div>
+</div>
+</article>
+</section>
+<section class="cat-section-main" id="cat-it_eval"><h2 class="cat-heading">🌐 IT Evaluation</h2>
+<article class="doc-card" id="doc-nordbrowser" data-content="nordbrowser">
+  <div class="doc-header">
+    <div class="doc-header-left">
+      <span class="doc-badge">IT Evaluation</span>
+      <h3 class="doc-title">NordBrowser Beta Test — Scope Review Report</h3>
+      <p class="doc-meta">Confidential — Version 0.1 | April 2026</p>
+    </div>
+    <div class="doc-header-right">
+      <p class="doc-summary">Beta evaluation of NordBrowser, a VPN-integrated managed browser from NordVPN. Tests security policy controls, routing enforcement, and peripheral access — with two high-priority defects identified.</p>
+      <button class="expand-btn" data-target="nordbrowser">Read Full Document ↓</button>
+    </div>
+  </div>
+  <div class="doc-body" id="body-nordbrowser" style="display:none;"><h2>NordBrowser — Beta Test Scope Review Report</h2>
+<div class="info-box">
+  <strong>Version:</strong> 0.1 &nbsp;|&nbsp; <strong>Date:</strong> April 2026 &nbsp;|&nbsp; <strong>Prepared by:</strong> Mert Fatih Simsek &nbsp;|&nbsp; <strong>Beta access via:</strong> NordVPN
+</div>
+
+<h3>1. Executive Summary</h3>
+<p>NordBrowser is a VPN-integrated browser solution currently under beta evaluation. It is developed under a NordVPN partnership, which has granted early access for internal testing. The core value proposition is distributing a fully VPN-enabled browser to employees without requiring individual VPN client installations or configuration — significantly reducing IT overhead and support burden.</p>
+<p>This report summarizes the initial test pass conducted as of March 30, 2026, covering Security Policy controls, Routing Policy enforcement, and peripheral device access. Results are categorized as <strong>working</strong> or <strong>not working</strong> based on observed behavior.</p>
+
+<h3>2. Background &amp; Business Rationale</h3>
+<p>The organization currently relies on NordVPN for secure remote access. Distributing and maintaining VPN clients across all employee endpoints involves ongoing operational complexity: installation, configuration, credential management, and troubleshooting.</p>
+<p>NordBrowser addresses this by embedding VPN connectivity directly into a managed browser. Key benefits identified:</p>
+<ul>
+  <li>Eliminates per-device VPN client installation and configuration</li>
+  <li>Reduces IT support burden for VPN-related issues</li>
+  <li>Centralized control over browser-level security policies</li>
+  <li>Granular routing rules to enforce VPN access for specific destinations</li>
+  <li>Faster onboarding of new employees requiring secure web access</li>
+</ul>
+
+<h3>3. Test Scope &amp; Methodology</h3>
+<p>Testing was performed on a controlled internal environment using beta credentials from NordVPN. The following capability areas were included:</p>
+<ul>
+  <li><strong>Security Policy management</strong> — ability to restrict or permit browser-level features for end users</li>
+  <li><strong>Routing Policy enforcement</strong> — ability to mandate VPN tunnel usage for specific domains or destinations</li>
+  <li><strong>Peripheral access controls</strong> — microphone and camera handling within the managed browser</li>
+</ul>
+<p>Tests were executed manually. Each feature was tested by enabling/disabling the relevant policy and verifying the resulting browser behavior. No automated test framework was used in this phase.</p>
+
+<h3>4. Test Findings</h3>
+<h4>4.1 Security Policy Controls</h4>
+<p>The Security Policy module allows administrators to disable specific browser capabilities for managed users.</p>
+<div class="table-wrap"><table><thead><tr><th>Feature Tested</th><th>Policy Action</th><th>Result</th></tr></thead><tbody>
+<tr><td>File downloads</td><td>Disable via Security Policy</td><td>✅ Working</td></tr>
+<tr><td>Clipboard access</td><td>Disable via Security Policy</td><td>✅ Working</td></tr>
+<tr><td>Microphone access</td><td>Restrict via Security Policy</td><td>❌ Not working — policy has no effect in current beta</td></tr>
+<tr><td>Camera access</td><td>Restrict via Security Policy</td><td>❌ Not working — policy has no effect in current beta</td></tr>
+</tbody></table></div>
+<div class="warning-box"><strong>⚠ Action required:</strong> Microphone and camera restrictions are non-functional in the current beta build. These must be escalated to the NordVPN beta team with reproduction steps before wider rollout.</div>
+
+<h4>4.2 Routing Policy</h4>
+<p>The Routing Policy feature allows administrators to define specific domains or URLs that must be accessed exclusively through the VPN tunnel, regardless of the user's general network state.</p>
+<div class="table-wrap"><table><thead><tr><th>Feature Tested</th><th>Configuration</th><th>Result</th></tr></thead><tbody>
+<tr><td>Domain-level VPN enforcement</td><td>Specify domain → force VPN tunnel</td><td>✅ Working — traffic is correctly routed through VPN for targeted domains</td></tr>
+<tr><td>Non-VPN traffic passthrough</td><td>All other domains bypass VPN</td><td>✅ Working</td></tr>
+</tbody></table></div>
+<p>Routing policy is particularly valuable for enforcing compliance on sensitive internal or business-critical services without requiring users to manage VPN state manually.</p>
+
+<h3>5. Open Issues &amp; Defects</h3>
+<div class="table-wrap"><table><thead><tr><th>Issue</th><th>Severity</th><th>Status</th></tr></thead><tbody>
+<tr><td>Microphone access restriction policy has no effect</td><td>High</td><td>Open — to be escalated to NordVPN beta team</td></tr>
+<tr><td>Camera access restriction policy has no effect</td><td>High</td><td>Open — to be escalated to NordVPN beta team</td></tr>
+<tr><td>VPN failsafe / kill-switch behavior when connection drops not yet tested</td><td>Medium</td><td>Pending — scheduled for next test pass</td></tr>
+<tr><td>Routing policy tested on limited domain set (fewer than 5 domains)</td><td>Low</td><td>Open — expand in next pass</td></tr>
+</tbody></table></div>
+
+<h3>6. Recommendations</h3>
+<ol>
+  <li>Report microphone and camera policy failures to NordVPN beta support with detailed reproduction steps and environment specs</li>
+  <li>Expand routing policy testing to cover at least 5–10 domains, including internal business applications</li>
+  <li>Validate behavior when the VPN connection drops mid-session (failsafe / kill-switch behavior)</li>
+  <li>Define and document which Security Policy settings are mandatory vs. optional for the organization's deployment</li>
+  <li>Request a policy audit log from NordVPN to ensure administrator actions are traceable</li>
+  <li>Conduct a second test pass after NordVPN addresses the peripheral policy issues</li>
+</ol>
+
+<h3>7. Next Steps</h3>
+<div class="table-wrap"><table><thead><tr><th>Action</th><th>Owner</th><th>Timeline</th></tr></thead><tbody>
+<tr><td>Submit bug report to NordVPN for microphone &amp; camera policies</td><td>Mert Fatih Simsek</td><td>Immediately</td></tr>
+<tr><td>Expand routing policy test to 5–10 domains</td><td>Mert Fatih Simsek</td><td>Next sprint</td></tr>
+<tr><td>Test VPN drop / kill-switch behavior</td><td>Mert Fatih Simsek</td><td>Next sprint</td></tr>
+<tr><td>Second full test pass after peripheral policy fix</td><td>Mert Fatih Simsek</td><td>After NordVPN patch</td></tr>
+<tr><td>Go/no-go decision for broader rollout</td><td>Ops lead</td><td>After second test pass</td></tr>
+</tbody></table></div>
+
+<h3>8. Conclusion</h3>
+<p>NordBrowser demonstrates strong potential as a zero-friction VPN browser solution for enterprise use. Core capabilities — Security Policy controls for file operations and clipboard, and Routing Policy enforcement for domain-level VPN requirements — are functional and meet initial expectations.</p>
+<p>Two high-priority defects related to microphone and camera access controls must be resolved before the solution can be considered production-ready. Pending these fixes and additional testing coverage, NordBrowser appears to be a viable candidate for replacing individual VPN client deployments across the organization.</p>
+</div>
+</article>
+</section></div>
+</div>
+<script>
+document.querySelectorAll('.doc-header').forEach(h => {
+  h.addEventListener('click', function(e) {
+    if(e.target.classList.contains('expand-btn')) return;
+    toggleDoc(this.closest('.doc-card').dataset.content);
+  });
+});
+document.querySelectorAll('.expand-btn').forEach(btn => {
+  btn.addEventListener('click', function(e) { e.stopPropagation(); toggleDoc(this.dataset.target); });
+});
+function toggleDoc(id) {
+  const body = document.getElementById('body-' + id);
+  const card = document.querySelector('#doc-' + id);
+  const btn = card.querySelector('.expand-btn');
+  const open = body.style.display === 'none' || body.style.display === '';
+  body.style.display = open ? 'block' : 'none';
+  card.classList.toggle('expanded', open);
+  btn.textContent = open ? 'Collapse ↑' : 'Read Full Document ↓';
+  if(open) {
+    document.querySelectorAll('.doc-link').forEach(l => l.classList.remove('active'));
+    const link = document.querySelector('.doc-link[data-target="' + id + '"]');
+    if(link) link.classList.add('active');
+  }
+}
+document.querySelectorAll('.doc-link').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    const id = this.dataset.target;
+    const body = document.getElementById('body-' + id);
+    if(!body || body.style.display === 'none' || body.style.display === '') toggleDoc(id);
+    document.getElementById('doc-' + id).scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+const searchInput = document.getElementById('searchInput');
+const searchInfo = document.getElementById('searchInfo');
+searchInput.addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  if(!q) {
+    document.querySelectorAll('.doc-card,.cat-section-main,.doc-link,.cat-section').forEach(el => el.style.display = '');
+    searchInfo.style.display = 'none';
+    return;
+  }
+  let count = 0;
+  document.querySelectorAll('.doc-card').forEach(card => {
+    const text = card.textContent.toLowerCase();
+    const vis = text.includes(q);
+    card.style.display = vis ? '' : 'none';
+    if(vis) count++;
+  });
+  document.querySelectorAll('.cat-section-main').forEach(s => {
+    s.style.display = s.querySelectorAll('.doc-card:not([style*="display: none"])').length ? '' : 'none';
+  });
+  document.querySelectorAll('.doc-link').forEach(l => {
+    const card = document.getElementById('doc-' + l.dataset.target);
+    l.style.display = (card && card.style.display !== 'none') ? '' : 'none';
+  });
+  document.querySelectorAll('.cat-section').forEach(s => {
+    s.style.display = s.querySelectorAll('.doc-link:not([style*="display: none"])').length ? '' : 'none';
+  });
+  searchInfo.style.display = 'block';
+  searchInfo.textContent = count + ' document' + (count !== 1 ? 's' : '') + ' match "' + this.value + '"';
+});
+document.addEventListener('keydown', e => { if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();searchInput.focus();searchInput.select();} });
+</script>
+</body>
+</html>
