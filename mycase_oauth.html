@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyCase OAuth Proxy — Installation &amp; Operations | Oguz Law SOP Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="doc-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <a class="back-link" href="index.html">← Back to SOP Library</a>
+      <div class="doc-badge">Node.js</div>
+      <h1 class="hero-title">MyCase OAuth Proxy — Installation &amp; Operations</h1>
+      <p class="hero-sub">Full SOP for installing, configuring, and operating the MyCase OAuth 2.0 proxy server. Covers Redis, environment variables, API endpoints, and production deployment checklist.</p>
+    </div>
+  </div>
+  <div class="page-wrap">
+    <div class="doc-card expanded">
+      <div class="doc-body"><h2>MyCase OAuth Proxy — Installation &amp; Operations</h2>
+<div class="info-box">
+<strong>SOP ID:</strong> SOP-MYCASE-001  |  <strong>Version:</strong> 1.0  |  <strong>Date:</strong> March 2026  |  <strong>Audience:</strong> Engineering &amp; DevOps
+</div>
+<h3>1. Purpose &amp; Scope</h3>
+<p>This SOP provides step-by-step guidance for installing, configuring, operating, and maintaining the MyCase OAuth Proxy server. It covers the full lifecycle from initial environment setup through production deployment and routine operations.</p>
+<p>This document applies to anyone who:</p>
+<ul>
+<li>Sets up or clones the <code>mycase-oauth</code> repository for development or production</li>
+<li>Configures environment variables and external service dependencies</li>
+<li>Deploys, monitors, or troubleshoots the OAuth proxy server</li>
+<li>Performs token management or administrative operations</li>
+</ul>
+<h3>2. Prerequisites</h3>
+<h4>Required Knowledge</h4>
+<ul>
+<li>Node.js application development and npm package management</li>
+<li>Linux/macOS command-line operations</li>
+<li>OAuth 2.0 authentication flows</li>
+<li>Redis server administration (basic)</li>
+<li>Environment variable and secret management</li>
+</ul>
+<h4>Access Requirements</h4>
+<ul>
+<li>Source code repository (Git access)</li>
+<li>MyCase Developer Portal account with application registration rights</li>
+<li>Target server with sudo privileges (for service installation)</li>
+<li>SSL certificate infrastructure (production deployments only)</li>
+</ul>
+<div class="warning-box"><strong>⚠ Important:</strong> Verify all prerequisites are confirmed before proceeding. Do not advance to Section 3 until all boxes can be checked.</div>
+<h3>3. System Requirements</h3>
+<div class="table-wrap"><table><thead><tr><th>Component</th><th>Minimum Version</th><th>Notes</th></tr></thead><tbody>
+<tr><td>Node.js</td><td>18.x LTS or higher</td><td>Required for native fetch support</td></tr>
+<tr><td>npm</td><td>9.x or higher</td><td>Bundled with Node.js 18+</td></tr>
+<tr><td>Redis</td><td>6.x or higher</td><td>Used for token caching and session management</td></tr>
+<tr><td>OS</td><td>Ubuntu 20.04+ / macOS 12+</td><td>Windows supported for development only</td></tr>
+</tbody></table></div>
+<h4>Production Dependencies</h4>
+<div class="table-wrap"><table><thead><tr><th>Package</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>express</code></td><td>HTTP server framework</td></tr>
+<tr><td><code>axios</code></td><td>HTTP client for MyCase API calls</td></tr>
+<tr><td><code>ioredis</code></td><td>Redis client for token storage</td></tr>
+<tr><td><code>jsonwebtoken</code></td><td>JWT generation and verification</td></tr>
+<tr><td><code>bcrypt</code></td><td>Admin password hashing</td></tr>
+<tr><td><code>dotenv</code></td><td>Environment variable loading</td></tr>
+</tbody></table></div>
+<h3>4. Installation Procedure</h3>
+<div class="step-block">
+<div class="step-num">1</div>
+<div class="step-content">
+<strong>Install Redis Server</strong>
+<p>Redis must be installed and running before starting the application.</p>
+<strong>macOS:</strong>
+<div class="code-block">brew install redis
+brew services start redis
+redis-cli ping          # Expected: PONG</div>
+<strong>Ubuntu / Debian:</strong>
+<div class="code-block">sudo apt-get install redis-server
+sudo systemctl start redis-server
+sudo systemctl enable redis-server
+redis-cli ping          # Expected: PONG</div>
+</div>
+</div>
+<div class="step-block">
+<div class="step-num">2</div>
+<div class="step-content">
+<strong>Register MyCase OAuth Application</strong>
+<ol>
+<li>Navigate to <code>https://developer.mycase.com</code> and sign in</li>
+<li>Select <strong>Create New Application</strong></li>
+<li>Enter an application name and description</li>
+<li>Set the Redirect URI to match your intended <code>REDIRECT_URI</code> value (e.g. <code>http://localhost:3000/api/auth/mycase/callback</code> for development)</li>
+<li>Save the application and copy the <strong>Client ID</strong> and <strong>Client Secret</strong> to a secure location</li>
+</ol>
+</div>
+</div>
+<div class="step-block">
+<div class="step-num">3</div>
+<div class="step-content">
+<strong>Clone Repository &amp; Install Dependencies</strong>
+<div class="code-block">git clone &lt;repository-url&gt;
+cd mycase-oauth
+npm install</div>
+</div>
+</div>
+<div class="step-block">
+<div class="step-num">4</div>
+<div class="step-content">
+<strong>Configure Environment Variables</strong>
+<p>Create a <code>.env</code> file in the project root. Populate it with the values below, substituting placeholders with real credentials.</p>
+<div class="code-block"># Runtime Environment
+NODE_ENV=development
+PORT=3000
+HOST=localhost
+
+# MyCase OAuth Credentials (from Step 2)
+MYCASE_CLIENT_ID=your_client_id
+MYCASE_CLIENT_SECRET=your_client_secret
+MYCASE_AUTH_URL=https://auth.mycase.com/login_sessions/new
+MYCASE_TOKEN_URL=https://auth.mycase.com/tokens
+
+# Application URLs
+REDIRECT_URI=http://localhost:3000/api/auth/mycase/callback
+BASE_URL=http://localhost:3000
+
+# JWT Configuration (generate a strong random string)
+JWT_SECRET=your_jwt_secret_here
+JWT_EXPIRES_IN=8h
+
+# Redis Connection
+REDIS_URL=redis://localhost:6379
+REDIS_DB=0
+
+# Security
+ALLOWED_DOMAINS=localhost,127.0.0.1
+
+# Logging
+LOG_LEVEL=info
+LOG_FORMAT=json
+
+# Token Storage
+TOKEN_ENCRYPTION_KEY=your_encryption_key_here
+USE_FILE_STORAGE=true
+
+# Admin Credentials (Optional)
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD_HASH=bcrypt_hash_here
+ADMIN_JWT_SECRET=admin_jwt_secret_here</div>
+</div>
+</div>
+<h3>5. Starting the Server</h3>
+<h4>Development Mode</h4>
+<div class="code-block">npm run dev</div>
+<p>Expected console output upon successful startup:</p>
+<div class="code-block">Server running on http://localhost:3000
+Redis connected
+MyCase OAuth proxy ready</div>
+<h4>Production Mode</h4>
+<div class="code-block">npm start</div>
+<h4>Verify Startup</h4>
+<div class="code-block">curl http://localhost:3000/api/healthz
+# Expected: HTTP 200 with JSON health status</div>
+<h3>6. API Endpoint Reference</h3>
+<h4>Authentication Endpoints</h4>
+<div class="table-wrap"><table><thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>GET</code></td><td><code>/api/auth/mycase</code></td><td>Initiates OAuth 2.0 authorization flow — redirects to MyCase login</td></tr>
+<tr><td><code>GET</code></td><td><code>/api/auth/mycase/callback</code></td><td>OAuth callback handler — exchanges code for tokens</td></tr>
+<tr><td><code>POST</code></td><td><code>/api/auth/refresh</code></td><td>Refreshes an expired access token using the stored refresh token</td></tr>
+<tr><td><code>POST</code></td><td><code>/api/auth/logout</code></td><td>Revokes tokens and clears session data</td></tr>
+</tbody></table></div>
+<h4>MyCase API Proxy Endpoints</h4>
+<div class="table-wrap"><table><thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>GET</code></td><td><code>/api/mycase/*</code></td><td>Proxies authenticated requests to the MyCase API</td></tr>
+<tr><td><code>POST</code></td><td><code>/api/mycase/*</code></td><td>Proxies write operations to MyCase</td></tr>
+</tbody></table></div>
+<h4>Admin &amp; Monitoring Endpoints</h4>
+<div class="table-wrap"><table><thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>GET</code></td><td><code>/api/healthz</code></td><td>Health check — returns service status and Redis connectivity</td></tr>
+<tr><td><code>GET</code></td><td><code>/admin</code></td><td>Admin panel (requires admin credentials)</td></tr>
+<tr><td><code>GET</code></td><td><code>/api/admin/tokens</code></td><td>Lists all stored tokens (admin only)</td></tr>
+<tr><td><code>DELETE</code></td><td><code>/api/admin/tokens/:id</code></td><td>Revokes a specific token (admin only)</td></tr>
+</tbody></table></div>
+<h3>7. Project Structure</h3>
+<div class="table-wrap"><table><thead><tr><th>Path</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>src/index.js</code></td><td>Application entry point and Express server setup</td></tr>
+<tr><td><code>src/routes/</code></td><td>Route handlers for auth, proxy, and admin endpoints</td></tr>
+<tr><td><code>src/middleware/</code></td><td>Authentication, logging, and error-handling middleware</td></tr>
+<tr><td><code>src/services/</code></td><td>Business logic — token management, Redis, MyCase API client</td></tr>
+<tr><td><code>src/config/</code></td><td>Environment variable parsing and validation</td></tr>
+<tr><td><code>public/admin/</code></td><td>Admin panel frontend (static HTML/CSS/JS)</td></tr>
+<tr><td><code>.env</code></td><td>Local environment variables (never commit this file)</td></tr>
+<tr><td><code>package.json</code></td><td>Dependencies and npm scripts</td></tr>
+</tbody></table></div>
+<h3>8. Security Controls</h3>
+<div class="table-wrap"><table><thead><tr><th>Control</th><th>Implementation</th></tr></thead><tbody>
+<tr><td>Token encryption</td><td>Access and refresh tokens are encrypted at rest in Redis using <code>TOKEN_ENCRYPTION_KEY</code></td></tr>
+<tr><td>JWT authentication</td><td>All API requests require a valid JWT signed with <code>JWT_SECRET</code></td></tr>
+<tr><td>Domain allowlist</td><td>Requests from domains not in <code>ALLOWED_DOMAINS</code> are rejected</td></tr>
+<tr><td>Admin authentication</td><td>Admin panel requires separate credentials; password stored as bcrypt hash</td></tr>
+<tr><td>HTTPS enforcement</td><td>Production deployments must use HTTPS — configure via reverse proxy (Nginx/Caddy)</td></tr>
+<tr><td>Secret isolation</td><td>All credentials are in <code>.env</code> — never hardcoded in source files</td></tr>
+</tbody></table></div>
+<h3>9. Production Deployment Checklist</h3>
+<p>Complete all items before go-live:</p>
+<ul>
+<li>Node.js 18+ installed on the production server</li>
+<li>Redis 6+ installed, running, and accessible</li>
+<li>MyCase OAuth application registered with production Redirect URI</li>
+<li><code>.env</code> populated with production credentials (no placeholder values)</li>
+<li><code>NODE_ENV=production</code> set</li>
+<li>Strong, unique values for <code>JWT_SECRET</code>, <code>TOKEN_ENCRYPTION_KEY</code>, and <code>ADMIN_JWT_SECRET</code></li>
+<li>HTTPS configured via reverse proxy</li>
+<li><code>ALLOWED_DOMAINS</code> restricted to production domains only</li>
+<li><code>npm test</code> passes with zero failures</li>
+<li><code>npm audit</code> shows no high/critical vulnerabilities</li>
+<li>Health check endpoint returns 200: <code>curl https://your-domain.com/api/healthz</code></li>
+<li>OAuth test flow completes end-to-end in production environment</li>
+</ul>
+<h3>10. Common Issues &amp; Resolutions</h3>
+<div class="table-wrap"><table><thead><tr><th>Issue</th><th>Likely Cause</th><th>Resolution</th></tr></thead><tbody>
+<tr><td>Server fails to start — "Redis connection refused"</td><td>Redis is not running</td><td>Start Redis: <code>brew services start redis</code> or <code>sudo systemctl start redis-server</code>. Verify with <code>redis-cli ping</code>.</td></tr>
+<tr><td>OAuth callback returns 400 — "redirect_uri mismatch"</td><td>Redirect URI in <code>.env</code> does not match what was registered in the MyCase Developer Portal</td><td>Update the Redirect URI in the MyCase app registration to exactly match <code>REDIRECT_URI</code> in <code>.env</code>.</td></tr>
+<tr><td>401 on all API proxy requests</td><td>JWT expired or invalid</td><td>Re-authenticate via <code>/api/auth/mycase</code>. Check <code>JWT_EXPIRES_IN</code> setting.</td></tr>
+<tr><td>Token not found in Redis after restart</td><td>Redis was restarted without persistence enabled</td><td>Enable Redis persistence (<code>appendonly yes</code> in <code>redis.conf</code>) or set <code>USE_FILE_STORAGE=true</code> for file-based fallback.</td></tr>
+<tr><td>Admin panel returns 403</td><td>Incorrect admin credentials or <code>ADMIN_PASSWORD_HASH</code> not set</td><td>Regenerate the bcrypt hash and update <code>ADMIN_PASSWORD_HASH</code> in <code>.env</code>. Restart the server.</td></tr>
+</tbody></table></div>
+<h3>11. Testing Procedures</h3>
+<div class="code-block"># Run automated tests
+npm test
+
+# Security audit
+npm audit
+
+# Health verification sequence
+redis-cli ping                                    # 1. Verify Redis
+npm start                                         # 2. Start server
+curl http://localhost:3000/api/healthz            # 3. Health check
+# Navigate to http://localhost:3000/admin         # 4. Admin panel
+# Navigate to http://localhost:3000/api/auth/mycase # 5. OAuth flow</div>
+</div>
+    </div>
+    <p class="footer-note">Oguz Law Internal — Confidential</p>
+  </div>
+</body>
+</html>

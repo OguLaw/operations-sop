@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp UTM Tracking — Team Handoff | Oguz Law SOP Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="doc-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <a class="back-link" href="index.html">← Back to SOP Library</a>
+      <div class="doc-badge">Zapier</div>
+      <h1 class="hero-title">WhatsApp UTM Tracking — Team Handoff</h1>
+      <p class="hero-sub">Full architecture overview of the two-Zap WhatsApp UTM tracking system: how it bridges website visits to WhatsApp contacts for full marketing attribution.</p>
+    </div>
+  </div>
+  <div class="page-wrap">
+    <div class="doc-card expanded">
+      <div class="doc-body"><h2>WhatsApp UTM Tracking — Team Handoff</h2>
+<p>This document covers the full architecture of the two-Zap WhatsApp UTM tracking system: how it works, current readiness status, and what needs to happen before launch.</p>
+<div class="info-box">
+<strong>Priority:</strong> HIGH  |  <strong>Status:</strong> Configured, pending activation  |  <strong>Platform:</strong> Zapier + Wati
+</div>
+<h3>1. Executive Summary</h3>
+<p>We have built a two-Zap automated system in Zapier that tracks UTM attribution for inbound WhatsApp leads. The system captures the marketing source of a visitor <em>before</em> they send a WhatsApp message, then automatically applies that attribution data to their contact record in Wati when they first make contact.</p>
+<p>Without this system, all WhatsApp leads appear as unattributed — making it impossible to determine which campaigns, ads, or channels are driving inbound enquiries.</p>
+<h3>2. System Architecture</h3>
+<p>The system consists of two Zapier workflows operating in sequence, using two Zapier Tables as shared data stores:</p>
+<div class="table-wrap"><table><thead><tr><th>Component</th><th>Role</th></tr></thead><tbody>
+<tr><td><strong>Zap #1</strong> (SOP-ZAP-001)</td><td>Receives UTM parameters from the website via webhook when a visitor clicks a WhatsApp link. Stores UTMs + CID in WA_UTM_Clicks table.</td></tr>
+<tr><td><strong>Zap #2</strong></td><td>Fires when a new message arrives in Wati. Extracts the CID from the greeting, looks up UTM data in WA_UTM_Clicks, and writes attribution to the Contacts table and Wati contact attributes.</td></tr>
+<tr><td><strong>WA_UTM_Clicks table</strong></td><td>Stores one row per unique CID: UTM source, medium, campaign, term, content, landing page, referrer, timestamp.</td></tr>
+<tr><td><strong>Contacts table</strong></td><td>Stores attribution data tied to each Wati contact: CID, UTM fields, attribution timestamp, "already attributed" flag (f10).</td></tr>
+</tbody></table></div>
+<h3>3. End-to-End Flow</h3>
+<div class="code-block">1. Visitor clicks WhatsApp button on website (link contains CID + UTM params)
+2. Page script fires POST to Zapier webhook → Zap #1 stores UTMs in WA_UTM_Clicks
+3. Visitor sends first WhatsApp message in Wati (greeting includes CID)
+4. Zap #2 fires on new Wati message
+5. Formatter step extracts CID from greeting text
+6. Lookup: search WA_UTM_Clicks for that CID
+7. If found: write UTM data to Contacts table + update Wati contact attributes
+8. Set f10 = true (already attributed) → future messages from this contact are skipped
+</div>
+<h3>4. Zap #2 — Detailed Step Breakdown</h3>
+<p>Zap #2 runs every time a new message arrives in Wati and follows a branching logic:</p>
+<div class="table-wrap"><table><thead><tr><th>Step</th><th>Action</th><th>Detail</th></tr></thead><tbody>
+<tr><td>Trigger</td><td>New message in Wati</td><td>Fires on every inbound message</td></tr>
+<tr><td>Filter A</td><td>Is this the first message?</td><td>Stops if contact has already been attributed (f10 = true)</td></tr>
+<tr><td>Formatter</td><td>Extract CID from greeting</td><td>Uses text pattern matching to pull CID from the greeting string</td></tr>
+<tr><td>Lookup</td><td>Search WA_UTM_Clicks by CID</td><td>Exact match on the cid column</td></tr>
+<tr><td>Filter B</td><td>Was a UTM record found?</td><td>Stops if no matching CID exists (visitor arrived without UTM)</td></tr>
+<tr><td>Write</td><td>Update Contacts table</td><td>Writes all UTM fields + CID + timestamp</td></tr>
+<tr><td>Write</td><td>Update Wati contact attributes</td><td>Pushes utm_source, utm_campaign, etc. to Wati</td></tr>
+<tr><td>Write</td><td>Set f10 = true</td><td>Marks contact as attributed — prevents re-attribution on future messages</td></tr>
+</tbody></table></div>
+<h3>5. Data Table Schemas</h3>
+<h4>WA_UTM_Clicks Table</h4>
+<div class="table-wrap"><table><thead><tr><th>Column</th><th>Field</th><th>Description</th></tr></thead><tbody>
+<tr><td>f1</td><td>cid</td><td>Unique client/session identifier</td></tr>
+<tr><td>f2</td><td>utm_source</td><td>Traffic source</td></tr>
+<tr><td>f3</td><td>utm_medium</td><td>Marketing medium</td></tr>
+<tr><td>f4</td><td>utm_campaign</td><td>Campaign name</td></tr>
+<tr><td>f5</td><td>utm_term</td><td>Paid keyword (optional)</td></tr>
+<tr><td>f6</td><td>utm_content</td><td>Ad variant (optional)</td></tr>
+<tr><td>f7</td><td>page_url</td><td>Landing page URL</td></tr>
+<tr><td>f8</td><td>referrer</td><td>Referring URL</td></tr>
+<tr><td>f9</td><td>timestamp</td><td>Session timestamp (ISO 8601)</td></tr>
+</tbody></table></div>
+<h4>Contacts Table</h4>
+<div class="table-wrap"><table><thead><tr><th>Column</th><th>Field</th><th>Description</th></tr></thead><tbody>
+<tr><td>f1</td><td>wati_contact_id</td><td>Wati contact identifier</td></tr>
+<tr><td>f2–f8</td><td>utm_* fields</td><td>Mirrors the UTM fields from WA_UTM_Clicks</td></tr>
+<tr><td>f9</td><td>attribution_timestamp</td><td>When attribution was written</td></tr>
+<tr><td>f10</td><td>already_attributed</td><td>Boolean flag — prevents re-attribution on future messages</td></tr>
+</tbody></table></div>
+<h3>6. Open Questions</h3>
+<ul>
+<li>How is the CID passed from the website into the WhatsApp greeting message — is it embedded in a pre-filled message URL or added by a script?</li>
+<li>What is the exact format of the greeting that contains the CID? The Formatter step needs the pattern to extract it reliably.</li>
+<li>Should returning contacts (f10 = true, already attributed) ever be re-attributed if they click a new ad later? Currently the system skips them.</li>
+<li>Are there greeting languages beyond English, Turkish, and Spanish that should be accounted for?</li>
+<li>Who owns the Wati account and can verify contact attributes are being written correctly?</li>
+</ul>
+<h3>7. Related Documents</h3>
+<ul>
+<li><strong>SOP-ZAP-001</strong> — WhatsApp UTM Tracking #1 (Store UTMs with Reference Code) — step-by-step SOP for Zap #1</li>
+<li>Zapier dashboard — both Zaps available for review and editing</li>
+<li>WA_UTM_Clicks table and Contacts Table — accessible via Zapier Tables</li>
+</ul>
+</div>
+    </div>
+    <p class="footer-note">Oguz Law Internal — Confidential</p>
+  </div>
+</body>
+</html>

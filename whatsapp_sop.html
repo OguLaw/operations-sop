@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp UTM Tracking SOP v1.1 | Oguz Law SOP Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="doc-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <a class="back-link" href="index.html">← Back to SOP Library</a>
+      <div class="doc-badge">Zapier</div>
+      <h1 class="hero-title">WhatsApp UTM Tracking SOP v1.1</h1>
+      <p class="hero-sub">Zapier workflow that captures and stores UTM parameters from WhatsApp traffic. Ensures each unique visitor session (CID) is recorded only once.</p>
+    </div>
+  </div>
+  <div class="page-wrap">
+    <div class="doc-card expanded">
+      <div class="doc-body"><h2>WhatsApp UTM Tracking — SOP-ZAP-001</h2>
+<p>This workflow captures and stores UTM (Urchin Tracking Module) parameters from WhatsApp traffic via Zapier. It ensures that each unique visitor session — identified by a client ID (CID) — is recorded exactly once in the tracking table, preventing duplicate entries and maintaining clean attribution data.</p>
+<div class="info-box">
+<strong>SOP ID:</strong> SOP-ZAP-001  |  <strong>Status:</strong> Active  |  <strong>Platform:</strong> Zapier + Zapier Tables  |  <strong>Version:</strong> 1.1
+</div>
+<h3>1. Scope</h3>
+<p>This SOP applies to:</p>
+<ul>
+<li>Marketing and analytics teams responsible for campaign attribution</li>
+<li>Operations and automation teams managing Zapier workflows</li>
+<li>Any stakeholder reviewing WhatsApp campaign performance data</li>
+</ul>
+<h3>2. Tools &amp; Systems</h3>
+<div class="table-wrap"><table><thead><tr><th>Tool</th><th>Role</th></tr></thead><tbody>
+<tr><td>Zapier</td><td>Workflow automation engine</td></tr>
+<tr><td>Zapier Webhook</td><td>Receives the incoming UTM payload (trigger)</td></tr>
+<tr><td>Zapier Tables — WA_UTM_Clicks</td><td>Stores one record per unique CID</td></tr>
+</tbody></table></div>
+<h3>3. Trigger</h3>
+<p>The workflow is triggered by an incoming <strong>Webhook (HTTP POST)</strong>. This webhook fires whenever a user arrives at a tracked page via a WhatsApp link containing UTM parameters.</p>
+<p>Expected webhook payload fields:</p>
+<div class="table-wrap"><table><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>cid</code></td><td>Unique client/session identifier</td></tr>
+<tr><td><code>utm_source</code></td><td>Traffic source (e.g. whatsapp, google)</td></tr>
+<tr><td><code>utm_medium</code></td><td>Marketing medium (e.g. cpc, organic)</td></tr>
+<tr><td><code>utm_campaign</code></td><td>Campaign name</td></tr>
+<tr><td><code>utm_term</code></td><td>Paid search keyword (optional)</td></tr>
+<tr><td><code>utm_content</code></td><td>Ad variant (optional)</td></tr>
+<tr><td><code>page_url</code></td><td>Landing page URL</td></tr>
+<tr><td><code>referrer</code></td><td>Referring URL</td></tr>
+<tr><td><code>timestamp</code></td><td>ISO 8601 timestamp of the session</td></tr>
+</tbody></table></div>
+<h3>4. Workflow Steps</h3>
+<p>The automation runs through four sequential steps each time the webhook fires:</p>
+<div class="step-block">
+<div class="step-num">1</div>
+<div class="step-content">
+<strong>Receive Webhook (Trigger)</strong>
+<p>The workflow starts when the Zapier webhook endpoint receives a POST request. The payload is parsed and all UTM fields are made available to subsequent steps. No action is taken at this point.</p>
+</div>
+</div>
+<div class="step-block">
+<div class="step-num">2</div>
+<div class="step-content">
+<strong>Search for Existing Record</strong>
+<p>Zapier searches the <strong>WA_UTM_Clicks</strong> table in Zapier Tables for the incoming CID.</p>
+<ul>
+<li>Lookup field: <code>cid</code> (mapped to column <code>f1</code>)</li>
+<li>Match type: exact match</li>
+<li>If no match found → workflow continues to Step 3</li>
+<li>If match found → filter in Step 3 will stop the workflow</li>
+</ul>
+<p><em>Note: The search is configured to succeed on miss — it does not fail if no record is found; it continues normally.</em></p>
+</div>
+</div>
+<div class="step-block">
+<div class="step-num">3</div>
+<div class="step-content">
+<strong>Filter — Skip Duplicates</strong>
+<p>Condition: <code>record_id</code> from Step 2 does not exist.</p>
+<ul>
+<li>If <code>record_id</code> is empty (no match) → proceed to Step 4, create new entry</li>
+<li>If <code>record_id</code> has a value (match found) → workflow stops, no duplicate written</li>
+</ul>
+<div class="warning-box"><strong>⚠ Deduplication guarantee:</strong> Each unique CID is stored only once, regardless of how many times the webhook fires for the same session.</div>
+</div>
+</div>
+<div class="step-block">
+<div class="step-num">4</div>
+<div class="step-content">
+<strong>Create Record in Zapier Tables</strong>
+<p>If no duplicate is found, a new row is written to <strong>WA_UTM_Clicks</strong> with all 9 UTM/page/timestamp fields mapped to the correct table columns.</p>
+</div>
+</div>
+<h3>5. Process Flow</h3>
+<div class="code-block">Webhook fires
+    ↓
+Step 1: Parse payload (CID + UTM fields)
+    ↓
+Step 2: Search WA_UTM_Clicks for CID
+    ↓
+Step 3: Is record_id empty?
+   YES → Step 4: Write new row     NO → STOP (duplicate suppressed)
+</div>
+<h3>6. Testing Checklist</h3>
+<ul>
+<li>Send a test webhook payload with a new CID → confirm a record is created in WA_UTM_Clicks</li>
+<li>Send the same CID a second time → confirm no duplicate record is created</li>
+<li>Verify all 9 UTM/page/timestamp fields are correctly mapped to the right columns</li>
+<li>Monitor Zapier task history for 48 hours and confirm no failures</li>
+</ul>
+<h3>7. Maintenance &amp; Ownership</h3>
+<p>Review this Zap whenever:</p>
+<ul>
+<li>WhatsApp campaign UTM parameter structure changes</li>
+<li>The WA_UTM_Clicks table schema is modified</li>
+<li>Zapier updates the Webhook or Tables integration</li>
+</ul>
+<p>Any changes to this workflow must be reflected in an updated version of this document.</p>
+</div>
+    </div>
+    <p class="footer-note">Oguz Law Internal — Confidential</p>
+  </div>
+</body>
+</html>

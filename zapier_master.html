@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zapier Active Automations — Master Reference | Oguz Law SOP Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="doc-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <a class="back-link" href="index.html">← Back to SOP Library</a>
+      <div class="doc-badge">Zapier</div>
+      <h1 class="hero-title">Zapier Active Automations — Master Reference</h1>
+      <p class="hero-sub">Full reference for all 36 Zapier automations (28 active, 8 off): overview table, per-zap maintenance guides, troubleshooting, and &quot;how to add&quot; instructions for each system.</p>
+    </div>
+  </div>
+  <div class="page-wrap">
+    <div class="doc-card expanded">
+      <div class="doc-body"><h2>Zapier Active Automations — Master Reference</h2>
+<div class="info-box">
+<strong>Last updated:</strong> April 22, 2026  |  <strong>Total Zaps:</strong> 36  |  <strong>Active:</strong> 28  |  <strong>Off:</strong> 8  |  <strong>Workspace:</strong> Oguz Law
+</div>
+<p>Single source of truth for all active Zapier automations. Organized by category below, with full maintenance instructions and add-item guides for each.</p>
+<h3>Overview — All 36 Zaps</h3>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>Zap Name</th><th>Category</th><th>Trigger</th><th>What It Does</th></tr></thead><tbody>
+<tr class="zap-off"><td>1</td><td><strong>openphone fills out a google sheets</strong><span class="badge-off">Off</span></td><td>Call Logging</td><td>OpenPhone: incoming call completed</td><td>Logs incoming calls from 4 organic/website numbers to "Openphone callers" sheet</td></tr>
+<tr><td>2</td><td><strong>Formatted+ Other Phone Number</strong></td><td>Call → HubSpot</td><td>OpenPhone: incoming call completed</td><td>For 12 marketing numbers: dedupes caller, creates/updates HubSpot contact, logs to Sheets</td></tr>
+<tr class="zap-off"><td>3</td><td><strong>eastbay form to oguz law intake</strong><span class="badge-off">Off</span></td><td>CRM Sync</td><td>HubSpot: contact created/updated</td><td>Upserts EastBay HubSpot contacts into Oguz Law HubSpot</td></tr>
+<tr class="zap-off"><td>4</td><td><strong>Whatsapp - Hubspot Integration with Zapier</strong><span class="badge-off">Off</span></td><td>Data Collection</td><td>Webhook</td><td>Logs WhatsApp webhook payload to "n8n araştırma" sheet</td></tr>
+<tr class="zap-off"><td>5</td><td><strong>Untitled Zap (ManyChat)</strong><span class="badge-off">Off</span></td><td>Data Collection</td><td>ManyChat: conversation opened</td><td>Logs new ManyChat conversations to "n8n araştırma" sheet</td></tr>
+<tr class="zap-off"><td>6</td><td><strong>Untitled Zap (LSA Leads)</strong><span class="badge-off">Off</span></td><td>Lead Processing</td><td>Google Sheets: new worksheet</td><td>Reads LSA Leads sheet, replaces text, writes to "deneme" worksheet</td></tr>
+<tr><td>7</td><td><strong>notification sub zap</strong></td><td>Sub-Zap</td><td>Sub-Zap trigger</td><td>Placeholder sub-zap (start → return only) — called by other zaps for notification routing</td></tr>
+<tr><td>8</td><td><strong>WhatsApp UTM Tracking #1 (oguz.law)</strong></td><td>UTM Tracking</td><td>Webhook</td><td>Receives UTM params + ref code, checks WA_UTM_Clicks table, creates record if new</td></tr>
+<tr><td>9</td><td><strong>deal kazanılınca mycasete case + contact</strong></td><td>Deal → MyCase</td><td>HubSpot: deal property change (Closed Won)</td><td>On won deal: gets deal+contact, branches by attorney (Nur/Yusuf/Gulbabil) and case type, creates MyCase case, sends ops + client emails, updates deal, calls document sub-zap</td></tr>
+<tr class="zap-off"><td>10</td><td><strong>Untitled Zap (Slack mention → Missive)</strong><span class="badge-off">Off</span><span class="badge-resolved">Resolved</span></td><td>Internal Ops</td><td>Slack: @emel.gedik mention</td><td>Creates a Missive task from Slack mention</td></tr>
+<tr><td>11</td><td><strong>Whatsapp Data Collection Flow</strong></td><td>Data Collection</td><td>Webhook</td><td>Logs WhatsApp data to "New Task Management System Logs → Wati" sheet</td></tr>
+<tr><td>12</td><td><strong>WhatsApp UTM Tracking #2 V2</strong></td><td>UTM Tracking</td><td>Wati: new incoming message</td><td>Delays, looks up contact, extracts ref code, updates UTM attributes on Wati contact, creates/updates table records</td></tr>
+<tr><td>13</td><td><strong>MailerLite Campaign Open</strong></td><td>Email Engagement</td><td>MailerLite: campaign open</td><td>Finds HubSpot contact, creates engagement, increments "MailerLite Campaign Opens" counter</td></tr>
+<tr class="zap-off"><td>14</td><td><strong>Untitled Zap (MailerLite send trigger)</strong><span class="badge-off">Off</span></td><td>Email Campaigns</td><td>Google Sheets: row updated</td><td>Sends MailerLite campaign when a control sheet row is updated</td></tr>
+<tr><td>15</td><td><strong>itin - stripe to content snare with hubspot</strong></td><td>ITIN Onboarding</td><td>Stripe: completed checkout session</td><td>Routes by product (9 types), creates HubSpot Order, creates Content Snare client + request, sends onboarding emails</td></tr>
+<tr><td>16</td><td><strong>itin - stripe to content snare Sub-Zap</strong></td><td>ITIN Sub-Zap</td><td>Sub-Zap trigger</td><td>Searches HubSpot contact by email, creates or updates contact with UTM data, returns contact ID</td></tr>
+<tr><td>17</td><td><strong>premium service - itin stripe check</strong></td><td>ITIN Sub-Zap</td><td>Sub-Zap trigger</td><td>Checks if Premium Add-On selected, updates HubSpot Order accordingly</td></tr>
+<tr><td>18</td><td><strong>(new) itin - stripe to content snare</strong></td><td>ITIN Onboarding</td><td>Stripe: new payment</td><td>Same as #15 but triggered by new_payment event (recurring/manual payments)</td></tr>
+<tr><td>19</td><td><strong>create update contact + utms</strong></td><td>UTM Sub-Zap</td><td>Sub-Zap trigger</td><td>Central reusable sub-zap for contact upsert + UTM tagging in HubSpot</td></tr>
+<tr><td>20</td><td><strong>mycase dokuman ve task olusturma sub zap</strong></td><td>MyCase Sub-Zap</td><td>Sub-Zap trigger</td><td>Formats date, creates MyCase document, creates task assigned to Fahri Mert Erbil</td></tr>
+<tr><td>21</td><td><strong>ITIN - completed fields - send meet link and update</strong></td><td>ITIN Post-Onboarding</td><td>Content Snare: all fields completed</td><td>Sends meeting link from support@itin.com, finds HubSpot Order, updates Order stage</td></tr>
+<tr class="zap-off"><td>22</td><td><strong>Untitled Zap (Stripe invoice failed)</strong><span class="badge-off">Off</span></td><td>Billing</td><td>Stripe: invoice payment failed</td><td>Logs failed payments to sheet</td></tr>
+<tr><td>23</td><td><strong>UTM Link exists but no utm tagged</strong></td><td>UTM Cleanup</td><td>HubSpot: new contact in list "No Source Yes UTMLİ LİNK"</td><td>Parses UTM params from first/last page URL, updates HubSpot contact UTM fields</td></tr>
+<tr><td>24</td><td><strong>Referral Company - Signed Deal Info Mail -2</strong></td><td>Referral Reporting</td><td>Schedule: every Tuesday 6PM</td><td>Generates HTML email tables of signed clients per referral company, emails from information@oguz.law, marks rows as sent</td></tr>
+<tr><td>25</td><td><strong>Feedback Tracker Zap - 1</strong></td><td>Internal Ops</td><td>Slack: #feedback-log channel message</td><td>Parses department/name/subject, routes card to correct Trello board (7 departments)</td></tr>
+<tr><td>26</td><td><strong>Feedback Tracker Zap - Billing Feedback Completed</strong></td><td>Internal Ops</td><td>Trello: card moved to Billing → Completed</td><td>DMs submitter in Slack when their billing feedback is resolved</td></tr>
+<tr><td>27</td><td><strong>Feedback Tracker Zap - HR Feedback Completed</strong></td><td>Internal Ops</td><td>Trello: card moved to HR → Completed</td><td>Same as #26 for HR board</td></tr>
+<tr><td>28</td><td><strong>Feedback Tracker Zap - Marketing Feedback Completed</strong></td><td>Internal Ops</td><td>Trello: card moved to Marketing → Completed</td><td>Same as #26 for Marketing board</td></tr>
+<tr><td>29</td><td><strong>Feedback Tracker Zap - OP Feedback Completed</strong></td><td>Internal Ops</td><td>Trello: card moved to Operasyon → Completed 🎉</td><td>Same as #26 for Operations board</td></tr>
+<tr><td>30</td><td><strong>Feedback Tracker Zap - Legal Feedback Completed</strong></td><td>Internal Ops</td><td>Trello: card moved to Legal → Completed</td><td>Same as #26 for Legal board</td></tr>
+<tr><td>31</td><td><strong>Feedback Tracker Zap - Sales Feedback Completed</strong></td><td>Internal Ops</td><td>Trello: card moved to Sales → Completed</td><td>Same as #26 for Sales board</td></tr>
+<tr><td>32</td><td><strong>Feedback Tracker Zap - Intake Feedback Completed</strong></td><td>Internal Ops</td><td>Trello: card moved to Intake → Completed</td><td>Same as #26 for Intake board</td></tr>
+<tr><td>33</td><td><strong>Dallas - Meet UTM</strong></td><td>UTM Tracking</td><td>Calendly: invitee created (Ovgu Ozdogan)</td><td>5-min delay, searches HubSpot by email, creates/updates contact, writes UTM/lead source fields</td></tr>
+<tr><td>34</td><td><strong>WhatsApp UTM Tracking #1 - OguzInjury</strong></td><td>UTM Tracking</td><td>Webhook</td><td>Same as #8 but for OguzInjury brand, uses separate WA_UTM_Clicks - Oguz Injury table</td></tr>
+<tr><td>35</td><td><strong>Feedback Tracker Zap - Feedback Rejected</strong></td><td>Internal Ops</td><td>Trello: card archived</td><td>Notifies submitter and department head via Slack when a feedback card is rejected/archived</td></tr>
+<tr><td>36</td><td><strong>(Tekli) Weekly Phone Number Processing and HubSpot Update Workflow</strong></td><td>Lead Processing</td><td>Google Sheets: updated row in "Lsa için güncellemeli" (dedupe col: "güncel mi")</td><td>Reads all phones from "LSA Leads → leads-girildi-4", dedupes against 3 processed worksheets, formats each phone (US), searches HubSpot → updates existing contact or creates a new contact ("LSA Lead Zapier") with LSA lead source fields, logs new contacts to "Created contacts" sheet, marks phone as processed in processed-sınır2</td></tr>
+</tbody></table></div>
+<h3>Categories at a Glance</h3>
+<div class="table-wrap"><table><thead><tr><th>Category</th><th>Count</th><th>Zap #s</th></tr></thead><tbody>
+<tr><td>ITIN Onboarding</td><td>5</td><td>#15, #16, #17, #18, #21</td></tr>
+<tr><td>Internal Ops / Feedback</td><td>9</td><td>#10, #25–#32, #35</td></tr>
+<tr><td>UTM Tracking</td><td>6</td><td>#8, #12, #19, #23, #33, #34</td></tr>
+<tr><td>Call → HubSpot</td><td>2</td><td>#1, #2</td></tr>
+<tr><td>Deal → MyCase</td><td>2</td><td>#9, #20</td></tr>
+<tr><td>Data Collection / Research</td><td>3</td><td>#4, #5, #11</td></tr>
+<tr><td>CRM / Email</td><td>3</td><td>#3, #13, #22</td></tr>
+<tr><td>Referral Reporting</td><td>1</td><td>#24</td></tr>
+<tr><td>Lead Processing</td><td>2</td><td>#6, #36</td></tr>
+<tr><td>Sub-Zaps</td><td>4</td><td>#7, #16, #17, #19, #20</td></tr>
+</tbody></table></div>
+<h3>⚠️ Critical: Sub-Zaps Must Always Stay ON</h3>
+<div class="warning-box"><strong>Sub-zaps (#7, #16, #17, #19, #20) must never be turned off.</strong> They have no external trigger — they're called by parent zaps. If a sub-zap is off, the parent zap will fail silently at that step. Before turning anything off for maintenance, check whether it's called by another zap.</div>
+<hr/>
+<h2>Zap #9 — deal kazanılınca mycasete case + contact ⭐ Critical</h2>
+<p>The most critical automation in the workspace. When a deal is marked Closed Won in HubSpot, it automatically opens a case in MyCase, assigns it to the correct attorney, sends notification emails, and updates the deal record.</p>
+<div class="table-wrap"><table><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>
+<tr><td>Trigger property</td><td>Is Closed Won = true</td></tr>
+<tr><td>Branches by attorney</td><td>Nur Kaldırım / Yusuf / Gulbabil</td></tr>
+<tr><td>Branches by case type</td><td>CoS / Family / Business Immigration</td></tr>
+<tr><td>Emails sent from</td><td>operations@oguz.law AND information@oguz.law</td></tr>
+<tr><td>Sub-zaps called</td><td>#20 (mycase dokuman ve task olusturma sub zap)</td></tr>
+<tr><td>Staff names in MyCase (case-sensitive)</td><td>Emre Cem Sanlier, Gulbabil Kokver, Fahri Mert Erbil</td></tr>
+</tbody></table></div>
+<h4>Step-by-Step Flow</h4>
+<ol>
+<li>Trigger — HubSpot: deal property change → Is Closed Won</li>
+<li>Filter — Confirm deal is actually closed won</li>
+<li>Get Deal — Retrieve full deal details (case type, pipeline, quote info, contact ID)</li>
+<li>Get Contact — Retrieve contact details (formatted phone, case types)</li>
+<li>Filter — Check contact is valid</li>
+<li>Update Contact — Tag contact in HubSpot</li>
+<li>MyCase Search — Search for existing person in MyCase</li>
+<li>Sheets Lookup — Look up staff user IDs from <code>user ids / Sheet3</code></li>
+<li>Branch: Person found? — Path "buldu" (found) or "bulamadı" (not found)</li>
+<li>Format Date — Format retainer/case start date</li>
+<li>Branch: Attorney — Nur Kaldırım / Yusuf / Gulbabil</li>
+<li>Per attorney path: Create MyCase case → Send ops email → Send client email → Update HubSpot deal → Call Sub-Zap #20</li>
+<li>Branch: Case type (for new person path) — CoS / Family / Business Immigration</li>
+<li>Create Person — MyCase: create new person if not found, then repeat case creation flow</li>
+</ol>
+<h4>🔧 Maintenance</h4>
+<div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Resolution</th></tr></thead><tbody>
+<tr><td>Attorney assignment stopped working</td><td>Check branch conditions — they match on HubSpot deal owner or case type. If an attorney's name changed in HubSpot, update the branch filter. MyCase staff names are case-sensitive: <code>Emre Cem Sanlier</code>, <code>Gulbabil Kokver</code>, <code>Fahri Mert Erbil</code></td></tr>
+<tr><td>Cases not being created</td><td>Check MyCase authentication in Zapier. Verify the HubSpot deal has an associated contact. Check Zapier task history for which step failed.</td></tr>
+<tr><td>Emails not sending</td><td>Verify operations@oguz.law and information@oguz.law Gmail auth tokens are valid. Check if recipient email is populated on the HubSpot contact.</td></tr>
+<tr><td>Deal not getting the MyCase link back</td><td>The update_crm_deal step retrieves "Deal information: MyCase Case Link" property — confirm this custom property still exists in HubSpot.</td></tr>
+<tr><td>Sub-zap not running</td><td>Check that sub-zap #20 is ON in Zapier.</td></tr>
+<tr><td>Lookup value missing (Google Sheets)</td><td>Deal owner email not in Sheet3. Go to Zapier run → get deal data → find deal owner email → add to Sheet3 as: <code>id — no value — name — surname — email</code></td></tr>
+<tr><td>Name has already been taken</td><td>A MyCase case with that name already exists. Find the existing case, determine if duplicate, rename one (e.g. add a dash suffix), then replay the Zapier run.</td></tr>
+<tr><td>The user specified is duplicate</td><td>Deal owner is already mapped as required staff in the Create Case action. Remove the duplicate mapping in that step.</td></tr>
+</tbody></table></div>
+<h4>➕ How to Add a New Attorney</h4>
+<ol>
+<li>Open the Zap → find the Branch: Attorney step</li>
+<li>Add a new path with the filter condition matching the attorney's HubSpot owner ID or name</li>
+<li>Duplicate an existing attorney's block (caseCreate → ops email → client email → update deal → call sub-zap)</li>
+<li>Update the <code>staff</code> field in the caseCreate step with the new attorney's MyCase staff name</li>
+<li>Test with a dummy closed-won deal</li>
+</ol>
+<hr/>
+<h2>Zaps #15 &amp; #18 — ITIN: Stripe → Content Snare → HubSpot</h2>
+<p>When a Stripe payment is completed, routes by product type, creates a HubSpot Order object, opens a Content Snare document request with the correct template, and sends onboarding emails. Both Zaps are functionally identical — they exist because different Stripe payment flows fire different event types.</p>
+<div class="table-wrap"><table><thead><tr><th>#15 Trigger</th><th>#18 Trigger</th><th>HubSpot Owners</th><th>Emails Sent From</th></tr></thead><tbody>
+<tr><td>Stripe: completed checkout session</td><td>Stripe: new payment (recurring/manual)</td><td>gokce.tandogdu@oguz.law (primary), dorukhan@oguz.law (secondary)</td><td>operations@oguz.law + support@itin.com</td></tr>
+</tbody></table></div>
+<h4>Product → Content Snare Template Routing</h4>
+<div class="table-wrap"><table><thead><tr><th>Path</th><th>Product</th><th>Content Snare Template</th></tr></thead><tbody>
+<tr><td>A</td><td>Standard ITIN Preparation Service</td><td>Documents Required for ITIN Application</td></tr>
+<tr><td>B</td><td>Renew ITIN Service</td><td>Documents Required for ITIN Application</td></tr>
+<tr><td>C</td><td>Standard EIN Application</td><td>EIN Application – Required Information</td></tr>
+<tr><td>D</td><td>EIN for Non-U.S. Residents (No SSN)</td><td>EIN Application – Required Information</td></tr>
+<tr><td>E</td><td>Standard LLC Formation</td><td>Company Formation – Required Documents (USA)</td></tr>
+<tr><td>F</td><td>LLC formation for Non-U.S. Residents</td><td>Company Formation – Required Documents (USA)</td></tr>
+<tr><td>G</td><td>Basic Bank Account Package</td><td>Bank Account Opening – Required Documents (USA)</td></tr>
+<tr><td>H</td><td>Full-Service Banking Setup Bundle</td><td>Bank Account Opening – Required Documents (USA)</td></tr>
+<tr><td>I</td><td>(fallback / other)</td><td>—</td></tr>
+</tbody></table></div>
+<h4>🔧 Maintenance</h4>
+<div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Resolution</th></tr></thead><tbody>
+<tr><td>Content Snare request not created</td><td>Check Content Snare auth in Zapier. Verify template name matches exactly (case-sensitive). Confirm "Admin ITIN" team member still exists in Content Snare.</td></tr>
+<tr><td>HubSpot Order not created</td><td>Verify Association 507 still exists for Contact → Order in HubSpot. Check gokce.tandogdu@oguz.law and dorukhan@oguz.law are active HubSpot users.</td></tr>
+<tr><td>Wrong template being used</td><td>Open the relevant path's requestCreate step and verify the request_template value matches exactly.</td></tr>
+</tbody></table></div>
+<hr/>
+<h2>Zap #24 — Referral Company Signed Deal Email (Weekly)</h2>
+<p>Every Tuesday at 6PM, checks the Referral Notification sheet for rows with status "pending", groups them by referral company, generates an HTML email table of signed clients, emails each company from information@oguz.law, and marks rows as "sent".</p>
+<h4>🔧 Critical Maintenance Note</h4>
+<div class="warning-box">The zap marks rows as "sent" only on the <strong>last loop iteration</strong>. If the last company has no clients (rowCount = 0), its send step is filtered out — and the entire sheet never gets marked as sent. Ensure the last company in the config tab always has at least one pending client, or restructure the update step to run outside the loop.</div>
+<h4>➕ How to Add a New Referral Company</h4>
+<p>Add a new row to the <code>config</code> tab in the Referral Notification sheet: Company name, Email, Official Name. Ensure incoming referral data in Sheet1 uses exactly the same company name (case-insensitive match is used in the JS code). No Zapier changes needed — the loop auto-iterates.</p>
+<hr/>
+<h2>Zaps #25–35 — Feedback Tracker System (9 Zaps)</h2>
+<p>A 9-zap system that routes internal feedback from a Slack channel to department Trello boards, then notifies the original submitter when their feedback is resolved or rejected.</p>
+<h4>Zap #25 — Slack → Trello Routing</h4>
+<p>Reads structured messages posted to <strong>#feedback-log</strong> Slack channel, parses department/name/subject/due date via regex, looks up Trello member and label IDs via lookup tables, and creates a card on the correct department board.</p>
+<p>Message format required: fields for <strong>Department, Name, Subject, Response Needed, Reply Date</strong> — the Formatter steps use regex Extract Pattern to pull each field. If the Slack message format changes, all 6 Formatter steps must be updated.</p>
+<div class="table-wrap"><table><thead><tr><th>Trello Board</th><th>List</th></tr></thead><tbody>
+<tr><td>HR</td><td>Feedback</td></tr>
+<tr><td>Intake</td><td>Feedback</td></tr>
+<tr><td>Billing</td><td>Feedbacks &amp; Requests</td></tr>
+<tr><td>Sales</td><td>Feedback</td></tr>
+<tr><td>Legal</td><td>Feedback</td></tr>
+<tr><td>Operasyon</td><td>Feedback</td></tr>
+<tr><td>Marketing</td><td>Feedback</td></tr>
+</tbody></table></div>
+<h4>Zaps #26–32 — Completion Notifications</h4>
+<p>When a card is moved to "Completed" on a department board, each zap finds the original Slack message (by card title), extracts the submitter's name, looks up their Slack user, and DMs them in #feedback-log. One zap per board: Billing, HR, Marketing, Operasyon, Legal, Sales, Intake.</p>
+<h4>Zap #35 — Rejection Notification</h4>
+<p>When a card is <strong>archived</strong> on any board, finds the original Slack message, extracts both the submitter name and department head name, and notifies both via Slack.</p>
+<h4>🔧 Maintenance</h4>
+<div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Resolution</th></tr></thead><tbody>
+<tr><td>Card not created on Trello</td><td>Check Trello auth. Verify board name in branch step is case-exactly correct. If Slack message format changed, update all 6 regex Formatter steps.</td></tr>
+<tr><td>Completion notification not sending</td><td>The zap searches for the Slack message by card title — if the card title was edited in Trello, the search will fail. Check Slack auth. Verify channel is still #feedback-log.</td></tr>
+<tr><td>Wrong person being notified</td><td>The name lookup uses Slack's user_by_name search — the name must match the Slack display name exactly. If someone changed their Slack display name, update the Lookup Table in the Formatter step.</td></tr>
+</tbody></table></div>
+<h4>➕ How to Add a New Department</h4>
+<ol>
+<li>In Zap #25: add a new path to the Branch step, pointing to the new Trello board and list. Add department → Trello label ID mapping to the Lookup Table step. Add person → Trello member ID if needed.</li>
+<li>For completion notifications: duplicate any of Zaps #26–32, change the trigger to the new Trello board → Completed list, turn the new zap ON.</li>
+</ol>
+<hr/>
+<h2>UTM Tracking System — Zaps #8, #12, #19, #23, #33, #34</h2>
+<p>Six zaps form the full UTM attribution system. Together they capture UTM parameters from multiple entry points and write them back to HubSpot contact fields.</p>
+<div class="table-wrap"><table><thead><tr><th>Zap</th><th>Trigger</th><th>Purpose</th></tr></thead><tbody>
+<tr><td>#8 — WhatsApp UTM Tracking #1 (oguz.law)</td><td>Webhook (UTM-tagged WhatsApp link click)</td><td>Stores UTMs + CID in [Table] WA_UTM_Clicks. Builds lookup table of cid → UTM data.</td></tr>
+<tr><td>#34 — WhatsApp UTM Tracking #1 - OguzInjury</td><td>Webhook</td><td>Identical to #8 but uses [Table] WA_UTM_Clicks - Oguz Injury</td></tr>
+<tr><td>#12 — WhatsApp UTM Tracking #2 V2</td><td>Wati: new incoming message</td><td>1-min delay → lookup cid in WA_UTM_Clicks → update Wati contact attributes with UTM source → create/update Contacts Table record</td></tr>
+<tr><td>#19 — create update contact + utms (Sub-Zap)</td><td>Sub-Zap trigger</td><td>Central reusable: searches HubSpot contact by email, creates or updates, writes UTM first/last touch dates + referring site</td></tr>
+<tr><td>#23 — UTM Link exists but no utm tagged</td><td>HubSpot: new contact in list "No Source Yes UTMLİ LİNK" (list ID 1401)</td><td>Retroactively parses UTM params from first_url or last_url and fills HubSpot UTM fields</td></tr>
+<tr><td>#33 — Dallas - Meet UTM</td><td>Calendly: invitee created (Ovgu Ozdogan)</td><td>5-min delay → search HubSpot by email → create/update contact with UTM + lead source fields</td></tr>
+</tbody></table></div>
+<h4>🔧 Key Maintenance Notes</h4>
+<ul>
+<li>Zap #12 has a 1-minute delay to let Zap #8 create the WA_UTM_Clicks record first. If traffic is high, increase to 2–3 minutes.</li>
+<li>HubSpot list "No Source Yes UTMLİ LİNK" (list ID 1401) must exist with correct enrollment criteria for Zap #23 to trigger.</li>
+<li>Sub-Zap #19 name must match exactly across all parent zaps that call it: <code>create update contact + utms</code></li>
+</ul>
+<hr/>
+<h2>Zap #1 — OpenPhone → Google Sheets (Organic Calls) <span class="badge-off">Off</span></h2>
+<p>Listens for completed incoming calls on 4 specific OpenPhone numbers and logs each call as a new row in the "Openphone callers" sheet.</p>
+<p>Monitored numbers: 📢 Organic Social (925) 940-4030 · Apply Oguz Law Website (925) 940-4044 · Oguz Law Website (925) 940-2002 · Google Business (925) 940-4004</p>
+<h2>Zap #2 — OpenPhone → HubSpot (12 Marketing Numbers)</h2>
+<p>When a call comes in on any of 12 marketing-tracked OpenPhone numbers, deduplicates the caller (checking 4 "processed numbers" sheet tabs + Zapier Storage), then creates or updates a HubSpot contact and logs the call.</p>
+<p>Monitored numbers (12): LSA, Email Marketing, Youtube, LinkedIn, TikTok, Meta Ads, LATAM, Website Blog, + 4 organic numbers.</p>
+<div class="warning-box">Dedup logic checks 4 sheet tabs + Zapier Storage. If any tab is renamed or the Storage key changes, duplicates can slip through. The <code>leads-inbox (64)</code> worksheet name in Zap #6 has a number in it — if the sheet regenerates with a new number, Zap #6 will break.</div>
+<hr/>
+<h2>Zap #36 — (Tekli) Weekly Phone Number Processing and HubSpot Update Workflow</h2>
+<p>LSA (Local Services Ads) leadleri manuel olarak "LSA Leads" spreadsheet'ine (<code>leads-girildi-4</code> worksheet'ine) girildikten sonra, kontrol sheet'indeki (<code>Lsa için güncellemeli → Sheet1</code>) <code>güncel mi</code> kolonu güncellendiğinde tetiklenir. Zap tüm lead listesini okur, 3 katmanlı dedupe kontrolünden geçirir ve her yeni numara için HubSpot'ta contact arar — varsa LSA lead-source alanlarıyla günceller, yoksa yeni bir contact (<strong>"LSA Lead Zapier"</strong>) oluşturur. Sonsuz çalışacak şekilde kurgulanmıştır; manuel müdahale yalnızca tetiklemek veya bozulmaları düzeltmek için gerekir.</p>
+<div class="table-wrap"><table><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>
+<tr><td>Trigger</td><td>Google Sheets: updated row (Google Sheets v2)</td></tr>
+<tr><td>Trigger spreadsheet</td><td><code>Lsa için güncellemeli</code> → <code>Sheet1</code></td></tr>
+<tr><td>Dedupe column (trigger)</td><td><code>güncel mi</code> (B kolonu)</td></tr>
+<tr><td>Data source (leads)</td><td><code>LSA Leads</code> → <code>leads-girildi-4</code> worksheet</td></tr>
+<tr><td>Dedupe worksheets (3 katman)</td><td><code>processed-sınır</code>, <code>processed-sınır2</code>, <code>processed-sınır3</code> — hepsi <code>LSA Leads</code> spreadsheet'inde</td></tr>
+<tr><td>Output — yeni contact log</td><td><code>LSA Leads</code> → <code>Created contacts</code> worksheet</td></tr>
+<tr><td>Output — processed tracker</td><td><code>LSA Leads</code> → <code>processed-sınır2</code> (her işlenen telefon buraya yazılır)</td></tr>
+<tr><td>Phone format</td><td>US default region, <code>number.phone_v2</code> Formatter</td></tr>
+<tr><td>HubSpot contact defaults (yeni kayıt)</td><td>firstname: <code>LSA Lead</code>, lastname: <code>Zapier</code></td></tr>
+<tr><td>HubSpot lead source alanları (her iki yolda da yazılır)</td><td><code>marketing_lead_source = Local Service Ads</code>, <code>lead_source = Paid search</code>, <code>marked_by_zapier_ = Yes, LSA Tekli</code>, <code>hs_analytics_source = PAID_SEARCH</code></td></tr>
+<tr><td>HubSpot arama kriteri</td><td>formatted_phone_number_with_plus + other_associated_phone_numbers</td></tr>
+</tbody></table></div>
+<h4>Step-by-Step Flow</h4>
+<ol>
+<li><strong>Trigger</strong> — <code>Lsa için güncellemeli / Sheet1</code> sheet'inde bir satır güncellenir (<code>güncel mi</code> kolonu bazında dedupe)</li>
+<li><strong>Get Many Rows</strong> — <code>LSA Leads / leads-girildi-4</code> worksheet'inden tüm satırlar çekilir (500 row limit)</li>
+<li><strong>Format Phone Number</strong> — tüm telefonlar US formatına dönüştürülür</li>
+<li><strong>Line Itemizer</strong> — telefonlar loop'a hazır liste haline getirilir</li>
+<li><strong>Loop</strong> — her telefon için aşağıdaki adımlar ayrı ayrı çalışır:
+    <ol type="a">
+<li><strong>Lookup in <code>processed-sınır</code></strong> → bulunursa <em>stop</em> (daha önce işlenmiş)</li>
+<li><strong>Lookup in <code>processed-sınır2</code></strong> → bulunursa stop</li>
+<li><strong>Lookup in <code>processed-sınır3</code></strong> → bulunursa stop</li>
+<li><strong>Delay</strong> — rate limit koruması</li>
+<li><strong>Format Phone</strong> (tekrar, tek telefon bazında)</li>
+<li><strong>HubSpot Search</strong> — contact'ı telefon numarasıyla ara</li>
+<li><strong>Branch</strong> — HubSpot'ta contact var mı yok mu?
+        <ul>
+<li><strong>Path A (existing contact):</strong> <code>update_crm_contact</code> → LSA lead source alanlarını yaz → 3 dedupe sheet'i tekrar kontrol et → <code>processed-sınır2</code>'ye telefonu ekle</li>
+<li><strong>Path B (no contact):</strong> <code>contactCreate</code> (firstname: LSA Lead, lastname: Zapier, phone, LSA source alanları) → <code>Created contacts</code> worksheet'ine log at → 3 dedupe sheet'i tekrar kontrol et → <code>processed-sınır2</code>'ye telefonu ekle</li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+<div class="info-box"><strong>Neden 3 katman dedupe?</strong> <code>processed-sınır</code>, <code>processed-sınır2</code> ve <code>processed-sınır3</code> farklı dönemlerde/kaynaklarda işlenmiş telefonları tutar. Loop her telefon için her üçünü sırayla kontrol eder; birinde bulunursa işleme alınmaz. Yeni işlenenlerin hepsi <code>processed-sınır2</code>'ye yazılır (bu "aktif" işlenmiş listesidir).</div>
+<h4>🔧 Maintenance</h4>
+<div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Resolution</th></tr></thead><tbody>
+<tr><td><strong>Trigger çalışmıyor / hiç tetiklenmiyor</strong></td><td>Google Sheets "updated row" trigger'ı <code>Lsa için güncellemeli → Sheet1</code> sheet'indeki <code>güncel mi</code> (B) kolonundaki değişimi izler. Manuel olarak tetiklemek için bu kolondaki herhangi bir hücrenin değerini değiştirin (örn. boş bırakılan hücreye <code>x</code>, veya mevcut değeri silip yeniden yazın). Zapier trigger kontrolünü 15 dakikada bir yapar — anında çalışmaz.</td></tr>
+<tr><td>Trigger tetikleniyor ama hiçbir şey işlenmiyor</td><td>Zap'ın her adımı <code>paused: true</code> olarak ayarlanmış olabilir. Zapier Task History'e girip hangi adımın "skipped" olduğuna bakın. Tüm sub-adımların ON olması gerekir — sadece root trigger'ın ON olması yeterli değildir.</td></tr>
+<tr><td>Yeni leadler işlenmiyor, ama eskiler tekrar görünüyor</td><td><code>LSA Leads → leads-girildi-4</code> worksheet'ine yeni satır eklendiğinden emin olun. Step 2 <strong>Get Many Rows</strong> sadece ilk 500 satırı çekiyor — sheet 500+ satıra ulaştıysa yeni eklenen leadler okunmuyor olabilir. Eski işlenmiş satırları arşivleyin veya limiti artırın.</td></tr>
+<tr><td>Duplicate contact'lar oluşuyor HubSpot'ta</td><td>Dedupe 3 worksheet'e bağlı: <code>processed-sınır</code>, <code>processed-sınır2</code>, <code>processed-sınır3</code>. Sheet ID'si veya worksheet adı değiştiyse lookup başarısız olur ve her çalıştırmada aynı telefon tekrar işlenir. Zapier step'lerindeki worksheet ID'lerini (<code>1263972131</code>, <code>1035654206</code>, <code>1324942904</code>) kontrol edin.</td></tr>
+<tr><td>Duplicate contact oluşuyor <em>ama</em> dedupe sheet'inde telefon var</td><td>Format Phone Number adımı aynı ham veri için farklı output üretiyor olabilir (örn. <code>+1</code> önek eklenmesi/çıkarılması). Dedupe lookup tam string match yapar — <code>+1XXXXXXXXXX</code> ile <code>XXXXXXXXXX</code> ayrı kabul edilir. US dışı numaralar için <code>default_region: US</code> ayarı yanlış format üretebilir.</td></tr>
+<tr><td>HubSpot'ta contact bulunmuyor, hep yeni oluşturuyor</td><td>Step 14 HubSpot search <code>formatted_phone_number_with_plus</code> ve <code>other_associated_phone_numbers</code> property'lerine bakıyor. Bu property'ler HubSpot'ta dolu değilse (eski contact'larda olabilir) Zap contact'ı bulamaz. HubSpot'ta manuel olarak bu alanları populate edin veya Zap arama kriterine standart <code>phone</code> alanını da ekleyin.</td></tr>
+<tr><td>Branch yanlış yola gidiyor (contact var, ama create çalışıyor)</td><td>Step 15 Branch, step 14'ün döndürdüğü contact sayısına göre karar verir. HubSpot auth süresi bittiyse search boş döner ve her kayıt "new" yoluna girer. HubSpot connection'ı yenileyin.</td></tr>
+<tr><td>Phone format US dışı numaralar için bozuk</td><td>Formatter <code>default_region: US</code> kullanıyor. Uluslararası LSA lead gelmeye başlarsa (şu an için unlikely — LSA US-only), step 3 ve 13'ü güncelleyin.</td></tr>
+<tr><td>"Created contacts" sheet'ine log düşmüyor ama contact oluşuyor</td><td>Step 19 ayrı Sheets auth kullanıyor — Google Sheets connection'ı yenileyin. Bu adım fail olsa bile HubSpot contact zaten oluşmuştur, tekrar çalıştırmayın (duplicate oluşur).</td></tr>
+<tr><td>Aynı telefon iki kez işleniyor (race condition)</td><td>Dedupe sheet'e yazma (step 26/34) contact oluşturma (step 18/27) <em>sonrasında</em> yapılıyor. Zap paralel çalıştırıyorsa (batch büyükse) iki loop aynı numarayı aynı anda işlemeye başlayabilir. Zapier Settings → Advanced → "Spread tasks" ayarı <code>1</code> olmalı (JSON'da zaten öyle).</td></tr>
+<tr><td>Lead source alanları HubSpot'ta görünmüyor</td><td>HubSpot property'lerinin hâlâ mevcut ve internal name'lerin değişmediğinden emin olun: <code>marketing_lead_source</code>, <code>lead_source</code>, <code>marked_by_zapier_</code>, <code>hs_analytics_source</code>. Özellikle <code>marked_by_zapier_</code> custom bir property — silinirse zap fail olur.</td></tr>
+</tbody></table></div>
+<h4>➕ Nasıl Yeni Lead Eklenir (Rutin Kullanım)</h4>
+<ol>
+<li><strong>LSA Leads</strong> spreadsheet'ini aç → <code>leads-girildi-4</code> worksheet'ine git</li>
+<li>Yeni telefon numarasını A kolonuna (Customer) ekle — format önemli değil, Formatter normalize eder</li>
+<li><strong>Lsa için güncellemeli</strong> spreadsheet'ine git → <code>Sheet1</code> → <code>güncel mi</code> (B) kolonundaki herhangi bir hücreyi değiştir (veya yeni bir satıra <code>x</code> yaz)</li>
+<li>15 dakika içinde Zapier trigger'ı yakalayıp tüm listeyi işleyecek — daha önce dedupe sheet'lerinde olanları atlayıp sadece yeni eklenen numaraları HubSpot'a yazacak</li>
+</ol>
+<h4>🔄 Bir Telefonu Yeniden İşletmek (Force Re-process)</h4>
+<ol>
+<li><code>LSA Leads</code> spreadsheet'ini aç</li>
+<li><code>processed-sınır</code>, <code>processed-sınır2</code>, <code>processed-sınır3</code> worksheet'lerinin <strong>üçünde de</strong> o telefonun satırını sil (sadece birinden silmek yetmez; loop üç sheet'i de kontrol ediyor)</li>
+<li><code>Lsa için güncellemeli / Sheet1</code> → <code>güncel mi</code> kolonunda bir hücre güncelle, zap yeniden çalışsın</li>
+</ol>
+<h4>🛠 Yıllık Bakım Kontrolleri (Proaktif)</h4>
+<ul>
+<li><strong><code>leads-girildi-4</code> satır sayısı</strong> — 500'e yaklaştığında: ya limiti artırın (step 2 <code>row_count</code>), ya da eski işlenmiş leadleri <code>leads-girildi-arşiv</code> gibi bir worksheet'e taşıyın. 500+ olursa yeni leadler okunmaz.</li>
+<li><strong><code>processed-sınır2</code> büyüklüğü</strong> — her işlenen telefon buraya yazıldığı için zamanla büyür; 10.000+ satıra ulaşınca lookup yavaşlar. Eski kayıtları <code>processed-sınır3</code>'e taşıyıp <code>processed-sınır2</code>'yi temizleyin (dedupe bütünlüğü korunur çünkü loop üçünü de kontrol ediyor).</li>
+<li><strong>Authentication expiration</strong> — Google Sheets ve HubSpot connection'ları her 6 ayda bir yenilenmesi gerekebilir. Zapier "connection expired" hatası vermeden önce My Apps ekranında yeşil olduklarını doğrulayın.</li>
+<li><strong>HubSpot property audit</strong> — <code>marketing_lead_source</code>, <code>lead_source</code>, <code>marked_by_zapier_</code>, <code>hs_analytics_source</code> property'lerinin hâlâ var olduğunu ve enum değerlerinin (<code>Local Service Ads</code>, <code>Paid search</code>, <code>PAID_SEARCH</code>, <code>Yes, LSA Tekli</code>) enum listesinden silinmediğini yılda bir kez kontrol edin.</li>
+<li><strong>Zap task history</strong> — ayda bir kez son 50 run'a bakıp filter'da stop olan oranını kontrol edin. %100 stop oluyorsa trigger hiç yeni lead getirmiyor demektir (bkz. ilk satır maintenance).</li>
+</ul>
+<hr/>
+<h2>Remaining Zaps — Notes &amp; Warnings</h2>
+<div class="table-wrap"><table><thead><tr><th>Zap</th><th>⚠️ Note</th></tr></thead><tbody>
+<tr class="zap-off"><td>#10 — Slack mention → Missive <span class="badge-resolved">Resolved</span> <span class="badge-off">Off</span></td><td><s>Trigger is @emel.gedik mention. If Emel's Slack username changes or she leaves, this zap needs a new trigger. Rename for clarity.</s><br/><strong>✅ Resolved (April 2026):</strong> Issue addressed and zap turned OFF.</td></tr>
+<tr class="zap-off"><td>#5 — ManyChat → Sheets <span class="badge-off">Off</span></td><td>Writes to same sheet as Zap #4 (n8n araştırma) — confirm this is intentional.</td></tr>
+<tr class="zap-off"><td>#14 — MailerLite send trigger <span class="badge-off">Off</span></td><td>Control panel is sheet "Zapier link başlatma". Each row corresponds to a different campaign — this mapping is not documented anywhere else. Document it.</td></tr>
+<tr class="zap-off"><td>#22 — Stripe invoice failed <span class="badge-off">Off</span></td><td>Logs to a sheet named "Untitled spreadsheet" — rename immediately. Has no alerting. Consider adding a Slack notification step so someone is notified of failed payments.</td></tr>
+<tr><td>#7 — notification sub zap</td><td>Currently just start → return (placeholder). Don't delete — other zaps may reference it. Check if it was meant to be built out further.</td></tr>
+</tbody></table></div>
+</div>
+    </div>
+    <p class="footer-note">Oguz Law Internal — Confidential</p>
+  </div>
+</body>
+</html>

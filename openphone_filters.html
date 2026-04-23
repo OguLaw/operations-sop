@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenPhone Analytics Filters Reference | Oguz Law SOP Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="doc-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <a class="back-link" href="index.html">← Back to SOP Library</a>
+      <div class="doc-badge">OpenPhone</div>
+      <h1 class="hero-title">OpenPhone Analytics Filters Reference</h1>
+      <p class="hero-sub">Exact filter settings for the three main OpenPhone analytics pivot tables: sent messages, total calls and durations, and unique conversation counts.</p>
+    </div>
+  </div>
+  <div class="page-wrap">
+    <div class="doc-card expanded">
+      <div class="doc-body">
+<h2>OpenPhone Analytics Filter Configurations</h2>
+<p>Apply these exact settings in the OpenPhone Analytics dashboard for consistent team reporting.</p>
+<h3>Report 1 — Sent Messages</h3>
+<div class="table-wrap"><table><thead><tr><th>Setting</th><th>Value</th></tr></thead><tbody>
+<tr><td>Rows</td><td>BelongsTo</td></tr>
+<tr><td>Values</td><td>BelongsTo – countA</td></tr>
+<tr><td>Status (filter)</td><td>Delivered + Sent</td></tr>
+<tr><td>Direction (filter)</td><td>Outgoing</td></tr>
+<tr><td>Type</td><td>Message</td></tr>
+</tbody></table></div>
+<h3>Report 2 — Total Calls and Call Durations</h3>
+<div class="table-wrap"><table><thead><tr><th>Setting</th><th>Value</th></tr></thead><tbody>
+<tr><td>Rows</td><td>BelongsTo</td></tr>
+<tr><td>Values</td><td>userId – name it "Call Count"</td></tr>
+<tr><td>Status (filter)</td><td>Completed</td></tr>
+<tr><td>Type (filter)</td><td>Call</td></tr>
+</tbody></table></div>
+<h3>Report 3 — Unique Conversation Count</h3>
+<h4>Incoming</h4>
+<div class="table-wrap"><table><thead><tr><th>Setting</th><th>Value</th></tr></thead><tbody>
+<tr><td>Rows</td><td>BelongsTo</td></tr>
+<tr><td>Values</td><td>From – countunique</td></tr>
+<tr><td>Status (filter)</td><td>Completed, Delivered, In-Progress, Received, Ringing, Sent, Answered</td></tr>
+<tr><td>Direction (filter)</td><td>Incoming</td></tr>
+</tbody></table></div>
+<h4>Outgoing</h4>
+<div class="table-wrap"><table><thead><tr><th>Setting</th><th>Value</th></tr></thead><tbody>
+<tr><td>Rows</td><td>BelongsTo</td></tr>
+<tr><td>Values</td><td>To – countunique</td></tr>
+<tr><td>Status (filter)</td><td>Completed, Delivered, Sent</td></tr>
+<tr><td>Direction (filter)</td><td>Outcoming</td></tr>
+</tbody></table></div>
+</div>
+    </div>
+    <p class="footer-note">Oguz Law Internal — Confidential</p>
+  </div>
+</body>
+</html>

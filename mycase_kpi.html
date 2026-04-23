@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyCase KPI Reports — SOP Library | Oguz Law SOP Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="doc-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <a class="back-link" href="index.html">← Back to SOP Library</a>
+      <div class="doc-badge">MyCase</div>
+      <h1 class="hero-title">MyCase KPI Reports — SOP Library</h1>
+      <p class="hero-sub">How to pull and structure MyCase KPI reports: active cases, opened/closed cases, time entries, task percentages, and automation error handling.</p>
+    </div>
+  </div>
+  <div class="page-wrap">
+    <div class="doc-card expanded">
+      <div class="doc-body"><h2>MyCase KPI Reports — How to Pull &amp; Structure</h2>
+<p>This guide covers how to extract, structure, and interpret monthly KPI reports from MyCase for operations reporting. Reports are pulled from MyCase, then organized in Google Sheets using pivot tables and formulas.</p>
+<div class="info-box">
+<strong>Platform:</strong> MyCase + Google Sheets  |  <strong>Audience:</strong> Operations team  |  <strong>Cadence:</strong> Monthly
+</div>
+<h3>1. Monthly Report Inventory</h3>
+<p>Each month, the following reports are generated:</p>
+<div class="table-wrap"><table><thead><tr><th>Report Name</th><th>What It Shows</th><th>Source</th></tr></thead><tbody>
+<tr><td>All Cases Still Open</td><td>Full case list of open cases at month-end, with how long each case has been in its current stage</td><td>MyCase → Google Sheets</td></tr>
+<tr><td>Time Entry (Monthly)</td><td>Total time entries per user for the month — this is what "active cases" means: cases with at least one time entry that month</td><td>MyCase Firm Time Entry → Sheets</td></tr>
+<tr><td>Active Cases</td><td>Number of distinct cases per user with time entries (unique case count, not hours)</td><td>Pivot from Time Entry sheet</td></tr>
+<tr><td>Opened Cases</td><td>Cases opened during the month, grouped by lead attorney</td><td>MyCase → Sheets</td></tr>
+<tr><td>Closed Cases</td><td>Cases closed during the month</td><td>MyCase → Sheets</td></tr>
+<tr><td>Overdue Task %</td><td>Percentage of tasks that were incomplete and past due date, broken down by user</td><td>MyCase Tasks → Sheets</td></tr>
+</tbody></table></div>
+<h3>2. Pulling Time Entry Data</h3>
+<p>To generate both the <strong>Time Entry</strong> and <strong>Active Cases</strong> reports:</p>
+<ol>
+<li>In MyCase, go to <strong>Firm Time Entry</strong></li>
+<li>Select the date range for the month</li>
+<li>Enable the <strong>Detailed</strong> view option</li>
+<li>Export the report</li>
+<li>In Google Sheets, create a pivot table from the exported data</li>
+</ol>
+<h4>Time Entry Pivot (Total Hours per User)</h4>
+<p>Rows: User name  |  Values: SUM of Duration/Quantity</p>
+<p>Example output:</p>
+<div class="code-block">User                    SUM of Duration/Quantity
+Ahmet Cemil Karakurt    194.5
+Ahsen Akbulut           129.9
+...</div>
+<h4>Active Cases Pivot (Distinct Cases per User)</h4>
+<p>Using the same time entry data, create a second pivot:</p>
+<p>Rows: User name  |  Values: COUNTUNIQUE of Case Link</p>
+<p>This gives the number of distinct cases each user logged time on — this is the "active case count."</p>
+<h3>3. All Cases Still Open — Stage Duration Extraction</h3>
+<p>MyCase shows stage duration in a format like <code>AS - I-589 Filed (670 days)</code>. To extract the day count cleanly:</p>
+<ol>
+<li>Use a formula to separate the stage name from the parenthetical number</li>
+<li>Extract just the numeric value (670 in the example above)</li>
+<li>Use this to calculate averages across cases in the same stage</li>
+</ol>
+<p>The final report contains two tabs: a full case list with all details, and an average-days-per-stage summary.</p>
+<h4>Key Formulas Used</h4>
+<div class="table-wrap"><table><thead><tr><th>Formula</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>=UNIQUE(FLATTEN(Sheet2!A:H))</code></td><td>Get all unique assignee names across multi-person task assignments</td></tr>
+<tr><td><code>=ARRAYFORMULA(COUNTIF(Sheet2!A:H, A1:A))</code></td><td>Count how many times each name appears across the task table</td></tr>
+<tr><td><code>=TEXT(K24/86400, "mm:ss")</code></td><td>Convert seconds to MM:SS duration format</td></tr>
+<tr><td><code>=ARRAYFORMULA("00:" &amp; AA:AA)</code></td><td>Prefix a "00:" to a minutes column to build HH:MM format</td></tr>
+</tbody></table></div>
+<h3>4. Opened &amp; Closed Cases</h3>
+<p>These reports show cases by the month they were opened or closed. In addition to a count-per-attorney pivot, a detailed list is generated showing the attorney name followed by each case they opened/closed.</p>
+<p>Example structure for <strong>Opened Cases</strong>:</p>
+<div class="code-block">Row Labels          Count of Column1
+Ahsen Akbulut       1
+  ↳ Yifeng Shi - Marriage-Based Green Card
+Ali Aricak          3
+  ↳ Ayhan Karaduman - E2
+  ↳ Kivanc Senyurek - E-2 CoS
+  ↳ Mustafa Calisir - E2</div>
+<p><em>Note: Rows without a lead attorney assigned appear as blank entries — these represent cases where lead attorney selection was skipped at intake.</em></p>
+<h3>5. Overdue Task Percentage</h3>
+<p>To calculate the overdue task rate per user:</p>
+<ol>
+<li>From the MyCase <strong>Tasks</strong> section, pull:
+    <ul>
+<li>All users — selected month — <strong>Incomplete only</strong> → this gives overdue/incomplete tasks</li>
+<li>All users — selected month — <strong>All tasks</strong> → this gives the total task count</li>
+</ul>
+</li>
+<li>Filter both exports so only tasks with a due date <em>within the target month</em> are included — MyCase's date filter may not always match exactly, so review the due date column</li>
+<li>Break down by attorney/user</li>
+<li>Use the <code>FLATTEN</code> + <code>COUNTIF</code> formulas to handle tasks that have multiple names assigned</li>
+</ol>
+<div class="warning-box"><strong>⚠ Important:</strong> A single task can have multiple assignees. If you count rows directly, each name gets counted once per row even if they share it. Use the <code>FLATTEN</code> approach to count per-person correctly.</div>
+<h3>6. Quote-to-Case Workflow — Automation Error Handling</h3>
+<p>When a deal is marked as closed-won and a signed quote triggers case creation in MyCase via Zapier, the following errors can occur:</p>
+<div class="table-wrap"><table><thead><tr><th>Error</th><th>Cause</th><th>Resolution</th></tr></thead><tbody>
+<tr><td><strong>Lookup value missing — Google Sheets</strong></td><td>The deal owner's email is not in Sheet 3 of the user ID mapping sheet, OR the user's email changed (e.g. Rippling deletion/re-add)</td><td>Open the Zapier run → get deal data → find deal owner email → add to Sheet 3 with format: <code>id (required) — no value — name — surname — email (required)</code>. If the owner is in Intake, also add them to the Deal Owner Copy property in the Deal Object and add the relevant branch to the Zapier workflow in HubSpot.</td></tr>
+<tr><td><strong>Name has already been taken</strong></td><td>A case with the same name already exists in MyCase</td><td>Find the existing case, determine if it's a duplicate. If so, rename one of them (e.g. add a dash suffix). Then replay the Zapier run.</td></tr>
+<tr><td><strong>The user specified is duplicate</strong></td><td>The deal owner is already assigned as a required staff member in the Create Case action (e.g. a director who normally doesn't do sales closed a deal)</td><td>Remove the duplicate mapping in the automation's Create Case step. Follow the video guide in the SOP Library folder.</td></tr>
+</tbody></table></div>
+<h3>7. Automation Error Notifications</h3>
+<div class="warning-box"><strong>📧 Note from Emel:</strong> Some automation error handlers send alert emails to Emel's inbox directly. If Emel is unavailable, these alerts may go unnoticed. Ops team should confirm who receives error notifications for each critical automation and add a backup recipient where needed.</div>
+<h3>8. Related Resources</h3>
+<ul>
+<li>Workflows and Descriptions spreadsheet — HubSpot automation inventory</li>
+<li>UTM Builder — Google Sheets + Apps Script</li>
+<li>SOP Library folder — Google Drive (linked in original PDF)</li>
+<li>ITIN Stripe project planning documents — Google Drive</li>
+</ul>
+</div>
+    </div>
+    <p class="footer-note">Oguz Law Internal — Confidential</p>
+  </div>
+</body>
+</html>

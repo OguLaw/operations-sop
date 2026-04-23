@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-Judge Maintenance — EOIR Hearing Sync | Oguz Law SOP Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="doc-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <a class="back-link" href="index.html">← Back to SOP Library</a>
+      <div class="doc-badge">Node.js</div>
+      <h1 class="hero-title">E-Judge Maintenance — EOIR Hearing Sync</h1>
+      <p class="hero-sub">Complete maintenance guide for E-Judge: a Node.js service that syncs immigration hearing data from the EOIR API into Google Sheets via Slack and HTTP.</p>
+    </div>
+  </div>
+  <div class="page-wrap">
+    <div class="doc-card expanded">
+      <div class="doc-body"><h2>E-Judge — EOIR Hearing Sync Service</h2>
+<div class="info-box">
+<strong>Runtime:</strong> Node.js ≥ 18  |  <strong>Version:</strong> 1.0.0  |  <strong>Last updated:</strong> 2026-04-08  |  <strong>PM2 app name:</strong> e-judge
+</div>
+<h3>1. Overview</h3>
+<p>E-Judge is a Node.js service that synchronizes immigration hearing data from the EOIR Case-Access API into Google Sheets. It exposes an HTTP API (including a Slack slash command endpoint) that triggers a sync run, detects changes against the previous state stored in the master sheet, and writes the updated dataset back to Google Sheets.</p>
+<h4>High-Level Architecture</h4>
+<div class="code-block">Slack / HTTP client
+        |
+        v
+ Express API  ──►  syncService  ──►  caseService  ──►  EOIR API
+ (src/index.js)    (lock + flow)    (HTTP + retry)
+        |                 |
+        |                 └──►  sheetService  ──►  Google Sheets + Drive
+        |
+        └── /health, /sync, /slack/command,
+            /master-sheet-info, /test/master-sheet</div>
+<h4>Key Source Files</h4>
+<div class="table-wrap"><table><thead><tr><th>File</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>src/index.js</code></td><td>Express app entry point, route registration</td></tr>
+<tr><td><code>src/syncService.js</code></td><td>Orchestrates sync flow, manages concurrency lock</td></tr>
+<tr><td><code>src/caseService.js</code></td><td>EOIR API calls with retry + exponential backoff</td></tr>
+<tr><td><code>src/sheetService.js</code></td><td>All Google Sheets and Drive operations</td></tr>
+<tr><td><code>ecosystem.config.js</code></td><td>PM2 configuration</td></tr>
+</tbody></table></div>
+<h3>2. Runtime Environment</h3>
+<h4>Requirements</h4>
+<ul>
+<li>Node.js 18+ (uses native global <code>fetch</code> / <code>AbortController</code>)</li>
+<li>A Google Cloud service account with access to the target Drive folder</li>
+<li>Network egress to <code>case-access.eoir.justice.gov</code> and Google APIs</li>
+<li>~300–500 MB RAM (PM2 restarts at 500 MB)</li>
+</ul>
+<h4>Environment Variables</h4>
+<div class="table-wrap"><table><thead><tr><th>Variable</th><th>Required</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>EOIR_ID</code></td><td>✅ Yes</td><td>EOIR attorney/firm identifier (e.g. NN532599)</td></tr>
+<tr><td><code>GOOGLE_APPLICATION_CREDENTIALS</code></td><td>✅ Yes</td><td>Path to service account JSON key</td></tr>
+<tr><td><code>GOOGLE_DRIVE_FOLDER_ID</code></td><td>✅ Yes</td><td>Drive folder ID for the master sheet</td></tr>
+<tr><td><code>PORT</code></td><td>No</td><td>Listen port (default: 3002)</td></tr>
+<tr><td><code>ALLOWED_USER_IDS</code></td><td>No</td><td>Comma-separated Slack user IDs allowed to run /sync</td></tr>
+<tr><td><code>LOCK_TIMEOUT_MS</code></td><td>No</td><td>Stale-lock timeout in ms (default: 10 min)</td></tr>
+</tbody></table></div>
+<div class="warning-box"><strong>🔒 Security:</strong> Secrets (service-account JSON) must never be committed to source control. <code>.gcloudignore</code> and <code>.gitignore</code> already exclude the <code>credentials/</code> directory.</div>
+<h4>Process &amp; Port Configuration</h4>
+<ul>
+<li>PM2 app name: <code>e-judge</code> (defined in <code>ecosystem.config.js</code>)</li>
+<li>Default listen port: <code>3002</code> (override via <code>PORT</code>)</li>
+<li>Cron restart window: 06:00, 14:00, 22:00 UTC (forced restart for hygiene)</li>
+<li>Max memory before auto-restart: 500 MB</li>
+</ul>
+<h3>3. Deployment</h3>
+<p>The full first-time deployment guide lives in <code>LIGHTSAIL_DEPLOY.md</code>. This section covers routine operations only.</p>
+<h4>Update an Existing Deployment (Lightsail / VM)</h4>
+<div class="code-block">cd ~/apps/e-judge
+git pull
+npm install --production
+pm2 restart e-judge
+pm2 logs e-judge --lines 100
+
+# After restart, verify:
+curl -s http://localhost:3002/health
+# Expected: {"status":"ok","timestamp":"..."}</div>
+<h4>Cloud Run / Container</h4>
+<div class="code-block"># Build and deploy
+gcloud run deploy e-judge \
+  --source . \
+  --region &lt;REGION&gt; \
+  --set-env-vars EOIR_ID=NN532599 \
+  --set-secrets GOOGLE_APPLICATION_CREDENTIALS=/secrets/sa.json:latest</div>
+<h4>Rollback</h4>
+<div class="code-block"># VM rollback
+cd ~/apps/e-judge
+git log --oneline -n 10       # find the previous good SHA
+git checkout &lt;SHA&gt;
+npm install --production
+pm2 restart e-judge
+
+# Cloud Run rollback
+gcloud run services update-traffic e-judge --to-revisions=&lt;PREVIOUS_REVISION&gt;=100</div>
+<h3>4. API Endpoints</h3>
+<div class="table-wrap"><table><thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>GET</code></td><td><code>/health</code></td><td>Liveness check — returns <code>{"status":"ok"}</code> if process is alive</td></tr>
+<tr><td><code>POST</code></td><td><code>/sync</code></td><td>Triggers a full EOIR sync run. Requires <code>cookie</code> in body.</td></tr>
+<tr><td><code>POST</code></td><td><code>/slack/command</code></td><td>Slack slash command endpoint (ACKs immediately, processes in background)</td></tr>
+<tr><td><code>GET</code></td><td><code>/master-sheet-info</code></td><td>Returns metadata about the master Google Sheet</td></tr>
+<tr><td><code>GET</code></td><td><code>/test/master-sheet</code></td><td>Returns first 10 rows for quick inspection</td></tr>
+</tbody></table></div>
+<h4>Cookie Requirements</h4>
+<ul>
+<li>Minimum length: 20 characters</li>
+<li>Rejected if it contains control characters (<code>\x00–\x1f</code> except tab/CR/LF)</li>
+<li>Cookie validation is skipped only in offline mock mode (<code>useTestSheet &amp;&amp; mockHearingChanges</code>)</li>
+</ul>
+<h4>Example API Calls</h4>
+<div class="code-block"># Production sync
+curl -X POST http://localhost:3002/sync \
+  -H "Content-Type: application/json" \
+  -d '{"cookie":"&lt;EOIR_COOKIE&gt;","isProductionMode":true}'
+
+# Offline mock (no cookie needed)
+curl -X POST http://localhost:3002/sync \
+  -H "Content-Type: application/json" \
+  -d '{"useTestSheet":true,"mockHearingChanges":true}'</div>
+<h3>5. Sync Flow Details</h3>
+<ol>
+<li><strong>Lock acquisition</strong> — syncService uses a timestamp-based lock (LOCK_TIMEOUT_MS = 10 min). Stale locks are auto-released.</li>
+<li><strong>Fetch hearings</strong> — caseService calls EOIR API with a 30 s timeout.</li>
+<li><strong>Filter</strong> — only hearings within the next 12 months are kept; duplicates by ScheduleId are removed.</li>
+<li><strong>Fetch details</strong> — parallel batches of 10 requests with up to 3 retries and exponential backoff (base 200 ms). 429 responses are respected.</li>
+<li><strong>Read previous data</strong> — sheetService reads both <code>individuals</code> and <code>others</code> tabs (range A2:P).</li>
+<li><strong>Diff &amp; write</strong> — compares hearing date/time/judge/court, marks rows as <code>NEW</code> / <code>UPDATED</code>, preserves judge rates, notes, and assigned lawyer unless a change is detected in production mode.</li>
+<li><strong>Trailing cleanup</strong> — rows beyond the new data (up to row 10,000) are cleared to prevent stale entries.</li>
+<li><strong>Lock release</strong> — always executed in a <code>finally</code> block.</li>
+</ol>
+<h3>6. Monitoring &amp; Logs</h3>
+<h4>PM2 Commands</h4>
+<div class="code-block">pm2 status                         # overview of all processes
+pm2 logs e-judge                   # tail combined logs
+pm2 logs e-judge --lines 200       # last 200 lines
+pm2 logs e-judge --err             # errors only
+pm2 monit                          # interactive dashboard</div>
+<h4>Log Files</h4>
+<ul>
+<li><code>logs/out.log</code> — stdout</li>
+<li><code>logs/error.log</code> — stderr</li>
+<li><code>logs/combined.log</code> — merged</li>
+</ul>
+<h4>Health Check</h4>
+<p>Use <code>GET /health</code> from an external monitor (UptimeRobot, Cloud Run healthcheck, etc.). It does not touch EOIR or Google APIs — a 200 proves the process is alive, not that downstream dependencies are reachable.</p>
+<h3>7. Routine Maintenance Schedule</h3>
+<div class="table-wrap"><table><thead><tr><th>Cadence</th><th>Tasks</th></tr></thead><tbody>
+<tr><td><strong>Weekly</strong></td><td>Check pm2 status / Cloud Run revision health; scan <code>logs/error.log</code> for new error signatures; confirm the master sheet is receiving updates (check Drive modification timestamp)</td></tr>
+<tr><td><strong>Monthly</strong></td><td>Rotate / verify the EOIR cookie with the team; review Google Cloud quotas (Sheets API &amp; Drive API); run <code>npm outdated</code> and plan dependency updates; archive or trim log files if they exceed a few hundred MB</td></tr>
+<tr><td><strong>Quarterly</strong></td><td>Rotate Google service-account key (steps below); review ALLOWED_USER_IDS against current team; re-validate Drive folder ID and service account access</td></tr>
+</tbody></table></div>
+<h4>Quarterly: Rotate the Google Service Account Key</h4>
+<ol>
+<li>Create a new key in Google Cloud Console for the same service account</li>
+<li>Copy it to <code>credentials/service-account.json</code> on the server (or update Secret Manager for Cloud Run)</li>
+<li>Restart the service: <code>pm2 restart e-judge</code></li>
+<li>Verify with <code>curl /health</code> and a small <code>/sync</code> run against the test sheet</li>
+<li>Delete the old key from Google Cloud Console</li>
+</ol>
+<h4>Dependency Upgrades</h4>
+<div class="code-block">npm outdated
+npm audit
+# Minor/patch updates:
+npm update
+npm install --production
+pm2 restart e-judge
+# Always test googleapis upgrades against the test sheet before touching production.</div>
+<h3>8. Troubleshooting</h3>
+<div class="table-wrap"><table><thead><tr><th>Symptom</th><th>Cause &amp; Resolution</th></tr></thead><tbody>
+<tr><td>Service won't start</td><td>Run <code>pm2 logs e-judge --err --lines 50</code>. Verify credentials file exists and is valid JSON. Check port is not already bound: <code>sudo lsof -i :3002</code>. Confirm Node.js ≥ 18: <code>node -v</code>.</td></tr>
+<tr><td><code>/sync</code> returns "Senkronizasyon yapilacak veri bulunamadi"</td><td>Invalid or expired EOIR cookie, or the account genuinely has no upcoming hearings. Verify by hitting EOIR directly with the same cookie.</td></tr>
+<tr><td><code>/sync</code> returns "Su anda baska bir senkronizasyon islemi yapiliyor"</td><td>Another sync run is in progress. Wait. If stuck for more than 10 minutes, the lock will auto-clear on the next call.</td></tr>
+<tr><td>Slack command times out</td><td>The endpoint ACKs immediately and processes in background. If timeouts persist, check whether Express is blocked (CPU/memory) or whether the inbound URL is reachable from Slack.</td></tr>
+<tr><td>Google API 403 / 401</td><td>Service account lost folder access. Re-share the Drive folder with the service-account email as Editor, or rotate the key (§7 Quarterly).</td></tr>
+<tr><td>Data looks wrong in the sheet</td><td>Use <code>GET /master-sheet-info</code> and <code>GET /test/master-sheet</code> to inspect state. Re-run <code>/sync</code> with <code>useTestSheet=true</code> before touching production.</td></tr>
+</tbody></table></div>
+<h3>9. Security Notes</h3>
+<ul>
+<li>The <code>/sync</code> endpoint has no authentication beyond cookie validation — protect it with a firewall, VPN, Cloud Run IAM, or reverse-proxy auth.</li>
+<li><code>/slack/command</code> relies on the ALLOWED_USER_IDS allow-list. Slack request signature verification is not yet implemented; adding <code>X-Slack-Signature</code> verification is recommended before public exposure.</li>
+<li>EOIR cookies appear in request bodies — avoid logging them. The current code only logs length, which is safe.</li>
+<li>The service-account key grants write access to the Drive folder — treat it as a high-severity secret.</li>
+</ul>
+<h3>10. References</h3>
+<ul>
+<li>Repository: <code>git remote -v</code> for origin</li>
+<li>Deployment guide: <code>LIGHTSAIL_DEPLOY.md</code></li>
+<li>EOIR API: <code>https://case-access.eoir.justice.gov/api/caseapi</code></li>
+<li>Google Sheets API v4, Google Drive API v3 (googleapis SDK)</li>
+<li>Apps Script companion: <code>apps-script/Code.gs</code></li>
+</ul>
+</div>
+    </div>
+    <p class="footer-note">Oguz Law Internal — Confidential</p>
+  </div>
+</body>
+</html>

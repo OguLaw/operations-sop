@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NordBrowser Beta Test — Scope Review Report | Oguz Law SOP Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="doc-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <a class="back-link" href="index.html">← Back to SOP Library</a>
+      <div class="doc-badge">IT Evaluation</div>
+      <h1 class="hero-title">NordBrowser Beta Test — Scope Review Report</h1>
+      <p class="hero-sub">Beta evaluation of NordBrowser, a VPN-integrated managed browser from NordVPN. Tests security policy controls, routing enforcement, and peripheral access — with two high-priority defects identified.</p>
+    </div>
+  </div>
+  <div class="page-wrap">
+    <div class="doc-card expanded">
+      <div class="doc-body"><h2>NordBrowser — Beta Test Scope Review Report</h2>
+<div class="info-box">
+<strong>Version:</strong> 0.1  |  <strong>Date:</strong> April 2026  |  <strong>Prepared by:</strong> Mert Fatih Simsek  |  <strong>Beta access via:</strong> NordVPN
+</div>
+<h3>1. Executive Summary</h3>
+<p>NordBrowser is a VPN-integrated browser solution currently under beta evaluation. It is developed under a NordVPN partnership, which has granted early access for internal testing. The core value proposition is distributing a fully VPN-enabled browser to employees without requiring individual VPN client installations or configuration — significantly reducing IT overhead and support burden.</p>
+<p>This report summarizes the initial test pass conducted as of March 30, 2026, covering Security Policy controls, Routing Policy enforcement, and peripheral device access. Results are categorized as <strong>working</strong> or <strong>not working</strong> based on observed behavior.</p>
+<h3>2. Background &amp; Business Rationale</h3>
+<p>The organization currently relies on NordVPN for secure remote access. Distributing and maintaining VPN clients across all employee endpoints involves ongoing operational complexity: installation, configuration, credential management, and troubleshooting.</p>
+<p>NordBrowser addresses this by embedding VPN connectivity directly into a managed browser. Key benefits identified:</p>
+<ul>
+<li>Eliminates per-device VPN client installation and configuration</li>
+<li>Reduces IT support burden for VPN-related issues</li>
+<li>Centralized control over browser-level security policies</li>
+<li>Granular routing rules to enforce VPN access for specific destinations</li>
+<li>Faster onboarding of new employees requiring secure web access</li>
+</ul>
+<h3>3. Test Scope &amp; Methodology</h3>
+<p>Testing was performed on a controlled internal environment using beta credentials from NordVPN. The following capability areas were included:</p>
+<ul>
+<li><strong>Security Policy management</strong> — ability to restrict or permit browser-level features for end users</li>
+<li><strong>Routing Policy enforcement</strong> — ability to mandate VPN tunnel usage for specific domains or destinations</li>
+<li><strong>Peripheral access controls</strong> — microphone and camera handling within the managed browser</li>
+</ul>
+<p>Tests were executed manually. Each feature was tested by enabling/disabling the relevant policy and verifying the resulting browser behavior. No automated test framework was used in this phase.</p>
+<h3>4. Test Findings</h3>
+<h4>4.1 Security Policy Controls</h4>
+<p>The Security Policy module allows administrators to disable specific browser capabilities for managed users.</p>
+<div class="table-wrap"><table><thead><tr><th>Feature Tested</th><th>Policy Action</th><th>Result</th></tr></thead><tbody>
+<tr><td>File downloads</td><td>Disable via Security Policy</td><td>✅ Working</td></tr>
+<tr><td>Clipboard access</td><td>Disable via Security Policy</td><td>✅ Working</td></tr>
+<tr><td>Microphone access</td><td>Restrict via Security Policy</td><td>❌ Not working — policy has no effect in current beta</td></tr>
+<tr><td>Camera access</td><td>Restrict via Security Policy</td><td>❌ Not working — policy has no effect in current beta</td></tr>
+</tbody></table></div>
+<div class="warning-box"><strong>⚠ Action required:</strong> Microphone and camera restrictions are non-functional in the current beta build. These must be escalated to the NordVPN beta team with reproduction steps before wider rollout.</div>
+<h4>4.2 Routing Policy</h4>
+<p>The Routing Policy feature allows administrators to define specific domains or URLs that must be accessed exclusively through the VPN tunnel, regardless of the user's general network state.</p>
+<div class="table-wrap"><table><thead><tr><th>Feature Tested</th><th>Configuration</th><th>Result</th></tr></thead><tbody>
+<tr><td>Domain-level VPN enforcement</td><td>Specify domain → force VPN tunnel</td><td>✅ Working — traffic is correctly routed through VPN for targeted domains</td></tr>
+<tr><td>Non-VPN traffic passthrough</td><td>All other domains bypass VPN</td><td>✅ Working</td></tr>
+</tbody></table></div>
+<p>Routing policy is particularly valuable for enforcing compliance on sensitive internal or business-critical services without requiring users to manage VPN state manually.</p>
+<h3>5. Open Issues &amp; Defects</h3>
+<div class="table-wrap"><table><thead><tr><th>Issue</th><th>Severity</th><th>Status</th></tr></thead><tbody>
+<tr><td>Microphone access restriction policy has no effect</td><td>High</td><td>Open — to be escalated to NordVPN beta team</td></tr>
+<tr><td>Camera access restriction policy has no effect</td><td>High</td><td>Open — to be escalated to NordVPN beta team</td></tr>
+<tr><td>VPN failsafe / kill-switch behavior when connection drops not yet tested</td><td>Medium</td><td>Pending — scheduled for next test pass</td></tr>
+<tr><td>Routing policy tested on limited domain set (fewer than 5 domains)</td><td>Low</td><td>Open — expand in next pass</td></tr>
+</tbody></table></div>
+<h3>6. Recommendations</h3>
+<ol>
+<li>Report microphone and camera policy failures to NordVPN beta support with detailed reproduction steps and environment specs</li>
+<li>Expand routing policy testing to cover at least 5–10 domains, including internal business applications</li>
+<li>Validate behavior when the VPN connection drops mid-session (failsafe / kill-switch behavior)</li>
+<li>Define and document which Security Policy settings are mandatory vs. optional for the organization's deployment</li>
+<li>Request a policy audit log from NordVPN to ensure administrator actions are traceable</li>
+<li>Conduct a second test pass after NordVPN addresses the peripheral policy issues</li>
+</ol>
+<h3>7. Next Steps</h3>
+<div class="table-wrap"><table><thead><tr><th>Action</th><th>Owner</th><th>Timeline</th></tr></thead><tbody>
+<tr><td>Submit bug report to NordVPN for microphone &amp; camera policies</td><td>Mert Fatih Simsek</td><td>Immediately</td></tr>
+<tr><td>Expand routing policy test to 5–10 domains</td><td>Mert Fatih Simsek</td><td>Next sprint</td></tr>
+<tr><td>Test VPN drop / kill-switch behavior</td><td>Mert Fatih Simsek</td><td>Next sprint</td></tr>
+<tr><td>Second full test pass after peripheral policy fix</td><td>Mert Fatih Simsek</td><td>After NordVPN patch</td></tr>
+<tr><td>Go/no-go decision for broader rollout</td><td>Ops lead</td><td>After second test pass</td></tr>
+</tbody></table></div>
+<h3>8. Conclusion</h3>
+<p>NordBrowser demonstrates strong potential as a zero-friction VPN browser solution for enterprise use. Core capabilities — Security Policy controls for file operations and clipboard, and Routing Policy enforcement for domain-level VPN requirements — are functional and meet initial expectations.</p>
+<p>Two high-priority defects related to microphone and camera access controls must be resolved before the solution can be considered production-ready. Pending these fixes and additional testing coverage, NordBrowser appears to be a viable candidate for replacing individual VPN client deployments across the organization.</p>
+</div>
+    </div>
+    <p class="footer-note">Oguz Law Internal — Confidential</p>
+  </div>
+</body>
+</html>
