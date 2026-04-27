@@ -1,14 +1,21 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stripe Checkout Sistemi — Oguz Law SOP Library</title>
+<title>Stripe Checkout System — Oguz Law SOP Library</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
-/* SOP-specific fallback styles — global styles.css'te tanımlı değilse devreye girer */
+/* Layout reset — force hero and main to stack full-width, prevent any side-by-side split */
+body.site-home { display: block; }
+.hero { display: block; width: 100%; float: none; position: static; }
+.hero-inner { max-width: 1100px; margin: 0 auto; }
+.main { display: block; width: 100%; float: none; }
+.content-area { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem 1.5rem; }
+
+/* SOP-specific fallback styles — used only if not defined in global styles.css */
 .back-link { display: inline-block; margin-bottom: 1.5rem; font-family: 'Jost', sans-serif; font-size: 0.9rem; color: #555; text-decoration: none; }
 .back-link:hover { color: #000; }
 
@@ -46,12 +53,12 @@ pre code { background: transparent; color: inherit; padding: 0; font-size: inher
 .kv-grid dd { margin: 0; color: #444; }
 </style>
 </head>
-<body class="site-doc">
+<body class="site-home">
 <div class="hero">
   <div class="hero-inner">
     <div class="main-header-title">Technical Infrastructure</div>
-    <h1 class="hero-title">Stripe Checkout Sistemi</h1>
-    <p class="hero-sub">ITIN ödeme sayfasının uçtan uca dokümantasyonu — mimari, bakım, yeni paket ekleme ve aynı sistemin yeni bir marka için sıfırdan kurulumu.</p>
+    <h1 class="hero-title">Stripe Checkout System</h1>
+    <p class="hero-sub">End-to-end documentation for the ITIN payment system: architecture, maintenance, adding a new package, and rebuilding the same system from scratch for a new brand.</p>
   </div>
 </div>
 
@@ -65,47 +72,47 @@ pre code { background: transparent; color: inherit; padding: 0; font-size: inher
       <span><strong>Owner:</strong> CRM Specialist (Emel Gedik)</span>
       <span><strong>Approved by:</strong> Dorukhan Korkut</span>
       <span><strong>Status:</strong> Active</span>
-      <span><strong>Last Updated:</strong> Nisan 2026</span>
+      <span><strong>Last Updated:</strong> April 2026</span>
     </div>
 
     <div class="callout callout-warn">
-      <strong>Önemli not — eski plan ile fiili build farklı.</strong> SOP Library'deki "ITIN STRIPE CHECKOUT" planlama dokümanı, Stripe Checkout API (hosted checkout sayfasına redirect) üzerinden anlatılmıştı. <strong>Fiili build farklıdır:</strong> custom HTML formu içinde Stripe Elements + PaymentIntent API kullanılıyor. Bu SOP, fiili build'in dokümantasyonudur. Eski planlama dokümanı referans olarak tutulabilir ama operasyonel kararlarda bu SOP esas alınmalıdır.
+      <strong>Important — the original plan and the actual build differ.</strong> The "ITIN STRIPE CHECKOUT" planning document in the SOP Library described a Stripe Checkout API flow (redirecting users to a hosted Stripe checkout page). <strong>The actual build is different:</strong> a custom HTML form with Stripe Elements + the PaymentIntent API. This SOP documents the actual build. The earlier planning document remains as historical reference, but operational decisions should be based on this SOP.
     </div>
 
     <section class="sop-section">
-      <h2>1. Amaç</h2>
-      <p>Bu SOP, ITIN ödeme sayfasının teknik altyapısını dokümante eder. Ödeme akışının nasıl çalıştığı, hangi servislerin birbirine bağlandığı, gün içinde ne tür hatalarla karşılaşılabileceği, yeni paket eklenmesi gerektiğinde atılacak adımlar ve aynı sistemin yeni bir marka için kurulması istendiğinde izlenecek yol burada anlatılır.</p>
-      <p>Bu doküman, sistemi devralacak veya bakımına dahil olacak her ekip üyesi için tek başvuru kaynağıdır.</p>
+      <h2>1. Purpose</h2>
+      <p>This SOP documents the technical infrastructure of the ITIN payment page. It explains how the payment flow works, which services connect to which, what kinds of errors can occur day-to-day, the steps to follow when adding a new package, and how to set up an equivalent system for a new brand from scratch.</p>
+      <p>This document is the single source of reference for any team member taking over the system or contributing to its maintenance.</p>
     </section>
 
     <section class="sop-section">
-      <h2>2. Kapsam</h2>
+      <h2>2. Scope</h2>
       <ul>
-        <li><strong>Frontend:</strong> Cloudflare Pages üzerinde host edilen tek sayfalık ödeme formu (<code>public/index.html</code>).</li>
-        <li><strong>Backend:</strong> Cloudflare Pages Functions (serverless) — üç endpoint: <code>/create-payment-intent</code>, <code>/payment-success</code>, <code>/webhook</code>.</li>
-        <li><strong>WordPress entegrasyonu:</strong> her paket için ayrı WordPress sayfası, ödeme formu iframe olarak gömülü.</li>
-        <li><strong>Stripe hesabı:</strong> Oguz Law Stripe (live) ve test ortamı.</li>
-        <li><strong>HubSpot entegrasyonu:</strong> Forms API submit + opsiyonel CRM API contact update.</li>
+        <li><strong>Frontend:</strong> single-page payment form hosted on Cloudflare Pages (<code>public/index.html</code>).</li>
+        <li><strong>Backend:</strong> Cloudflare Pages Functions (serverless) — three endpoints: <code>/create-payment-intent</code>, <code>/payment-success</code>, <code>/webhook</code>.</li>
+        <li><strong>WordPress integration:</strong> a separate WordPress page per package, with the payment form embedded as an iframe.</li>
+        <li><strong>Stripe account:</strong> Oguz Law Stripe (live + test).</li>
+        <li><strong>HubSpot integration:</strong> Forms API submit + optional CRM API contact update.</li>
       </ul>
-      <p>Bu SOP <strong>kapsam dışındadır</strong>: Stripe ürün/fiyat tasarımı (pazarlama kararı), WordPress sayfa içerikleri (içerik ekibi), Stripe ödeme uyuşmazlık (dispute) süreci.</p>
+      <p><strong>Out of scope</strong> for this SOP: Stripe product/price design (a marketing decision), WordPress page content (content team), Stripe dispute handling.</p>
     </section>
 
     <section class="sop-section">
-      <h2>3. Sistem Mimarisi</h2>
+      <h2>3. System Architecture</h2>
 
       <h3>3.1 Stack</h3>
       <ul>
-        <li><strong>Hosting:</strong> Cloudflare Pages (statik sayfa) + Cloudflare Pages Functions (serverless API endpoint'leri). Build adımı yok, output dizini <code>public/</code>.</li>
-        <li><strong>Ödeme:</strong> Stripe Elements (kart girişi) + Stripe PaymentIntent API (ödeme oluşturma).</li>
-        <li><strong>CRM:</strong> HubSpot Forms API (tüm submit'ler) + HubSpot CRM API (token varsa contact property update).</li>
-        <li><strong>Site:</strong> WordPress (paket sayfaları, iframe wrapper).</li>
+        <li><strong>Hosting:</strong> Cloudflare Pages (static page) + Cloudflare Pages Functions (serverless API endpoints). No build step, output directory <code>public/</code>.</li>
+        <li><strong>Payments:</strong> Stripe Elements (card input) + Stripe PaymentIntent API (payment creation).</li>
+        <li><strong>CRM:</strong> HubSpot Forms API (every successful payment) + HubSpot CRM API (contact property update when access token is set).</li>
+        <li><strong>Site:</strong> WordPress (package pages, iframe wrapper).</li>
       </ul>
 
-      <h3>3.2 Repo yapısı</h3>
-      <p>GitHub repo: <code>stripe-hubspot-main</code> (hesap: <code>accounts.itin</code>). Cloudflare hesabı: <code>admin@oguz.law</code>.</p>
+      <h3>3.2 Repo structure</h3>
+      <p>GitHub repo: <code>stripe-hubspot-main</code> (account: <code>accounts.itin</code>). Cloudflare account: <code>admin@oguz.law</code>.</p>
 <pre><code>stripe-hubspot-main/
 ├── public/
-│   ├── index.html           ← Ödeme formu (statik)
+│   ├── index.html           ← Payment form (static)
 │   └── logo.png
 ├── functions/
 │   ├── create-payment-intent.js   → POST /create-payment-intent
@@ -113,52 +120,52 @@ pre code { background: transparent; color: inherit; padding: 0; font-size: inher
 │   └── webhook.js                 → POST /webhook
 ├── DEPLOY-GUIDE.md
 └── .gitignore</code></pre>
-      <p><code>functions/</code> klasöründeki her dosya, Cloudflare Pages tarafından otomatik olarak aynı isimle bir API endpoint'ine dönüştürülür. Ayrı sunucu yok, Node.js çalıştırılmıyor.</p>
+      <p>Every file under <code>functions/</code> is automatically turned into an API endpoint by Cloudflare Pages, using the filename as the route. No separate server, no Node.js process to manage.</p>
 
-      <h3>3.3 Endpoint sorumlulukları</h3>
+      <h3>3.3 Endpoint responsibilities</h3>
       <table>
-        <thead><tr><th>Endpoint</th><th>Tetikleyici</th><th>Görev</th></tr></thead>
+        <thead><tr><th>Endpoint</th><th>Trigger</th><th>Job</th></tr></thead>
         <tbody>
-          <tr><td><code>POST /create-payment-intent</code></td><td>Frontend formu submit</td><td>Stripe'tan fiyatı çek, customer search/create, PaymentIntent oluştur, metadata'ya UTM + tracking + müşteri bilgisi ekle, <code>client_secret</code> döndür.</td></tr>
-          <tr><td><code>POST /payment-success</code></td><td>Frontend, ödeme onaylandıktan sonra</td><td>PaymentIntent'i Stripe'tan tekrar çekip <code>status === 'succeeded'</code> doğrula. HubSpot Forms API'ye submit. Token varsa CRM contact PATCH. PI metadata'sına <code>success_url</code> ekle.</td></tr>
-          <tr><td><code>POST /webhook</code></td><td>Stripe webhook</td><td>Şu an sadece event tipini log'luyor. <strong>Gerçek iş yapmıyor</strong> — bilinen risk, bkz. §10.3.</td></tr>
+          <tr><td><code>POST /create-payment-intent</code></td><td>Frontend form submit</td><td>Fetch price from Stripe, find or create customer, create a PaymentIntent, attach UTM + tracking + customer info as metadata, return <code>client_secret</code>.</td></tr>
+          <tr><td><code>POST /payment-success</code></td><td>Frontend, after Stripe confirms payment</td><td>Re-fetch the PaymentIntent and verify <code>status === 'succeeded'</code>. Submit to HubSpot Forms API. PATCH the HubSpot contact via CRM API (if token set). Add <code>success_url</code> to PI metadata.</td></tr>
+          <tr><td><code>POST /webhook</code></td><td>Stripe webhook</td><td>Currently logs the event type only. <strong>Does no real work</strong> — known risk, see §9.3.</td></tr>
         </tbody>
       </table>
     </section>
 
     <section class="sop-section">
-      <h2>4. Uçtan Uca Ödeme Akışı</h2>
+      <h2>4. End-to-End Payment Flow</h2>
       <ol class="step-list">
-        <li><strong>Kullanıcı WordPress paket sayfasını açar.</strong> Her paket için ayrı bir sayfa var (örn. <code>itin.com/standard-itin</code>). Sayfada Cloudflare ödeme formu iframe olarak gömülü, paket query param ile geçiriliyor: <code>?pkg=itin</code>.</li>
-        <li><strong>Frontend açılışta UTM ve tracking yakalar.</strong> URL'den okur, <code>localStorage</code> ile birleştirir, <code>hubspotutk</code> cookie'sini de alır. Yakalanan alanlar: <code>utm_source/medium/campaign/term/content/id</code>, <code>gclid</code>, <code>fbclid</code>, <code>msclkid</code>, <code>referrer</code>, <code>landing_page</code>, first/last touch URL ve tarih, <code>page_history</code>, <code>page_views</code>, <code>device</code>, <code>browser_lang</code>.</li>
-        <li><strong>Form doldurulur ve submit edilir.</strong> Frontend, <code>POST /create-payment-intent</code> çağırır. Body: email, ad-soyad, telefon, adres, <code>premiumSelected</code>, <code>pkg</code>, tracking bloğu.</li>
-        <li><strong>Backend PaymentIntent hazırlar.</strong>
+        <li><strong>The user opens a WordPress package page.</strong> Each package has its own page (e.g. <code>itin.com/standard-itin</code>). The Cloudflare payment form is embedded as an iframe; the package is passed as a query parameter: <code>?pkg=itin</code>.</li>
+        <li><strong>The frontend captures UTM and tracking data on load.</strong> It reads from the URL, merges with <code>localStorage</code>, and reads the <code>hubspotutk</code> cookie. Captured fields: <code>utm_source/medium/campaign/term/content/id</code>, <code>gclid</code>, <code>fbclid</code>, <code>msclkid</code>, <code>referrer</code>, <code>landing_page</code>, first/last touch URL and date, <code>page_history</code>, <code>page_views</code>, <code>device</code>, <code>browser_lang</code>.</li>
+        <li><strong>The form is filled in and submitted.</strong> The frontend calls <code>POST /create-payment-intent</code>. Body: email, first/last name, phone, address, <code>premiumSelected</code>, <code>pkg</code>, tracking block.</li>
+        <li><strong>Backend prepares the PaymentIntent.</strong>
           <ul>
-            <li>Stripe API'den base price çeker (gerekirse premium price'ı da).</li>
-            <li><code>customers/search</code> ile email'e göre müşteri arar. Bulursa update eder, bulamazsa yeni oluşturur.</li>
-            <li>PaymentIntent oluşturur. UTM, tracking, müşteri bilgisi, IP (Cloudflare <code>cf-connecting-ip</code> header'ından), paket bilgisi — hepsi PI <strong>metadata</strong>'sına yazılır.</li>
-            <li><code>page_history</code>, Stripe metadata 500 karakter limiti nedeniyle path-only string'e sıkıştırılır.</li>
-            <li><code>client_secret</code> frontend'e döner.</li>
+            <li>Fetches the base price from Stripe (and the premium price if applicable).</li>
+            <li>Searches Stripe customers by email via <code>customers/search</code>. Updates if found, creates a new one if not.</li>
+            <li>Creates a PaymentIntent. UTM, tracking, customer info, IP (from Cloudflare's <code>cf-connecting-ip</code> header), package info — all attached as PI <strong>metadata</strong>.</li>
+            <li><code>page_history</code> is compressed to a path-only string due to the 500-character Stripe metadata value limit.</li>
+            <li>Returns <code>client_secret</code> to the frontend.</li>
           </ul>
         </li>
-        <li><strong>Frontend Stripe ile ödemeyi onaylar.</strong> <code>stripe.confirmCardPayment(clientSecret, { payment_method: { card, billing_details } })</code>. Kart bilgisi Stripe'a doğrudan gider, sunucumuza dokunmaz (PCI scope dışında kalırız).</li>
-        <li><strong>Ödeme başarılıysa frontend <code>POST /payment-success</code>'a istek atar.</strong> Burada PaymentIntent ID'si, contact data, paket, tracking, success URL gönderilir.</li>
-        <li><strong>Backend ödemeyi server-side doğrular ve HubSpot'a yazar.</strong>
+        <li><strong>Frontend confirms the payment with Stripe.</strong> <code>stripe.confirmCardPayment(clientSecret, { payment_method: { card, billing_details } })</code>. Card details go directly to Stripe and never touch our server (which keeps us out of PCI scope).</li>
+        <li><strong>On success, the frontend calls <code>POST /payment-success</code>.</strong> Body: PaymentIntent ID, contact data, package, tracking, success URL.</li>
+        <li><strong>Backend verifies the payment server-side and writes to HubSpot.</strong>
           <ul>
-            <li>PaymentIntent'i tekrar çekip <code>status === 'succeeded'</code> kontrolü.</li>
-            <li>HubSpot Forms API submit (Portal <code>44184085</code>, Form <code>bc104a87-0a64-42e3-abf7-1c9192975a9e</code>). UTM'ler native HubSpot field name'leriyle, <code>hutk</code> context'e ekli, payment info hidden field olarak.</li>
-            <li><code>HUBSPOT_ACCESS_TOKEN</code> set ise CRM API üzerinden contact'ı email'le bulup property'leri PATCH eder: <code>payment_status</code>, <code>payment_amount</code>, <code>payment_id</code>, <code>last_payment_date</code>, <code>package_type</code>.</li>
+            <li>Re-fetches the PaymentIntent and checks <code>status === 'succeeded'</code>.</li>
+            <li>Submits to HubSpot Forms API (Portal <code>44184085</code>, Form <code>bc104a87-0a64-42e3-abf7-1c9192975a9e</code>). UTMs go in as native HubSpot fields, <code>hutk</code> goes in the context, payment info goes as hidden fields.</li>
+            <li>If <code>HUBSPOT_ACCESS_TOKEN</code> is set: looks up the contact by email via the CRM API and PATCHes properties: <code>payment_status</code>, <code>payment_amount</code>, <code>payment_id</code>, <code>last_payment_date</code>, <code>package_type</code>.</li>
           </ul>
         </li>
-        <li><strong>Frontend thank-you sayfasına yönlendirir.</strong> <code>https://itin.com/thank-you/#&lt;params&gt;</code> — hash fragment, query değil (GA ve iframe parent için kasıtlı). Iframe içindeyse <code>window.top.location.href</code> kullanılır, üst pencere yönlendirilir.</li>
+        <li><strong>Frontend redirects to the thank-you page.</strong> <code>https://itin.com/thank-you/#&lt;params&gt;</code> — note the hash fragment, not query string (intentional, for GA and iframe parent compatibility). If running inside an iframe, <code>window.top.location.href</code> is used to redirect the parent window.</li>
       </ol>
     </section>
 
     <section class="sop-section">
-      <h2>5. Paket Konfigürasyonu</h2>
+      <h2>5. Package Configuration</h2>
 
-      <h3>5.1 Mevcut paketler ve Stripe Price ID'leri</h3>
-      <p>Tek tek tanımlı: backend dosyasında (<code>functions/create-payment-intent.js</code>) ve frontend dosyasında (<code>public/index.html</code>). <strong>İkisi de güncellenmediği sürece paket çalışmaz.</strong></p>
+      <h3>5.1 Current packages and Stripe Price IDs</h3>
+      <p>Defined in two places: in the backend (<code>functions/create-payment-intent.js</code>) and in the frontend (<code>public/index.html</code>). <strong>A package will not work unless both files are updated.</strong></p>
       <table>
         <thead><tr><th>pkg key</th><th>Stripe Price ID</th><th>Display name</th></tr></thead>
         <tbody>
@@ -180,19 +187,19 @@ pre code { background: transparent; color: inherit; padding: 0; font-size: inher
         <li><strong>Live:</strong> <code>price_1SuIWr01jNNW3HJpjoAJkCMa</code></li>
         <li><strong>Test:</strong> <code>price_1SucRy01jNNW3HJp87IDczJ1</code></li>
       </ul>
-      <p>Sadece <code>test</code> ve <code>test2</code> paketleri test premium price'ı kullanır. Diğer tüm paketler live premium price'ı kullanır. Bu mantık <code>create-payment-intent.js</code> içinde <code>premiumPriceId</code> değişkeniyle çözümlenir.</p>
+      <p>Only <code>test</code> and <code>test2</code> packages use the test premium price. All other packages use the live premium price. This logic is resolved in <code>create-payment-intent.js</code> via the <code>premiumPriceId</code> variable.</p>
 
       <h3>5.3 Frontend display config</h3>
-      <p>Frontend'deki <code>PACKAGES</code> nesnesi <strong>backend ile aynı key'leri</strong> kullanır ama sadece görsel bilgi içerir: <code>name</code> (başlık), <code>sub</code> (alt başlık), <code>base</code> (gösterim fiyatı), <code>upsellDesc</code> (premium upsell açıklaması). Fiili tahsilat tutarı her zaman Stripe'tan çekilir — frontend'deki sayı sadece görsel.</p>
+      <p>The frontend's <code>PACKAGES</code> object uses <strong>the same keys as the backend</strong>, but only contains display info: <code>name</code> (title), <code>sub</code> (subtitle), <code>base</code> (display price), <code>upsellDesc</code> (premium upsell description). The actual amount charged is always pulled live from Stripe — the number on the frontend is just for display.</p>
 
       <div class="callout callout-info">
-        <strong>Neden iki yerde tutuyoruz?</strong> Backend Stripe API'yi konuşur, fiyatı her ödeme öncesi gerçek zamanlı çeker (manipülasyon riski yok). Frontend ise sayfa render olur olmaz fiyatı göstermek zorunda — bu yüzden hızlı bir hardcoded değere ihtiyacı var. İki yerde tutarlı kalmaları operasyonel sorumluluktur.
+        <strong>Why is it duplicated in two places?</strong> The backend talks to Stripe and fetches the price live before each charge (no manipulation risk). The frontend has to display a price the moment the page renders, so it needs a fast hardcoded value. Keeping the two consistent is an operational responsibility.
       </div>
     </section>
 
     <section class="sop-section">
-      <h2>6. WordPress Entegrasyonu</h2>
-      <p>Mevcut pattern: her paket için ayrı bir WordPress sayfası açılır. Sayfada <strong>HTML widget</strong> içine iframe gömülür. Iframe, Cloudflare Pages URL'ine <code>?pkg=&lt;key&gt;</code> query param ile yönlendirilir.</p>
+      <h2>6. WordPress Integration</h2>
+      <p>Current pattern: a separate WordPress page is created for each package. An <strong>HTML widget</strong> is added to the page, containing an iframe pointing at the Cloudflare Pages URL with the <code>?pkg=&lt;key&gt;</code> query parameter.</p>
 <pre><code>&lt;div style="max-width:700px;margin:0 auto;"&gt;
   &lt;iframe
     src="https://stripe-hubspot2.pages.dev/?pkg=itin"
@@ -207,268 +214,268 @@ window.addEventListener('message', function(e) {
   }
 });
 &lt;/script&gt;</code></pre>
-      <p>Iframe yüksekliği <code>postMessage</code> ile ödeme formundan parent pencereye gönderilir, otomatik resize olur. Sayfa template'i <strong>Full Width</strong> olmalı (sidebar yok).</p>
+      <p>The iframe height is sent from the payment form to the parent window via <code>postMessage</code>, so it auto-resizes to fit content. The page template should be set to <strong>Full Width</strong> (no sidebar).</p>
     </section>
 
     <section class="sop-section">
       <h2>7. Environment Variables</h2>
-      <p>Cloudflare Pages → Settings → Environment Variables → Production altında tanımlanır. Değişiklik sonrası <strong>en son deployment'i Retry etmek zorunlu</strong> — yoksa yeni env var'lar pickup edilmez.</p>
+      <p>Defined under Cloudflare Pages → Settings → Environment Variables → Production. After any change, the latest deployment <strong>must be retried</strong> manually — otherwise the new variables will not be picked up.</p>
       <table>
-        <thead><tr><th>Variable</th><th>Zorunlu</th><th>Açıklama</th></tr></thead>
+        <thead><tr><th>Variable</th><th>Required</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code>STRIPE_SECRET_KEY</code></td><td>Evet</td><td><code>sk_live_…</code> — Stripe Dashboard → Developers → API Keys'ten alınır. Yoksa <code>/create-payment-intent</code> 500 döner.</td></tr>
-          <tr><td><code>HUBSPOT_ACCESS_TOKEN</code></td><td>Hayır</td><td>Set ise CRM contact property update yapılır. Yoksa sadece Forms API submit gider.</td></tr>
-          <tr><td><code>ALLOWED_ORIGIN</code></td><td>Önerilir</td><td>CORS için. Set değilse <code>*</code> fallback (production'da önerilmez).</td></tr>
+          <tr><td><code>STRIPE_SECRET_KEY</code></td><td>Yes</td><td><code>sk_live_…</code> — from Stripe Dashboard → Developers → API Keys. If missing, <code>/create-payment-intent</code> returns 500.</td></tr>
+          <tr><td><code>HUBSPOT_ACCESS_TOKEN</code></td><td>No</td><td>If set, the CRM contact properties are PATCHed after each payment. If absent, only the Forms API submission runs.</td></tr>
+          <tr><td><code>ALLOWED_ORIGIN</code></td><td>Recommended</td><td>For CORS. If unset, falls back to <code>*</code> (not recommended in production).</td></tr>
         </tbody>
       </table>
       <div class="callout callout-warn">
-        <strong>Stripe publishable key</strong> (<code>pk_live_…</code>) <code>public/index.html</code> içinde <strong>hardcoded</strong>. Bu güvenlik açığı değildir (publishable key zaten halka açıktır), ama test/live arasında geçişte unutulan alanlardan biridir. Bkz. §10.5.
+        The Stripe <strong>publishable key</strong> (<code>pk_live_…</code>) is <strong>hardcoded</strong> inside <code>public/index.html</code>. This is not a security issue (publishable keys are meant to be public), but it is one of the fields easy to forget when switching between test and live modes. See §9.3.
       </div>
     </section>
 
     <section class="sop-section">
-      <h2>8. UTM ve HubSpot Entegrasyonu</h2>
+      <h2>8. UTM and HubSpot Integration</h2>
 
-      <h3>8.1 UTM yakalama</h3>
-      <p>Frontend <code>captureUtms()</code> fonksiyonu sayfa açılır açılmaz çalışır:</p>
+      <h3>8.1 UTM capture</h3>
+      <p>The frontend's <code>captureUtms()</code> function runs immediately on page load:</p>
       <ol>
-        <li>URL query string'inden UTM ve tracking parametrelerini okur.</li>
-        <li><code>localStorage</code> ile birleştirir (boş kalan alanları doldurur, dolu olanları saklar).</li>
-        <li><code>document.referrer</code>'ı yakalar.</li>
-        <li><code>hubspotutk</code> cookie'sini okur.</li>
-        <li>Device tipi ve browser dilini ekler.</li>
+        <li>Reads UTM and tracking parameters from the URL query string.</li>
+        <li>Merges with <code>localStorage</code> (fills empty fields, preserves existing ones).</li>
+        <li>Captures <code>document.referrer</code>.</li>
+        <li>Reads the <code>hubspotutk</code> cookie.</li>
+        <li>Adds device type and browser language.</li>
       </ol>
 
       <h3>8.2 HubSpot Forms API submit</h3>
-      <p>Her başarılı ödemede tetiklenir:</p>
+      <p>Triggered after every successful payment:</p>
       <div class="kv-grid">
         <dt>Portal ID</dt><dd><code>44184085</code></dd>
         <dt>Form ID</dt><dd><code>bc104a87-0a64-42e3-abf7-1c9192975a9e</code></dd>
         <dt>Endpoint</dt><dd><code>https://api.hsforms.com/submissions/v3/integration/submit/&lt;portalId&gt;/&lt;formId&gt;</code></dd>
       </div>
-      <p>Submit edilen alanlar: <code>firstname</code>, <code>lastname</code>, <code>email</code>, <code>phone</code>, UTM beşlisi, <code>gclid</code>/<code>fbclid</code>/<code>msclkid</code>/<code>utm_id</code>, <code>referrer</code>, <code>landing_page</code>, <code>payment_status</code>, <code>payment_amount</code>, <code>payment_id</code>, <code>package_type</code>. Context'te <code>hutk</code> taşınır — bu HubSpot'un mevcut browser session'ıyla bağ kurmasını sağlar.</p>
+      <p>Submitted fields: <code>firstname</code>, <code>lastname</code>, <code>email</code>, <code>phone</code>, the five UTMs, <code>gclid</code>/<code>fbclid</code>/<code>msclkid</code>/<code>utm_id</code>, <code>referrer</code>, <code>landing_page</code>, <code>payment_status</code>, <code>payment_amount</code>, <code>payment_id</code>, <code>package_type</code>. The <code>hutk</code> is included in the context — this is what lets HubSpot tie the submission back to the visitor's existing browser session.</p>
 
-      <h3>8.3 HubSpot CRM API contact update (opsiyonel)</h3>
-      <p><code>HUBSPOT_ACCESS_TOKEN</code> set ise: contact email ile aranır, bulunursa property'leri PATCH'lenir. Bu sayede HubSpot'ta contact kaydında payment property'leri güncel kalır. Token yoksa bu adım atlanır, sadece form submit kalır.</p>
+      <h3>8.3 HubSpot CRM API contact update (optional)</h3>
+      <p>If <code>HUBSPOT_ACCESS_TOKEN</code> is set, the contact is looked up by email and patched with payment-related properties. This keeps the contact record up to date with the latest payment. If the token is missing, this step is skipped and only the form submission persists.</p>
     </section>
 
     <section class="sop-section">
-      <h2>9. Bakım ve İşletme</h2>
+      <h2>9. Maintenance and Operations</h2>
 
       <h3>9.1 Deploy</h3>
-      <p>GitHub'a <code>main</code> branch'e push otomatik Cloudflare Pages deployment'ını tetikler. Build adımı yok, deployment ortalama 30-60 saniye. <strong>Hotfix'ler doğrudan main'e push edilebilir</strong> — staging branch yok.</p>
+      <p>A push to the <code>main</code> branch on GitHub automatically triggers a Cloudflare Pages deployment. No build step, deployments take ~30–60 seconds. <strong>Hotfixes can go straight to <code>main</code></strong> — there is no staging branch.</p>
 
-      <h3>9.2 Loglar</h3>
-      <p>Cloudflare Dashboard → Workers &amp; Pages → ilgili proje → <strong>Functions → Real-time Logs</strong>. Tüm <code>console.log</code>/<code>console.error</code> çıktıları burada görünür. Hata debugging için <code>create-payment-intent.js</code> içindeki <code>debugStep</code> değişkeni ne aşamada hata aldığını söyler (örn. <code>"DEBUG [customer-search]: …"</code>).</p>
+      <h3>9.2 Logs</h3>
+      <p>Cloudflare Dashboard → Workers &amp; Pages → the project → <strong>Functions → Real-time Logs</strong>. All <code>console.log</code> and <code>console.error</code> output appears here. For debugging, the <code>debugStep</code> variable inside <code>create-payment-intent.js</code> tells you which stage the error happened at (e.g. <code>"DEBUG [customer-search]: …"</code>).</p>
 
-      <h3>9.3 Bilinen gotchas</h3>
+      <h3>9.3 Known gotchas</h3>
       <ol>
-        <li><strong>Webhook signature verification yok.</strong> <code>webhook.js</code>, Stripe'tan gelen payload'ı parse edip log'luyor ama <code>stripe-signature</code> header'ını doğrulamıyor. Şu an webhook spoof edilebilir. Production'da signature verify edilmeli.</li>
-        <li><strong>Webhook handler aslında iş yapmıyor.</strong> Sadece log'luyor. Asıl HubSpot submit <code>/payment-success</code> üzerinden frontend tetiklemesiyle gidiyor. <strong>Risk:</strong> Kullanıcı tarayıcısı <code>/payment-success</code> isteğini atmadan kapatırsa ödeme Stripe'ta görünür ama HubSpot'ta kayıt oluşmaz. <em>Çözüm:</em> webhook'u gerçek handler'a çevirmek (uzun vadeli iş).</li>
-        <li><strong>HubSpot submit fail-silent.</strong> Try/catch ile yutuluyor, sadece <code>console.error</code>. Frontend'e hata dönmüyor — kullanıcı thank-you sayfasına gidiyor ama CRM'de kayıt olmamış olabilir. Loglardan kontrol edilmeli.</li>
-        <li><strong>Stripe customer search eventual consistency.</strong> Yeni oluşmuş bir customer hemen aranınca bulunamayabilir, sistem yeniden create eder → duplicate Stripe customer oluşur. Çözüm gelecek versiyona kalmıştır; şimdilik aynı email'le çok hızlı arka arkaya iki ödeme yapılırsa Stripe Dashboard'da temizlik gerekebilir.</li>
-        <li><strong>Test/Live geçişi manuel.</strong> Otomatik switch yok. Test'e geçmek için: <code>public/index.html</code>'de <code>stripe_pk</code> değerini <code>pk_test_…</code> ile değiştir + Cloudflare env var'larında <code>STRIPE_SECRET_KEY</code>'i <code>sk_test_…</code> yap + deployment retry. Live'a dönüşte aynı işlemi tersine yap.</li>
-        <li><strong>Stripe metadata 500 karakter limiti.</strong> <code>page_history</code> kırpılıyor ama uzun referrer/URL'lerde Stripe API 400 dönebilir. Yeni alan eklerken <code>.substring(0, 500)</code> uygulanmalı.</li>
-        <li><strong>Iframe'in yüksekliği parent'a postMessage ile gidiyor.</strong> Parent script'i çalışmazsa scroll bar oluşur. WordPress sayfası kurulurken script'in eklendiğinden emin ol.</li>
+        <li><strong>Webhook signature verification is not implemented.</strong> <code>webhook.js</code> parses and logs the Stripe payload but does not verify the <code>stripe-signature</code> header. The webhook is currently spoofable. Signature verification should be added before relying on the webhook in production.</li>
+        <li><strong>The webhook handler does no real work.</strong> It only logs. The actual HubSpot submit happens via <code>/payment-success</code>, triggered by the frontend. <strong>Risk:</strong> if the user closes their browser before the <code>/payment-success</code> request fires, the payment will appear in Stripe but no record will land in HubSpot. <em>Long-term fix:</em> move the HubSpot submit into the webhook.</li>
+        <li><strong>HubSpot submission fails silently.</strong> Errors are swallowed by a try/catch and only printed to <code>console.error</code>. The user is still redirected to the thank-you page even if the CRM never received the data. Logs must be monitored to catch this.</li>
+        <li><strong>Stripe customer search is eventually consistent.</strong> A customer just created may not be findable by <code>customers/search</code> immediately, so the system creates a duplicate. Two payments by the same email in rapid succession can produce duplicate Stripe customers. Manual cleanup in the Stripe Dashboard may be needed; a retry/dedupe layer is on the backlog.</li>
+        <li><strong>Test/Live mode switching is manual.</strong> There is no automatic switch. To switch to test: change <code>stripe_pk</code> in <code>public/index.html</code> to <code>pk_test_…</code>, change the <code>STRIPE_SECRET_KEY</code> env var to <code>sk_test_…</code>, and retry the deployment. Reverse the same steps to go back live.</li>
+        <li><strong>Stripe metadata 500-character limit per value.</strong> <code>page_history</code> is already trimmed, but long referrer/URL values may still cause Stripe to return 400. When adding new metadata fields, always apply <code>.substring(0, 500)</code>.</li>
+        <li><strong>Iframe height relies on <code>postMessage</code>.</strong> If the parent script does not run (e.g. it was forgotten when the WordPress page was set up), a scrollbar appears inside the iframe. Always confirm the script is in place when creating a new package page.</li>
       </ol>
 
-      <h3>9.4 Test kartları</h3>
+      <h3>9.4 Test cards</h3>
       <table>
-        <thead><tr><th>Kart</th><th>Sonuç</th></tr></thead>
+        <thead><tr><th>Card</th><th>Result</th></tr></thead>
         <tbody>
-          <tr><td><code>4242 4242 4242 4242</code></td><td>Başarılı</td></tr>
-          <tr><td><code>4000 0000 0000 0002</code></td><td>Reddedildi</td></tr>
+          <tr><td><code>4242 4242 4242 4242</code></td><td>Success</td></tr>
+          <tr><td><code>4000 0000 0000 0002</code></td><td>Declined</td></tr>
           <tr><td><code>4000 0027 6000 3184</code></td><td>3D Secure prompt</td></tr>
         </tbody>
       </table>
-      <p>Geçerli herhangi bir gelecek tarihi ve 3 haneli CVC kullanılabilir.</p>
+      <p>Any valid future expiry date and any 3-digit CVC will work.</p>
     </section>
 
     <section class="sop-section">
-      <h2>10. Yeni Paket Ekleme — Adım Adım</h2>
-      <p>Mevcut sisteme yeni bir paket eklemek istendiğinde izlenecek sıra. Mevcut marka için (yani aynı Stripe ve HubSpot hesabı altında) geçerlidir; yeni marka için bkz. §11.</p>
+      <h2>10. Adding a New Package — Step by Step</h2>
+      <p>Use this section when adding a package to the existing system (same Stripe and HubSpot accounts). For setting up a brand-new instance, see §11.</p>
 
       <ol class="step-list">
-        <li><strong>Stripe Dashboard'da product ve price oluştur.</strong> Stripe → Products → Add product. Tek seferlik ödeme (one-time) seç, fiyatı gir, kaydet. Oluşan <strong>Price ID</strong>'yi kopyala (<code>price_…</code> ile başlar). Test mod ve live mod için ayrı Price ID'ler vardır — ikisini de oluştur.</li>
+        <li><strong>Create the product and price in Stripe Dashboard.</strong> Stripe → Products → Add product. Choose one-time payment, enter the price, save. Copy the resulting <strong>Price ID</strong> (starts with <code>price_…</code>). Test mode and live mode have separate Price IDs — create both.</li>
 
-        <li><strong>Backend'i güncelle:</strong> <code>functions/create-payment-intent.js</code>. Dosyanın en üstündeki <code>PACKAGES</code> nesnesine yeni satır ekle:
-<pre><code>'yeni-paket-key': {
+        <li><strong>Update the backend:</strong> <code>functions/create-payment-intent.js</code>. Add a new entry to the <code>PACKAGES</code> object at the top of the file:
+<pre><code>'new-pkg-key': {
     price: 'price_XXXXXXXXXX',
-    name: 'Görünür Paket Adı'
+    name: 'Display Name'
 }</code></pre>
         </li>
 
-        <li><strong>Frontend'i güncelle:</strong> <code>public/index.html</code>. <code>PACKAGES</code> nesnesine aynı key ile yeni satır ekle:
-<pre><code>'yeni-paket-key': {
-    name: 'Görünür Paket Adı',
-    sub: 'Alt başlık',
+        <li><strong>Update the frontend:</strong> <code>public/index.html</code>. Add an entry to the <code>PACKAGES</code> object with the same key:
+<pre><code>'new-pkg-key': {
+    name: 'Display Name',
+    sub: 'Subtitle',
     base: 297,
-    upsellDesc: 'Premium upsell açıklaması.'
+    upsellDesc: 'Premium upsell description.'
 }</code></pre>
-          <strong>Önemli:</strong> Backend ve frontend key'leri tıpatıp aynı olmalı. Tutarsızlık olursa frontend default <code>itin</code>'e döner.
+          <strong>Important:</strong> the backend and frontend keys must match exactly. If they don't, the frontend silently falls back to <code>itin</code>.
         </li>
 
-        <li><strong>Commit ve push.</strong> Git üzerinden main branch'e push. Cloudflare Pages otomatik deploy eder, yaklaşık 30-60 saniye.</li>
+        <li><strong>Commit and push.</strong> Push to <code>main</code>. Cloudflare Pages auto-deploys, ~30–60 seconds.</li>
 
-        <li><strong>WordPress'te yeni paket sayfası oluştur.</strong> Yeni sayfa aç, HTML widget ekle, §6'daki iframe kodunu kopyala, <code>?pkg=yeni-paket-key</code> olarak güncelle. Template Full Width yap. Yayınla.</li>
+        <li><strong>Create the WordPress page.</strong> Open a new page, add an HTML widget, paste the iframe code from §6, and update <code>?pkg=new-pkg-key</code>. Set the page template to Full Width. Publish.</li>
 
-        <li><strong>Test modunda doğrula.</strong> Önce test moduna geç (§9.3 madde 5). Yeni paket sayfasını aç, test kartı ile ödeme dene. Kontrol listesi:
+        <li><strong>Verify in test mode.</strong> Switch to test mode first (§9.3 item 5). Open the new package page and try a payment with a test card. Checklist:
           <ul>
-            <li>Ödeme formunda doğru paket adı, fiyat, premium açıklaması görünüyor mu?</li>
-            <li>Test kartı ile ödeme tamamlanıyor mu?</li>
-            <li>Stripe Dashboard'ta PaymentIntent oluşmuş ve metadata'da paket bilgisi doğru mu?</li>
-            <li>HubSpot'a contact düşüyor mu? (Form submission'ları kontrol et.)</li>
-            <li>Thank-you sayfasına yönlendirme oluyor mu?</li>
+            <li>Does the form display the correct package name, price, and premium description?</li>
+            <li>Does the test card payment complete?</li>
+            <li>Is the PaymentIntent created in Stripe Dashboard with the correct package metadata?</li>
+            <li>Does the contact land in HubSpot? (Check Form Submissions.)</li>
+            <li>Does the redirect to the thank-you page work?</li>
           </ul>
         </li>
 
-        <li><strong>Live moda geri dön.</strong> Test pk/sk değerlerini geri al, deployment retry et.</li>
+        <li><strong>Switch back to live mode.</strong> Restore the live <code>pk</code> and <code>sk</code> values, retry the deployment.</li>
 
-        <li><strong>Live ortamda son bir kontrol yap.</strong> Mümkünse en düşük tutarlı bir test paketi üzerinden gerçek bir ödeme dene (sonradan refund), çünkü test mod ve live mod arasında bazen farklılıklar çıkabilir.</li>
+        <li><strong>Run a final live check.</strong> If possible, run one real payment on the cheapest test package and refund it afterwards — production sanity check, since test and live modes occasionally diverge.</li>
       </ol>
     </section>
 
     <section class="sop-section">
-      <h2>11. Yeni Marka için Sıfırdan Kurulum — Adım Adım</h2>
-      <p>Aynı sistemin başka bir marka (örn. yeni bir LLC, ayrı bir hizmet hattı) için kurulması gerektiğinde izlenecek yol. Bu, mevcut sistemin <strong>klonlanıp</strong> yeni Stripe ve HubSpot hesaplarına bağlanmasıdır.</p>
+      <h2>11. Setting Up the System for a New Brand — Step by Step</h2>
+      <p>Use this section when the same payment system needs to be stood up for a different brand (e.g. a separate LLC or a new service line). This is essentially a <strong>clone</strong> of the existing system, rewired to a different Stripe and HubSpot setup.</p>
 
-      <h3>11.1 Hazırlık</h3>
+      <h3>11.1 Preparation</h3>
       <ol class="step-list">
-        <li><strong>Stripe hesabını hazırla.</strong> Yeni marka için ayrı bir Stripe hesabı varsa o kullanılır; yoksa mevcut hesap altında ürün eklenebilir (multi-brand karar). Karar netleşene kadar başlamayın.</li>
-        <li><strong>HubSpot brand kararı.</strong> Aynı HubSpot portal'ı içinde ayrı brand olarak mı kurulacak, yoksa ayrı portal'a mı gidecek? <em>Bkz. SOP Library → "HubSpot Internal Kurallar"</em>. Genelde aynı portal'da brand olarak ayrılır.</li>
-        <li><strong>Domain ve URL planı.</strong> Ödeme sayfası hangi subdomain altında olacak? (örn. <code>pay.yenimarka.com</code>). WordPress siteye bağlanacak mı?</li>
+        <li><strong>Decide on the Stripe account.</strong> If the new brand has its own Stripe account, use it. Otherwise, products can be added under the existing account (a multi-brand call). Don't start until this is settled.</li>
+        <li><strong>Decide on the HubSpot brand.</strong> Will it be a new brand inside the existing HubSpot portal, or a separate portal entirely? <em>See SOP Library → "HubSpot Internal Kurallar".</em> Usually it goes under the existing portal as a separate brand.</li>
+        <li><strong>Plan the domain and URL.</strong> Which subdomain will host the payment page? (e.g. <code>pay.newbrand.com</code>.) Is it being attached to a WordPress site?</li>
       </ol>
 
-      <h3>11.2 Stripe ürünlerini ve fiyatlarını oluştur</h3>
+      <h3>11.2 Create Stripe products and prices</h3>
       <ol class="step-list">
-        <li>Stripe Dashboard → Products → her paket için product + price oluştur.</li>
-        <li>Premium add-on varsa onu da ayrı price olarak oluştur.</li>
-        <li>Hem test hem live için ayrı Price ID'ler kaydet — iki ortam ayrı yönetilir.</li>
-        <li>Tüm Price ID'leri bir dokümana not et (örn. Google Sheets) — repo güncellenirken bu dokümandan kopyalanacak.</li>
+        <li>Stripe Dashboard → Products → create a product + price for each package.</li>
+        <li>If there is a premium add-on, create it as a separate price.</li>
+        <li>Create both test and live Price IDs — the two environments are managed separately.</li>
+        <li>Record every Price ID in a working document (e.g. Google Sheets) — you will copy from this doc when updating the repo.</li>
       </ol>
 
-      <h3>11.3 HubSpot tarafını hazırla</h3>
+      <h3>11.3 Prepare HubSpot</h3>
       <ol class="step-list">
-        <li>HubSpot → Marketing → Forms → yeni form oluştur. Form ödeme akışına özel: <code>firstname</code>, <code>lastname</code>, <code>email</code>, <code>phone</code> + UTM alanları + payment hidden field'ları (<code>payment_status</code>, <code>payment_amount</code>, <code>payment_id</code>, <code>package_type</code>).</li>
-        <li>Form'un brand'ini doğru seç (HubSpot Internal Kurallar SOP'una göre).</li>
-        <li><strong>Portal ID</strong> ve <strong>Form GUID</strong> değerlerini al — repo'da bunlar değişecek.</li>
-        <li>(Opsiyonel) HubSpot Private App üzerinden access token oluştur — CRM contact property update'i için. Custom property olarak <code>payment_status</code>, <code>payment_amount</code>, <code>payment_id</code>, <code>last_payment_date</code>, <code>package_type</code> ekle (yoksa).</li>
+        <li>HubSpot → Marketing → Forms → create a new form. The form should match the payment flow: <code>firstname</code>, <code>lastname</code>, <code>email</code>, <code>phone</code> + UTM fields + payment hidden fields (<code>payment_status</code>, <code>payment_amount</code>, <code>payment_id</code>, <code>package_type</code>).</li>
+        <li>Make sure the form is assigned to the correct brand (per the HubSpot Internal Kurallar SOP).</li>
+        <li>Note the <strong>Portal ID</strong> and <strong>Form GUID</strong> — these will be hardcoded into the cloned repo.</li>
+        <li>(Optional) Create a HubSpot Private App and generate an access token, for the CRM contact property update. Make sure the custom properties exist on the Contact object: <code>payment_status</code>, <code>payment_amount</code>, <code>payment_id</code>, <code>last_payment_date</code>, <code>package_type</code>.</li>
       </ol>
 
-      <h3>11.4 Repo'yu klonla ve özelleştir</h3>
+      <h3>11.4 Clone and customize the repo</h3>
       <ol class="step-list">
-        <li>Mevcut <code>stripe-hubspot-main</code> repo'sunu yeni bir repo'ya kopyala (örn. <code>stripe-hubspot-yenimarka</code>). Fork değil, yeni repo — birbirinden bağımsız ilerleyecekler.</li>
+        <li>Copy the existing <code>stripe-hubspot-main</code> repo to a new repo (e.g. <code>stripe-hubspot-newbrand</code>). Don't fork — make a clean copy. The two will evolve independently.</li>
 
-        <li><strong><code>functions/create-payment-intent.js</code></strong> içinde:
+        <li>In <strong><code>functions/create-payment-intent.js</code></strong>:
           <ul>
-            <li><code>PACKAGES</code> nesnesini yeni markanın paketleriyle baştan yaz.</li>
-            <li><code>PREMIUM_PRICE</code> ve <code>PREMIUM_TEST</code> sabitlerini yeni Price ID'lerle güncelle (premium add-on yoksa kaldır).</li>
+            <li>Rewrite the <code>PACKAGES</code> object with the new brand's packages.</li>
+            <li>Update the <code>PREMIUM_PRICE</code> and <code>PREMIUM_TEST</code> constants with the new Price IDs (or remove them if there is no premium add-on).</li>
           </ul>
         </li>
 
-        <li><strong><code>functions/payment-success.js</code></strong> içinde:
+        <li>In <strong><code>functions/payment-success.js</code></strong>:
           <ul>
-            <li><code>HS_PORTAL_ID</code> ve <code>HS_FORM_ID</code> değerlerini yeni HubSpot bilgileriyle değiştir.</li>
-            <li>HubSpot custom property isimleri farklıysa <code>updateHubSpotContact</code> içindeki property map'i güncelle.</li>
+            <li>Replace <code>HS_PORTAL_ID</code> and <code>HS_FORM_ID</code> with the new HubSpot values.</li>
+            <li>If the HubSpot custom property names differ, update the property map inside <code>updateHubSpotContact</code>.</li>
           </ul>
         </li>
 
-        <li><strong><code>public/index.html</code></strong> içinde:
+        <li>In <strong><code>public/index.html</code></strong>:
           <ul>
-            <li><code>PACKAGES</code> nesnesini yeni markanın paketleriyle baştan yaz (backend'le birebir aynı key'ler).</li>
-            <li><code>CFG.stripe_pk</code> değerini yeni markanın <code>pk_live_…</code> publishable key'iyle değiştir.</li>
-            <li>Logo'yu <code>public/logo.png</code> içinde değiştir.</li>
-            <li>Başlıklar, renkler, success URL (<code>https://yenimarka.com/thank-you/#…</code>) gibi marka-spesifik alanları güncelle.</li>
+            <li>Rewrite the <code>PACKAGES</code> object with the new brand's packages (keys must match the backend exactly).</li>
+            <li>Replace <code>CFG.stripe_pk</code> with the new brand's <code>pk_live_…</code> publishable key.</li>
+            <li>Replace <code>public/logo.png</code> with the new brand's logo.</li>
+            <li>Update brand-specific fields: titles, colors, success URL (<code>https://newbrand.com/thank-you/#…</code>), etc.</li>
           </ul>
         </li>
 
-        <li><strong><code>DEPLOY-GUIDE.md</code></strong>'i güncelle — yeni domain, yeni env var değerleri, yeni Stripe hesabı referansları. Bu doküman başka birisi devraldığında ilk okuyacağı şey.</li>
+        <li>Update <strong><code>DEPLOY-GUIDE.md</code></strong> with the new domain, env var values, and Stripe account references. This is the first thing the next engineer will read when picking up the system.</li>
       </ol>
 
-      <h3>11.5 Cloudflare Pages projesi oluştur</h3>
+      <h3>11.5 Create the Cloudflare Pages project</h3>
       <ol class="step-list">
-        <li>Cloudflare Dashboard → Workers &amp; Pages → Create → Pages → Connect to Git → yeni repo'yu seç.</li>
-        <li>Build command boş, build output dir <code>public</code>.</li>
-        <li>Save and Deploy. İlk deploy <code>&lt;proje-adi&gt;.pages.dev</code> URL'ini verir.</li>
+        <li>Cloudflare Dashboard → Workers &amp; Pages → Create → Pages → Connect to Git → select the new repo.</li>
+        <li>Build command: empty. Build output directory: <code>public</code>.</li>
+        <li>Save and Deploy. The first deployment yields a <code>&lt;project-name&gt;.pages.dev</code> URL.</li>
         <li>Settings → Environment Variables → Production:
           <ul>
-            <li><code>STRIPE_SECRET_KEY</code>: yeni markanın <code>sk_live_…</code></li>
-            <li><code>HUBSPOT_ACCESS_TOKEN</code>: (opsiyonel)</li>
-            <li><code>ALLOWED_ORIGIN</code>: <code>https://yenimarka.com</code></li>
+            <li><code>STRIPE_SECRET_KEY</code>: the new brand's <code>sk_live_…</code></li>
+            <li><code>HUBSPOT_ACCESS_TOKEN</code>: optional</li>
+            <li><code>ALLOWED_ORIGIN</code>: <code>https://newbrand.com</code></li>
           </ul>
         </li>
-        <li>Deployments → en son deployment'ı Retry — env var'lar pickup olur.</li>
-        <li><strong>(Önerilir)</strong> Custom domain ekle: <code>pay.yenimarka.com</code> CNAME → <code>&lt;proje-adi&gt;.pages.dev</code>.</li>
+        <li>Deployments → retry the latest deployment so the env vars are picked up.</li>
+        <li><strong>(Recommended)</strong> Add a custom domain: <code>pay.newbrand.com</code> CNAME → <code>&lt;project-name&gt;.pages.dev</code>.</li>
       </ol>
 
-      <h3>11.6 Stripe webhook bağla</h3>
+      <h3>11.6 Wire up the Stripe webhook</h3>
       <ol class="step-list">
         <li>Stripe Dashboard → Developers → Webhooks → Add endpoint.</li>
-        <li>URL: <code>https://pay.yenimarka.com/webhook</code> (veya pages.dev URL'i).</li>
-        <li>Event'ler: <code>payment_intent.succeeded</code>, <code>payment_intent.payment_failed</code>.</li>
-        <li><div class="callout callout-warn" style="margin: 0.5rem 0;"><strong>Hatırlatma:</strong> webhook handler şu an signature verify etmiyor (§9.3 madde 1). Yeni marka kurulumu fırsattır — bu handler'ı düzgün implemente et: webhook secret'ı env var'a koy, signature doğrula, gerçek HubSpot submit'i webhook'tan tetikle (frontend bağımlılığını kaldır).</div></li>
+        <li>URL: <code>https://pay.newbrand.com/webhook</code> (or the pages.dev URL).</li>
+        <li>Events: <code>payment_intent.succeeded</code>, <code>payment_intent.payment_failed</code>.</li>
+        <li><div class="callout callout-warn" style="margin: 0.5rem 0;"><strong>Reminder:</strong> the webhook handler does not currently verify signatures (§9.3 item 1). A new-brand setup is the perfect opportunity to fix this properly: store the webhook secret as an env var, verify the signature, and trigger the actual HubSpot submit from the webhook (removing the dependency on the frontend).</div></li>
       </ol>
 
-      <h3>11.7 WordPress entegrasyonu</h3>
+      <h3>11.7 WordPress integration</h3>
       <ol class="step-list">
-        <li>Yeni markanın WordPress sitesinde her paket için ayrı sayfa aç.</li>
-        <li>Her sayfada §6'daki iframe kodunu kullan, <code>src</code>'yi yeni Cloudflare URL'ine çevir, <code>?pkg=&lt;key&gt;</code> uygun olsun.</li>
-        <li>Sayfa template'i Full Width.</li>
-        <li>Yayınlamadan önce iframe yüksekliğinin postMessage ile düzgün resize olduğunu kontrol et.</li>
+        <li>On the new brand's WordPress site, create one page per package.</li>
+        <li>On each page, paste the iframe code from §6, point <code>src</code> at the new Cloudflare URL, and set <code>?pkg=&lt;key&gt;</code> appropriately.</li>
+        <li>Page template: Full Width.</li>
+        <li>Before publishing, confirm the iframe height auto-resizes correctly via the <code>postMessage</code> handler.</li>
       </ol>
 
-      <h3>11.8 Test ve canlıya alma</h3>
+      <h3>11.8 Test and go live</h3>
       <ol class="step-list">
-        <li>İlk deploy'ı önce test mod ile yap: <code>pk_test_…</code> + <code>sk_test_…</code>.</li>
-        <li>Her paket sayfasını test kartıyla test et (§9.4).</li>
-        <li>Stripe Dashboard ve HubSpot'ta verinin düzgün düştüğünü kontrol et — özellikle UTM ve metadata.</li>
-        <li>Test geçtikten sonra live anahtarlara geç, deployment retry.</li>
-        <li>Live ortamda en düşük tutarlı paketle 1 gerçek ödeme yap, refund et — production sanity check.</li>
-        <li>Test mode onayı için <strong>Dorukhan Korkut</strong>'a not düş (mevcut sistemde olduğu gibi).</li>
+        <li>First deploy in test mode: <code>pk_test_…</code> + <code>sk_test_…</code>.</li>
+        <li>Test every package page with a test card (§9.4).</li>
+        <li>Verify in Stripe Dashboard and HubSpot that the data lands correctly — especially UTMs and metadata.</li>
+        <li>After tests pass, switch to live keys and retry the deployment.</li>
+        <li>Run one real payment on the cheapest package in the live environment, then refund it — production sanity check.</li>
+        <li>Get test mode approval from <strong>Dorukhan Korkut</strong>, following the same pattern as the existing system.</li>
       </ol>
     </section>
 
     <section class="sop-section">
-      <h2>12. Zapier Entegrasyonu (Legacy)</h2>
-      <p>Zapier'da iki Zap bu ödeme akışına bağlı: <strong>Zap #15</strong> (Stripe → completed checkout session) ve <strong>Zap #18</strong> (Stripe → new payment). <em>Bkz. Zapier Active Automations — Master Reference.</em></p>
-      <p>Mevcut custom checkout (PaymentIntent) sistemi bu Zap'ları doğrudan tetiklemez. Ancak <strong>eski Stripe Payment Link'ler hâlâ aktif</strong> — birisi eski bir link üzerinden ödeme yaparsa Zap #15 ve #18 devreye girer. Bu yüzden iki Zap da kapatılmamalı, legacy fallback olarak duruyor.</p>
+      <h2>12. Zapier Integration (Legacy)</h2>
+      <p>Two Zaps in Zapier are connected to the payment flow: <strong>Zap #15</strong> (Stripe → completed checkout session) and <strong>Zap #18</strong> (Stripe → new payment). <em>See Zapier Active Automations — Master Reference.</em></p>
+      <p>The current custom checkout (PaymentIntent) flow does not trigger these Zaps directly. However, <strong>old Stripe Payment Links are still active</strong> — if someone pays through one of those legacy links, Zap #15 and #18 take over. Both Zaps must therefore be left enabled as a legacy fallback.</p>
       <div class="callout callout-info">
-        Yeni paket eklerken eski Payment Link'lerle bir alakası yok — onları görmezden gelebilirsin. Yeni marka kurulumunda da Zapier tarafına dokunmaya gerek yok, çünkü yeni sistemde HubSpot submit doğrudan <code>/payment-success</code> üzerinden gidiyor.
+        When adding a new package, the legacy Payment Links are unrelated — you can ignore them. For a new brand setup, no Zapier work is needed either, since the new system writes to HubSpot directly via <code>/payment-success</code>.
       </div>
     </section>
 
     <section class="sop-section">
-      <h2>13. Owner ve İletişim</h2>
+      <h2>13. Owner and Contacts</h2>
       <div class="kv-grid">
-        <dt>Sistem sahibi</dt><dd>Emel Gedik (CRM Specialist)</dd>
-        <dt>Test mode onayı</dt><dd>Dorukhan Korkut</dd>
-        <dt>GitHub hesabı</dt><dd><code>accounts.itin@…</code></dd>
-        <dt>Cloudflare hesabı</dt><dd><code>admin@oguz.law</code></dd>
-        <dt>Stripe hesabı</dt><dd>Oguz Law Stripe (live + test)</dd>
+        <dt>System owner</dt><dd>Emel Gedik (CRM Specialist)</dd>
+        <dt>Test mode approval</dt><dd>Dorukhan Korkut</dd>
+        <dt>GitHub account</dt><dd><code>accounts.itin@…</code></dd>
+        <dt>Cloudflare account</dt><dd><code>admin@oguz.law</code></dd>
+        <dt>Stripe account</dt><dd>Oguz Law Stripe (live + test)</dd>
         <dt>HubSpot Portal</dt><dd><code>44184085</code></dd>
       </div>
     </section>
 
     <section class="sop-section">
-      <h2>14. İlgili Dokümanlar</h2>
+      <h2>14. Related Documents</h2>
       <ul>
-        <li><strong>Zapier Active Automations — Master Reference</strong> (Zap #15, #16, #17, #18 — eski Payment Link akışı)</li>
-        <li><strong>HubSpot Internal Kurallar</strong> (yeni marka kurulumunda brand seçimi)</li>
-        <li><strong>WhatsApp UTM Tracking SOP v1.1</strong> (UTM mantığının diğer tarafı — kullandığımız UTM key'leri tutarlı kalsın diye)</li>
-        <li>Repo: <code>stripe-hubspot-main</code> (GitHub) — güncel kod ve <code>DEPLOY-GUIDE.md</code></li>
-        <li>Eski planlama dokümanı: <em>SOP Library → ITIN STRIPE CHECKOUT</em> — referans için, fiili build farklıdır (bkz. üstteki uyarı).</li>
+        <li><strong>Zapier Active Automations — Master Reference</strong> (Zap #15, #16, #17, #18 — legacy Payment Link flow)</li>
+        <li><strong>HubSpot Internal Kurallar</strong> (brand selection rules for new-brand setup)</li>
+        <li><strong>WhatsApp UTM Tracking SOP v1.1</strong> (the upstream side of UTM logic — keeps the UTM keys consistent across systems)</li>
+        <li>Repo: <code>stripe-hubspot-main</code> (GitHub) — current code and <code>DEPLOY-GUIDE.md</code></li>
+        <li>Original planning document: <em>SOP Library → ITIN STRIPE CHECKOUT</em> — historical reference; the actual build differs (see the warning at the top of this SOP).</li>
       </ul>
     </section>
 
     <section class="sop-section">
-      <h2>15. İyileştirme Önerileri (Backlog)</h2>
-      <p>Sistemin şu an çalışan ama gelecekte ele alınması gereken noktaları:</p>
+      <h2>15. Improvement Backlog</h2>
+      <p>Items the system runs without today, but that should be addressed over time:</p>
       <ol>
-        <li>Webhook signature verification'ı implemente et — şu an spoof edilebilir durumda.</li>
-        <li>HubSpot submit'i webhook'a taşı — frontend kapanırsa kayıt kaybolma riskini ortadan kaldırır.</li>
-        <li>Test/live geçişini env var ile otomatikleştir — publishable key hardcoded olmaktan çıksın.</li>
-        <li>Stripe customer search retry mantığı ekle — duplicate customer riskine karşı.</li>
-        <li>HubSpot submit hatalarını monitoring'e bağla (örn. Slack alert) — fail-silent davranışı yerine.</li>
+        <li>Implement webhook signature verification — currently spoofable.</li>
+        <li>Move the HubSpot submit into the webhook — removes the risk of losing a record if the user closes their browser before <code>/payment-success</code> fires.</li>
+        <li>Make the test/live switch driven by env vars — get the publishable key out of the hardcoded HTML.</li>
+        <li>Add retry logic to the Stripe customer search — protect against duplicate-customer race conditions.</li>
+        <li>Wire HubSpot submission failures into a monitoring channel (e.g. a Slack alert) — replace the current fail-silent behavior.</li>
       </ol>
     </section>
 
